@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="ModernDesign.View.Login.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ModernDesign.View.Login"
+             xmlns:models="clr-namespace:InputFields;assembly=InputFields"
+             mc:Ignorable="d" 
+             d:DesignHeight="720" d:DesignWidth="1280">
+    <Grid>
+        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="250" Background="White" CornerRadius="10">
+            <Border.Effect>
+                <DropShadowEffect Color="#333" BlurRadius="20" ShadowDepth="0"></DropShadowEffect>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border CornerRadius="10 10 0 0" Background="{DynamicResource bru_BackgroundDarker}" Margin="0 0 0 0"></Border>
+
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           Orientation="Vertical">
+                    <WrapPanel.Resources>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Margin" Value="0 0 0 10" />
+                            <Setter Property="Width" Value="200" />
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Control Template="{StaticResource LoginInput}" DataContext="{Binding LoginInput}"/>
+                    <Control Template="{StaticResource PassInput}" DataContext="{Binding PassInput}"/>
+                    <Button Content="{Binding ConnextionInput.Value}" Style="{StaticResource Button}" Margin="0 5 0 0"
+                            Command="{Binding LogCmd}"/>
+                </WrapPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

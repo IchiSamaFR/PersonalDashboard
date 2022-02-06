@@ -1,0 +1,58 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ModernDesign.View.Styles.Templates"
+                    xmlns:models="clr-namespace:InputFields;assembly=InputFields"
+                    xmlns:converter="clr-namespace:ModernDesign.View.Convertors">
+
+    <converter:StringNullOrEmptyConverter x:Key="StringNullOrEmptyConverter" />
+
+    <ControlTemplate x:Key="LoginInput">
+        <Border x:Name="borderMail" BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="1">
+            <Grid Height="25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle x:Name="filler" Fill="{DynamicResource bru_BackgroundDarker}"/>
+                <TextBlock x:Name="placeholder" Foreground="{DynamicResource bru_Background}" Padding="7 0 0 0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                            Text="{Binding Placeholder}"/>
+                <TextBox x:Name="textValue" Style="{StaticResource TextBox}" BorderThickness="0" Grid.Column="1"
+                            Text="{Binding Value}"/>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Path=IsFocused, ElementName=textValue}" Value="True">
+                <Setter Property="BorderBrush" TargetName="borderMail" Value="{DynamicResource bru_BackgroundFocused}"/>
+                <Setter Property="Fill" TargetName="filler" Value="{DynamicResource bru_BackgroundFocused}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=textValue, Path=Text, Converter={StaticResource StringNullOrEmptyConverter}}" Value="false">
+                <Setter Property="Visibility" TargetName="placeholder" Value="Collapsed"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
+    <ControlTemplate x:Key="PassInput">
+        <Border x:Name="borderMail" BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="1">
+            <Grid Height="25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle x:Name="filler" Fill="{DynamicResource bru_BackgroundDarker}"/>
+                <TextBlock x:Name="placeholder" Foreground="{DynamicResource bru_Background}" Padding="7 0 0 0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                            Text="{Binding Placeholder}"/>
+                <models:BindablePasswordBox x:Name="textValue" BorderThickness="0" Grid.Column="1"
+                            Password="{Binding Value}" />
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Path=Focused, ElementName=textValue}" Value="True">
+                <Setter Property="BorderBrush" TargetName="borderMail" Value="{DynamicResource bru_BackgroundFocused}"/>
+                <Setter Property="Fill" TargetName="filler" Value="{DynamicResource bru_BackgroundFocused}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=textValue, Path=Password, Converter={StaticResource StringNullOrEmptyConverter}}" Value="false">
+                <Setter Property="Visibility" TargetName="placeholder" Value="Collapsed"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+</ResourceDictionary>

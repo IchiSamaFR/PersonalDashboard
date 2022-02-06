@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ModernDesign.View.Styles">
+    <Color x:Key="col_Background">#343434</Color>
+    <Color x:Key="col_BackgroundDarker">#232323</Color>
+    <Color x:Key="col_BackgroundFocused">#2e2e75</Color>
+    <Color x:Key="col_DarkForeground">#1E1E3E</Color>
+    <Color x:Key="col_LightForeground">#FFFFFF</Color>
+
+
+
+    <SolidColorBrush x:Key="bru_Background" Color="{DynamicResource col_Background}"/>
+    <SolidColorBrush x:Key="bru_BackgroundDarker" Color="{DynamicResource col_BackgroundDarker}"/>
+    <SolidColorBrush x:Key="bru_BackgroundFocused" Color="{DynamicResource col_BackgroundFocused}"/>
+    <SolidColorBrush x:Key="bru_DarkForeground" Color="{DynamicResource col_DarkForeground}"/>
+    <SolidColorBrush x:Key="bru_LightForeground" Color="{DynamicResource col_LightForeground}"/>
+</ResourceDictionary>
