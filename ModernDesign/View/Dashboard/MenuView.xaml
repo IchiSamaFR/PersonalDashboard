@@ -1,19 +1,24 @@
-﻿<UserControl x:Class="ModernDesign.View.Dashboard.Menu"
+﻿<UserControl x:Class="ModernDesign.View.Dashboard.MenuView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ModernDesign.View.Dashboard"
-             xmlns:dashboard="clr-namespace:ModernDesign.Model.Dashboard"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="150">
     <Grid Background="{DynamicResource bru_BackgroundDarker}">
-        <ItemsControl ItemsSource="{Binding MenuButtons}">
+        <ItemsControl ItemsSource="{Binding Menus}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Background="Red">
-                        <Button Style="{StaticResource MenuButton}"/>
-                    </StackPanel>
+                    <Button x:Name="Button"
+                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.ChangeVMCmd}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
+                                Width="150" Height="30">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MenuButton}">
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

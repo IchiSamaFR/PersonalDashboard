@@ -83,6 +83,16 @@ namespace ModernDesign.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap envelope {
+            get {
+                object obj = ResourceManager.GetObject("envelope", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap file {
             get {
                 object obj = ResourceManager.GetObject("file", resourceCulture);
@@ -123,6 +133,16 @@ namespace ModernDesign.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap open_envelope {
+            get {
+                object obj = ResourceManager.GetObject("open_envelope", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap opened_folder {
             get {
                 object obj = ResourceManager.GetObject("opened_folder", resourceCulture);
@@ -136,6 +156,16 @@ namespace ModernDesign.Properties {
         internal static System.Drawing.Bitmap search {
             get {
                 object obj = ResourceManager.GetObject("search", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sent {
+            get {
+                object obj = ResourceManager.GetObject("sent", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

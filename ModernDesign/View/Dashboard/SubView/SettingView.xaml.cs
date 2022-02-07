@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard
+namespace ModernDesign.View.Dashboard.SubView
 {
     /// <summary>
-    /// Logique d'interaction pour Menu.xaml
+    /// Logique d'interaction pour SettingView.xaml
     /// </summary>
-    public partial class Menu : UserControl
+    public partial class SettingView : UserControl
     {
-        public Menu()
+        public SettingView()
         {
             InitializeComponent();
         }
