@@ -20,21 +20,13 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             get
             {
-                return _menus;
-            }
-            set
-            {
-                _menus = value;
-                NotifyPropertyChanged();
+                return dashboardVM.AllVM;
             }
         }
         
         public void SetDashboard(DashboardVM dashboardVM)
         {
             this.dashboardVM = dashboardVM;
-            Menus.Add(dashboardVM.HomeVM);
-            Menus.Add(dashboardVM.MailVM);
-            Menus.Add(dashboardVM.SettingVM);
         }
 
         private ICommand _changeVMCmd;

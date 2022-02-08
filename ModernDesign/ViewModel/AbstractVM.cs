@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModernDesign.ViewModel.Tools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -10,7 +11,7 @@ using System.Windows.Controls;
 
 namespace ModernDesign.ViewModel
 {
-    public abstract class AbstractVM : INotifyPropertyChanged
+    public abstract class AbstractVM : ObservableObject
     {
         private string _name;
         public string Name
@@ -49,19 +50,21 @@ namespace ModernDesign.ViewModel
             }
             set
             {
-                _focused = value;
-                NotifyPropertyChanged();
+                if(_focused != value)
+                {
+                    _focused = value;
+                    NotifyPropertyChanged();
+                    OnFocus();
+                }
             }
         }
 
-        public virtual UserControl UserControl { get; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        
-        public void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        public virtual void OnFocus()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         }
+
+        public virtual UserControl UserControl { get; }
 
         public AbstractVM()
         {

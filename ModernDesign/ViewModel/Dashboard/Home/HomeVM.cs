@@ -13,14 +13,11 @@ namespace ModernDesign.ViewModel.Dashboard.Home
         private DashboardVM dashboardVM { get; set; }
         public override UserControl UserControl { get; } = new HomeView();
 
-        public HomeVM()
-        {
-            Name = "Home";
-            Icon = ModernDesign.Properties.Resources.home_page;
-        }
-        public void SetDashboard(DashboardVM dashboardVM)
+        public HomeVM(DashboardVM dashboardVM)
         {
             this.dashboardVM = dashboardVM;
+            Name = "Home";
+            Icon = ModernDesign.Properties.Resources.home_page;
         }
     }
 }

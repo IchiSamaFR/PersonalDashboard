@@ -1,4 +1,5 @@
-﻿using ModernDesign.View.Dashboard.SubView;
+﻿using ModernDesign.Model.Dashboard.Mail;
+using ModernDesign.View.Dashboard.SubView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,35 @@ namespace ModernDesign.ViewModel.Dashboard.Mail
         private DashboardVM dashboardVM { get; set; }
         public override UserControl UserControl { get; } = new MailView();
 
-        public MailVM()
+        private List<MailItem> _mailItems = new List<MailItem>();
+        public List<MailItem> MailItems
         {
-            Name = "Mail";
-            Icon = ModernDesign.Properties.Resources.envelope;
+            get
+            {
+                return _mailItems;
+            }
+            set
+            {
+                _mailItems = value;
+                NotifyPropertyChanged();
+            }
         }
-        public void SetDashboard(DashboardVM dashboardVM)
+
+        public MailVM(DashboardVM dashboardVM)
         {
             this.dashboardVM = dashboardVM;
+            Name = "Mail";
+            Icon = ModernDesign.Properties.Resources.envelope;
+
+            LoadMails();
+        }
+        public void LoadMails()
+        {
+            MailItems.Add(new MailItem());
+            MailItems.Add(new MailItem());
+            MailItems.Add(new MailItem());
+            MailItems.Add(new MailItem());
+            MailItems.Add(new MailItem());
         }
     }
 }

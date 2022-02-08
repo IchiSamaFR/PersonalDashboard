@@ -38,8 +38,20 @@
     <StartupObject>ModernDesign.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Binance.Net, Version=7.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Binance.Net.7.2.7\lib\netstandard2.0\Binance.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="CryptoExchange.Net, Version=4.2.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CryptoExchange.Net.4.2.8\lib\netstandard2.0\CryptoExchange.Net.dll</HintPath>
+    </Reference>
     <Reference Include="InputFields">
       <HintPath>..\InputFields\bin\Debug\InputFields.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -62,6 +74,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
+    <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
+    <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Resources\Icons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -69,6 +84,7 @@
     </Compile>
     <Compile Include="Resources\ResourceTool.cs" />
     <Compile Include="ViewModel\AbstractVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Crypto\CryptoVM.cs" />
     <Compile Include="ViewModel\Dashboard\DashboardVM.cs" />
     <Compile Include="ViewModel\Dashboard\Home\HomeVM.cs" />
     <Compile Include="ViewModel\Dashboard\Mail\MailVM.cs" />
@@ -76,6 +92,7 @@
     <Compile Include="ViewModel\Dashboard\Setting\SettingVM.cs" />
     <Compile Include="ViewModel\Login\LoginVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="ViewModel\Tools\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
@@ -85,6 +102,9 @@
     </Compile>
     <Compile Include="View\Dashboard\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\SubView\CryptoView.xaml.cs">
+      <DependentUpon>CryptoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\SubView\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
@@ -115,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dashboard\MenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\SubView\CryptoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -162,13 +186,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Icons.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Icons.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -177,13 +202,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Dashboard\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\Background\renault-megane-rs.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\bitcoin.png" />
+    <Resource Include="Resources\Images\Icons\dollar-bag.png" />
+    <Resource Include="Resources\Images\Icons\dollar.png" />
+    <Resource Include="Resources\Images\Icons\stats.png" />
+    <Resource Include="Resources\Images\Icons\wallet.png" />
     <Resource Include="Resources\Images\Icons\open-envelope.png" />
     <Resource Include="Resources\Images\Icons\envelope.png" />
     <Resource Include="Resources\Images\Icons\sent.png" />
