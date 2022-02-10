@@ -21,6 +21,14 @@ namespace ModernDesign.Model.Dashboard.Crypto
             }
         }
 
+        public string SymbolNoUSDT
+        {
+            get
+            {
+                return Symbol.Replace("USDT", "");
+            }
+        }
+
         private decimal price;
         public decimal Price
         {
@@ -32,6 +40,18 @@ namespace ModernDesign.Model.Dashboard.Crypto
             }
         }
 
+        private decimal priceChange;
+        public decimal PriceChange
+        {
+            get { return priceChange; }
+            set
+            {
+                priceChange = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(PriceChangeInf));
+            }
+        }
+
         private decimal priceChangePercent;
         public decimal PriceChangePercent
         {
@@ -40,6 +60,17 @@ namespace ModernDesign.Model.Dashboard.Crypto
             {
                 priceChangePercent = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(PriceChangeInf));
+            }
+        }
+
+        public string PriceChangeInf
+        {
+            get
+            {
+                string price = PriceChange > 0 ? $"+{PriceChange.ToString("0.00")}" : $"{PriceChange.ToString("0.00")}";
+                string percent = PriceChangePercent > 0 ? $"+{PriceChangePercent.ToString("0.00")}" : $"{PriceChangePercent.ToString("0.00")}";
+                return $"{price} ({percent}%)";
             }
         }
 

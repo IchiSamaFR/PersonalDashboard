@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard.SubView
+namespace ModernDesign.View.Dashboard.Crypto
 {
     /// <summary>
-    /// Logique d'interaction pour MailView.xaml
+    /// Logique d'interaction pour BotView.xaml
     /// </summary>
-    public partial class MailView : UserControl
+    public partial class BotView : UserControl
     {
-        public MailView()
+        public BotView()
         {
             InitializeComponent();
         }

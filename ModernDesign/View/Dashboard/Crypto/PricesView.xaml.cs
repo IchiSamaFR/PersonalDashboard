@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard.SubView
+namespace ModernDesign.View.Dashboard.Crypto
 {
     /// <summary>
-    /// Logique d'interaction pour SettingView.xaml
+    /// Logique d'interaction pour PricesView.xaml
     /// </summary>
-    public partial class SettingView : UserControl
+    public partial class PricesView : UserControl
     {
-        public SettingView()
+        public PricesView()
         {
             InitializeComponent();
         }

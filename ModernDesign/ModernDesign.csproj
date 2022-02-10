@@ -84,12 +84,17 @@
     </Compile>
     <Compile Include="Resources\ResourceTool.cs" />
     <Compile Include="ViewModel\AbstractVM.cs" />
-    <Compile Include="ViewModel\Dashboard\Crypto\CryptoVM.cs" />
+    <Compile Include="ViewModel\Dashboard\CryptoVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Crypto\BotVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Crypto\PricesVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Crypto\TradingVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Crypto\WalletVM.cs" />
     <Compile Include="ViewModel\Dashboard\DashboardVM.cs" />
-    <Compile Include="ViewModel\Dashboard\Home\HomeVM.cs" />
-    <Compile Include="ViewModel\Dashboard\Mail\MailVM.cs" />
+    <Compile Include="ViewModel\Dashboard\HomeVM.cs" />
+    <Compile Include="ViewModel\Dashboard\MailVM.cs" />
     <Compile Include="ViewModel\Dashboard\MenuVM.cs" />
-    <Compile Include="ViewModel\Dashboard\Setting\SettingVM.cs" />
+    <Compile Include="ViewModel\Dashboard\PasswordVM.cs" />
+    <Compile Include="ViewModel\Dashboard\SettingVM.cs" />
     <Compile Include="ViewModel\Login\LoginVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\Tools\ObservableObject.cs" />
@@ -97,22 +102,37 @@
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
+    <Compile Include="View\Dashboard\Crypto\BotView.xaml.cs">
+      <DependentUpon>BotView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Crypto\PricesView.xaml.cs">
+      <DependentUpon>PricesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Crypto\TradingView.xaml.cs">
+      <DependentUpon>TradingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Crypto\WalletView.xaml.cs">
+      <DependentUpon>WalletView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dashboard\DashboardView.xaml.cs">
       <DependentUpon>DashboardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dashboard\SubView\CryptoView.xaml.cs">
+    <Compile Include="View\Dashboard\CryptoView.xaml.cs">
       <DependentUpon>CryptoView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dashboard\SubView\HomeView.xaml.cs">
+    <Compile Include="View\Dashboard\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dashboard\SubView\MailView.xaml.cs">
+    <Compile Include="View\Dashboard\MailView.xaml.cs">
       <DependentUpon>MailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dashboard\SubView\SettingView.xaml.cs">
+    <Compile Include="View\Dashboard\PasswordView.xaml.cs">
+      <DependentUpon>PasswordView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\SettingView.xaml.cs">
       <DependentUpon>SettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Login\LoginView.xaml.cs">
@@ -130,6 +150,22 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Dashboard\Crypto\BotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Crypto\PricesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Crypto\TradingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Crypto\WalletView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dashboard\DashboardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -138,19 +174,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dashboard\SubView\CryptoView.xaml">
+    <Page Include="View\Dashboard\CryptoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dashboard\SubView\HomeView.xaml">
+    <Page Include="View\Dashboard\HomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dashboard\SubView\MailView.xaml">
+    <Page Include="View\Dashboard\MailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dashboard\SubView\SettingView.xaml">
+    <Page Include="View\Dashboard\PasswordView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\SettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -202,11 +242,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ViewModel\Dashboard\Home\" />
+    <Folder Include="ViewModel\Dashboard\Mail\" />
+    <Folder Include="ViewModel\Dashboard\Setting\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Background\renault-megane-rs.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\security-shield-green.png" />
     <Resource Include="Resources\Images\Icons\bitcoin.png" />
     <Resource Include="Resources\Images\Icons\dollar-bag.png" />
     <Resource Include="Resources\Images\Icons\dollar.png" />
@@ -216,6 +261,7 @@
     <Resource Include="Resources\Images\Icons\envelope.png" />
     <Resource Include="Resources\Images\Icons\sent.png" />
     <Resource Include="Resources\Images\Background\back.png" />
+    <Resource Include="Resources\Images\Icons\bot.png" />
     <Content Include="Resources\Images\Icons\document.png" />
     <Resource Include="Resources\Images\Icons\edit.png" />
     <Resource Include="Resources\Images\Icons\file.png" />

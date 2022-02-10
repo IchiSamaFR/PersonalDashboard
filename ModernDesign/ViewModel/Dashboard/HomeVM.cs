@@ -1,4 +1,4 @@
-﻿using ModernDesign.View.Dashboard.SubView;
+﻿using ModernDesign.View.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard.Home
+namespace ModernDesign.ViewModel.Dashboard
 {
     public class HomeVM : AbstractVM
     {

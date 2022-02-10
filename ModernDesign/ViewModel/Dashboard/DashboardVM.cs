@@ -1,23 +1,23 @@
 ﻿using ModernDesign.View.Dashboard;
-using ModernDesign.ViewModel.Dashboard.Home;
-using ModernDesign.ViewModel.Dashboard.Mail;
-using ModernDesign.ViewModel.Dashboard.Setting;
-using ModernDesign.ViewModel.Dashboard.Crypto;
-using ModernDesign.ViewModel.Tools;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace ModernDesign.ViewModel.Dashboard
 {
     public class DashboardVM : AbstractVM
     {
         private MainVM mainVM;
+        public override UserControl UserControl { get; } = new DashboardView();
+
         private MenuVM MenuVM { get; } = new MenuVM();
+        public UserControl MenuView
+        {
+            get
+            {
+                return MenuVM?.UserControl;
+            }
+        }
 
         private List<AbstractVM> _allVM = new List<AbstractVM>();
         public List<AbstractVM> AllVM
@@ -30,16 +30,6 @@ namespace ModernDesign.ViewModel.Dashboard
             {
                 _allVM = value;
                 NotifyPropertyChanged();
-            }
-        }
-
-        public override UserControl UserControl { get; } = new DashboardView();
-
-        public UserControl MenuView
-        {
-            get
-            {
-                return MenuVM?.UserControl;
             }
         }
 
@@ -74,7 +64,7 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             this.mainVM = mainVM;
             BuildVM();
-            ActualVM = GetVM("Home");
+            ChangeVM(GetVM("Home"));
         }
 
         private void BuildVM()
@@ -83,6 +73,7 @@ namespace ModernDesign.ViewModel.Dashboard
             {
                 new HomeVM(this),
                 new MailVM(this),
+                new PasswordVM(this),
                 new CryptoVM(this),
                 new SettingVM(this)
             };

@@ -25,7 +25,9 @@ namespace ModernDesign.ViewModel
             {
                 if(actualVM != value)
                 {
+                    actualVM?.Hide();
                     actualVM = value;
+                    actualVM.Show();
                     NotifyPropertyChanged("ActualVM");
                     NotifyPropertyChanged("UserControl");
                 }

@@ -1,5 +1,5 @@
 ﻿using ModernDesign.Model.Dashboard.Mail;
-using ModernDesign.View.Dashboard.SubView;
+using ModernDesign.View.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard.Mail
+namespace ModernDesign.ViewModel.Dashboard
 {
     public class MailVM : AbstractVM
     {
