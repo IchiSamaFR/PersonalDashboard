@@ -5,8 +5,6 @@
     
     <converters:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
 
-    <BitmapImage x:Key="img_background" UriSource="pack://application:,,,/ModernDesign;component/Resources/Images/Background/back.png"/>
-
     <Style TargetType="Button" x:Key="Button">
         <Setter Property="Background" Value="{DynamicResource bru_BackgroundDarker}"/>
         <Setter Property="Foreground" Value="{DynamicResource bru_LightForeground}"/>

@@ -23,6 +23,10 @@ namespace ModernDesign.ViewModel.Dashboard
                 return dashboardVM.AllVM;
             }
         }
+        public MenuVM(DashboardVM dashboardVM)
+        {
+            this.dashboardVM = dashboardVM;
+        }
         
         public void SetDashboard(DashboardVM dashboardVM)
         {

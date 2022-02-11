@@ -10,7 +10,7 @@ namespace ModernDesign.ViewModel.Dashboard
         private MainVM mainVM;
         public override UserControl UserControl { get; } = new DashboardView();
 
-        private MenuVM MenuVM { get; } = new MenuVM();
+        private MenuVM MenuVM { get; set; }
         public UserControl MenuView
         {
             get
@@ -77,7 +77,7 @@ namespace ModernDesign.ViewModel.Dashboard
                 new CryptoVM(this),
                 new SettingVM(this)
             };
-            MenuVM.SetDashboard(this);
+            MenuVM = new MenuVM(this);
         }
 
         public AbstractVM GetVM(string name)
@@ -87,7 +87,7 @@ namespace ModernDesign.ViewModel.Dashboard
 
         public void ChangeVM(AbstractVM vm)
         {
-            ActualVM = GetVM(vm.Name);
+            ActualVM = vm;
         }
     }
 }
