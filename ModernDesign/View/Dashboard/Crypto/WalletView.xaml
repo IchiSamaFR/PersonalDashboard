@@ -42,9 +42,11 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Grid.Column="3">
                                 <Image Source="{Binding Source={x:Static properties:Resources.wallet}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
+                                <TextBlock Text="{Binding WalletTotal}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Grid.Column="4">
                                 <Image Source="{Binding Source={x:Static properties:Resources.dollar_bag}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
+                                <TextBlock Text="{Binding WalletDollarInf}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
                             </StackPanel>
                         </Grid>
                     </Border>

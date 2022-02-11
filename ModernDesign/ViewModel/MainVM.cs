@@ -14,6 +14,8 @@ namespace ModernDesign.ViewModel
         public LoginVM LoginVM;
         public DashboardVM DashboardVM;
 
+        private Config config;
+
         private AbstractVM actualVM;
         public AbstractVM ActualVM
         {
@@ -44,6 +46,7 @@ namespace ModernDesign.ViewModel
 
         public MainVM()
         {
+            config = new Config();
             LoginVM = new LoginVM(this);
             ActualVM = LoginVM;
         }

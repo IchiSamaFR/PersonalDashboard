@@ -29,6 +29,7 @@ namespace ModernDesign.Model.Dashboard.Crypto
             }
         }
 
+        #region Wallet
         private decimal price;
         public decimal Price
         {
@@ -37,6 +38,8 @@ namespace ModernDesign.Model.Dashboard.Crypto
             {
                 price = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(WalletDollar));
+                NotifyPropertyChanged(nameof(WalletDollarInf));
             }
         }
 
@@ -63,7 +66,6 @@ namespace ModernDesign.Model.Dashboard.Crypto
                 NotifyPropertyChanged(nameof(PriceChangeInf));
             }
         }
-
         public string PriceChangeInf
         {
             get
@@ -73,6 +75,59 @@ namespace ModernDesign.Model.Dashboard.Crypto
                 return $"{price} ({percent}%)";
             }
         }
+        #endregion
+
+        #region Wallet
+        private decimal walletFree;
+        public decimal WalletFree
+        {
+            get { return walletFree; }
+            set
+            {
+                walletFree = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(WalletTotal));
+                NotifyPropertyChanged(nameof(WalletDollar));
+                NotifyPropertyChanged(nameof(WalletDollarInf));
+            }
+        }
+
+        private decimal walletLock;
+        public decimal WalletLock
+        {
+            get { return walletLock; }
+            set
+            {
+                walletLock = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(WalletTotal));
+                NotifyPropertyChanged(nameof(WalletDollar));
+                NotifyPropertyChanged(nameof(WalletDollarInf));
+            }
+        }
+        public decimal WalletTotal
+        {
+            get
+            {
+                return WalletFree + WalletLock;
+            }
+        }
+
+        public decimal WalletDollar
+        {
+            get
+            {
+                return WalletTotal * Price;
+            }
+        }
+        public string WalletDollarInf
+        {
+            get
+            {
+                return WalletDollar.ToString("0.00");
+            }
+        }
+        #endregion
 
         private decimal highPrice;
         public decimal HighPrice
