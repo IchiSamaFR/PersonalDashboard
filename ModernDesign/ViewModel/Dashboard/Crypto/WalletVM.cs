@@ -18,7 +18,7 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
         private bool isInit;
 
         private List<string> _lstSymbols = new List<string>();
-        public List<string> lstSymbols
+        public List<string> LstSymbols
         {
             get { return _lstSymbols; }
             set
@@ -28,7 +28,7 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
             }
         }
 
-        private ObservableCollection<SymbolItem> _allPrices;
+        private ObservableCollection<SymbolItem> _allPrices = new ObservableCollection<SymbolItem>();
         public ObservableCollection<SymbolItem> AllPrices
         {
             get { return _allPrices; }
@@ -48,12 +48,7 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
             Name = "Wallet";
             Icon = ModernDesign.Properties.Resources.wallet;
 
-            lstSymbols.Add("BTCUSDT");
-            lstSymbols.Add("ETHUSDT");
-            lstSymbols.Add("BNBUSDT");
-            lstSymbols.Add("LTCUSDT");
-
-            Task.Run(() => InitSymbols());
+            Task.Run(() => GetWallet());
         }
 
         public override void OnFocus()
@@ -75,7 +70,6 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
         public async Task InitSymbols()
         {
             socketClient = await cryptoVM.IsSet();
-            AllPrices = new ObservableCollection<SymbolItem>(cryptoVM.AllPrices.Where(item => lstSymbols.Contains(item.Symbol)).ToList());
             isInit = true;
         }
 
@@ -86,7 +80,32 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
                 await Task.Delay(100);
             }
 
-            await cryptoVM.GetSymbolsValues(lstSymbols);
+            await cryptoVM.GetSymbolsValues(LstSymbols);
+        }
+
+        public async Task GetWallet()
+        {
+            socketClient = await cryptoVM.IsSet();
+            isInit = true;
+
+            using (var client = new BinanceClient())
+            {
+                var accountResult = await client.General.GetAccountInfoAsync();
+                if (accountResult.Success)
+                {
+                    foreach (var item in accountResult.Data.Balances.Where(b => b.Free != 0 || b.Locked != 0))
+                    {
+                        var modify = cryptoVM.AllPrices.FirstOrDefault(price => price.Symbol.IndexOf(item.Asset + "USDT") >= 0);
+                        if(modify != null)
+                        {
+                            modify.WalletFree = item.Free;
+                            modify.WalletLock = item.Locked;
+                            AllPrices.Add(modify);
+                            LstSymbols.Add(modify.Symbol);
+                        }
+                    }
+                }
+            }
         }
     }
 }

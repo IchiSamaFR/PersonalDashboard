@@ -14,6 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -87,7 +88,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Config.cs" />
     <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="Resources\ResourceTool.cs" />
     <Compile Include="ViewModel\AbstractVM.cs" />
+    <Compile Include="ViewModel\Config.cs" />
     <Compile Include="ViewModel\Dashboard\CryptoVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\BotVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\PricesVM.cs" />

@@ -13,6 +13,8 @@ using System.Windows;
 using ModernDesign.ViewModel.Dashboard.Crypto;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Authentication;
+using Binance.Net.Objects;
 
 namespace ModernDesign.ViewModel.Dashboard
 {
@@ -62,26 +64,14 @@ namespace ModernDesign.ViewModel.Dashboard
             }
         }
 
-        private string apiKey;
         public string ApiKey
         {
-            get { return apiKey; }
-            set
-            {
-                apiKey = value;
-                NotifyPropertyChanged();
-            }
+            get { return Config.Instance.APIKey; }
         }
 
-        private string apiSecret;
         public string ApiSecret
         {
-            get { return apiSecret; }
-            set
-            {
-                apiSecret = value;
-                NotifyPropertyChanged();
-            }
+            get { return Config.Instance.SecretKey; }
         }
 
         private ObservableCollection<SymbolItem> allPrices;
@@ -103,6 +93,9 @@ namespace ModernDesign.ViewModel.Dashboard
             this.dashboardVM = dashboardVM;
             Name = "Crypto";
             Icon = ModernDesign.Properties.Resources.wallet;
+
+            BinanceClient.SetDefaultOptions(new BinanceClientOptions() { ApiCredentials = new ApiCredentials(ApiKey, ApiSecret) });
+
 
             AllVM = new List<AbstractVM>
             {
