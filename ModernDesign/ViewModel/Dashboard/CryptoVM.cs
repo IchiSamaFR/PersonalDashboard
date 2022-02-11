@@ -15,6 +15,7 @@ using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Authentication;
 using Binance.Net.Objects;
+using ModernDesign.Model;
 
 namespace ModernDesign.ViewModel.Dashboard
 {

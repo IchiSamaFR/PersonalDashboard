@@ -11,6 +11,8 @@ using System.Net;
 using MailKit;
 using MimeKit;
 using System.Collections.ObjectModel;
+using ModernDesign.Model;
+using ModernDesign.ViewModel.Tools;
 
 namespace ModernDesign.ViewModel.Dashboard
 {
@@ -32,6 +34,8 @@ namespace ModernDesign.ViewModel.Dashboard
                 NotifyPropertyChanged();
             }
         }
+        
+        private Task GetMailsTask;
 
         public MailVM(DashboardVM dashboardVM)
         {
@@ -46,13 +50,11 @@ namespace ModernDesign.ViewModel.Dashboard
 
         }
 
-        private Task GetMailsTask;
-
         public override void OnFocus()
         {
             if (Focused)
             {
-                GetMails();
+                GetMailsTask = Task.Run(() => GetMails());
             }
             else
             {
@@ -64,28 +66,26 @@ namespace ModernDesign.ViewModel.Dashboard
             }
         }
 
-        public void GetMails()
+        public async Task GetMails()
         {
-            MailItems = new ObservableCollection<MailItem>();
-
             try
             {
                 using (ImapClient client = new ImapClient())
                 {
                     client.Connect("outlook.office365.com", 993, true);
-                    client.Authenticate(new NetworkCredential("***REMOVED***", "***REMOVED***"));
+                    client.Authenticate(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
 
                     var inbox = client.Inbox;
                     inbox.Open(FolderAccess.ReadOnly);
 
 
-                    if (inbox.Count > 0)
+                    if (inbox.Count > MailItems?.Count || MailItems == null)
                     {
-                        int pageStartIndex = inbox.Count - 10;
-                        int pageEndIndex = inbox.Count - 1;
+                        int pageStartIndex = inbox.Count - 10 - (MailItems?.Count ?? 0);
+                        int pageEndIndex = inbox.Count - 1 - (MailItems?.Count ?? 0);
                         
-                        var messages = inbox.Fetch(pageStartIndex, pageEndIndex, MessageSummaryItems.UniqueId);
-                        
+                        var messages = await inbox.FetchAsync(pageStartIndex, pageEndIndex, MessageSummaryItems.UniqueId);
+                        List<MailItem> tempList = new List<MailItem>();
                         foreach (var message in messages)
                         {
                             MimeMessage mimeMessage = inbox.GetMessage(message.UniqueId);
@@ -102,8 +102,10 @@ namespace ModernDesign.ViewModel.Dashboard
                                 Attachments = mimeMessage.Attachments.ToList(),
                                 HtmlBody = mimeMessage.HtmlBody,
                             };
-                            MailItems.Add(tempEmail);
+                            tempList.Insert(0, tempEmail);
                         }
+                        tempList = tempList.OrderByDescending(item => item.TimeReceived).ToList();
+                        await MailItems.AddRangeAsync(tempList);
                     }
                 }
             }
@@ -111,6 +113,7 @@ namespace ModernDesign.ViewModel.Dashboard
             {
 
             }
+            NotifyPropertyChanged(nameof(MailItems));
         }
     }
 }

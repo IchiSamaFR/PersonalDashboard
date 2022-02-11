@@ -98,7 +98,7 @@
     </Compile>
     <Compile Include="Resources\ResourceTool.cs" />
     <Compile Include="ViewModel\AbstractVM.cs" />
-    <Compile Include="ViewModel\Config.cs" />
+    <Compile Include="Model\Config.cs" />
     <Compile Include="ViewModel\Dashboard\CryptoVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\BotVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\PricesVM.cs" />
@@ -114,6 +114,7 @@
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\Tools\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
+    <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
