@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10">
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer x:Name="MainScrollView" HorizontalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged">
                 <ItemsControl ItemsSource="{Binding MailItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

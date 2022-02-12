@@ -13,6 +13,7 @@ using MimeKit;
 using System.Collections.ObjectModel;
 using ModernDesign.Model;
 using ModernDesign.ViewModel.Tools;
+using System.Windows.Input;
 
 namespace ModernDesign.ViewModel.Dashboard
 {
@@ -34,7 +35,36 @@ namespace ModernDesign.ViewModel.Dashboard
                 NotifyPropertyChanged();
             }
         }
+
+        private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
+        public ObservableCollection<UserControl> MailControls
+        {
+            get
+            {
+                return _mailControls;
+            }
+            set
+            {
+                _mailControls = value;
+                NotifyPropertyChanged();
+            }
+        }
         
+        private ICommand _loadNewMailsCmd;
+        public ICommand LoadNewMailsCmd
+        {
+            get
+            {
+                if (_loadNewMailsCmd == null)
+                {
+                    _loadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
+                }
+                return _loadNewMailsCmd;
+            }
+        }
+
+        private ImapClient imapClient;
+        private IMailFolder inbox;
         private Task GetMailsTask;
 
         public MailVM(DashboardVM dashboardVM)
@@ -43,18 +73,25 @@ namespace ModernDesign.ViewModel.Dashboard
             Name = "Mail";
             Icon = ModernDesign.Properties.Resources.envelope;
 
-            LoadMails();
+            Task.Run(() => InitMails());
         }
-        public void LoadMails()
-        {
 
+        public async void LoadMails()
+        {
+            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted)
+            {
+                GetMailsTask = Task.Run(() => GetMails());
+            }
         }
 
         public override void OnFocus()
         {
             if (Focused)
             {
-                GetMailsTask = Task.Run(() => GetMails());
+                if(MailItems.Count <= 0)
+                {
+                    LoadMails();
+                }
             }
             else
             {
@@ -66,48 +103,60 @@ namespace ModernDesign.ViewModel.Dashboard
             }
         }
 
+        public async Task<ImapClient> IsSet()
+        {
+            while (inbox == null)
+            {
+                await Task.Delay(100);
+            }
+            return imapClient;
+        }
+
+        public async Task InitMails()
+        {
+            imapClient = new ImapClient();
+
+            await imapClient.ConnectAsync("outlook.office365.com", 993, true);
+            await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
+            inbox = imapClient.Inbox;
+        }
+
         public async Task GetMails()
         {
-            await App.Current.Dispatcher.Invoke(async () =>  
+            await IsSet();
+
+            await App.Current.Dispatcher.Invoke(async () =>
             {
-                using (ImapClient client = new ImapClient())
+                inbox.Open(FolderAccess.ReadOnly);
+
+                int mailItemsCount = MailItems?.Count ?? 0;
+                if (inbox.Count > mailItemsCount)
                 {
-                    client.Connect("outlook.office365.com", 993, true);
-                    client.Authenticate(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
+                    var lastMessages = Enumerable.Range(inbox.Count - 20 - mailItemsCount, 20).ToList();
+                    var messages = await inbox.FetchAsync(lastMessages, MailKit.MessageSummaryItems.UniqueId);
 
-                    var inbox = client.Inbox;
-                    inbox.Open(FolderAccess.ReadOnly);
-
-                    int mailItemsCount = MailItems?.Count ?? 0;
-                    if (inbox.Count > mailItemsCount)
+                    foreach (var message in messages.Reverse())
                     {
-                        var lastMessages = Enumerable.Range(inbox.Count - 20 - mailItemsCount, 20).ToList();
-                        var messages = await inbox.FetchAsync(lastMessages, MailKit.MessageSummaryItems.UniqueId);
-
-                        List<MailItem> tempList = new List<MailItem>();
-                        foreach (var message in messages)
+                        MimeMessage mimeMessage = inbox.GetMessage(message.UniqueId);
+                        MailItem tempEmail = new MailItem()
                         {
-                            MimeMessage mimeMessage = inbox.GetMessage(message.UniqueId);
-                            MailItem tempEmail = new MailItem()
-                            {
-                                Uid = message.UniqueId,
-                                FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
-                                FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault(),
-                                ToDisplayName = mimeMessage.To.Select(item => item.Name).ToList(),
-                                ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList(),
-                                Subject = mimeMessage.Subject,
-                                TimeReceived = mimeMessage.Date.DateTime,
-                                HasAttachment = mimeMessage.Attachments.Count() > 0 ? true : false,
-                                Attachments = mimeMessage.Attachments.ToList(),
-                                HtmlBody = mimeMessage.HtmlBody,
-                                TextBody = mimeMessage.TextBody,
-                            };
-                            tempList.Insert(0, tempEmail);
-                        }
-                        await MailItems.AddRangeAsync(tempList);
+                            Uid = message.UniqueId,
+                            FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
+                            FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault(),
+                            ToDisplayName = mimeMessage.To.Select(item => item.Name).ToList(),
+                            ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList(),
+                            Subject = mimeMessage.Subject,
+                            TimeReceived = mimeMessage.Date.DateTime,
+                            HasAttachment = mimeMessage.Attachments.Count() > 0 ? true : false,
+                            Attachments = mimeMessage.Attachments.ToList(),
+                            HtmlBody = mimeMessage.HtmlBody,
+                            TextBody = mimeMessage.TextBody,
+                        };
+                        MailItems.Add(tempEmail);
+                        NotifyPropertyChanged(nameof(MailItems));
+                        await Task.Delay(1);
                     }
                 }
-                NotifyPropertyChanged(nameof(MailItems));
             });
         }
     }

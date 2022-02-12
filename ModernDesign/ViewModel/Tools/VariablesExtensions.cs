@@ -9,7 +9,7 @@ namespace ModernDesign.ViewModel.Tools
 {
     public static class VariablesExtensions
     {
-        public static async Task AddRangeAsync<T>(this ObservableCollection<T> list, List<T> items)
+        public static async Task AddRange<T>(this ObservableCollection<T> list, List<T> items)
         {
             try
             {

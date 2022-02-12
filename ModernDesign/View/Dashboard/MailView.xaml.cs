@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModernDesign.ViewModel.Dashboard;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,19 @@ namespace ModernDesign.View.Dashboard
         public MailView()
         {
             InitializeComponent();
+        }
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.VerticalChange > 0)
+            {
+                if (e.VerticalOffset + e.ViewportHeight == e.ExtentHeight)
+                {
+                    var viewModel = (MailVM)DataContext;
+                    if (viewModel.LoadNewMailsCmd.CanExecute(null))
+                        viewModel.LoadNewMailsCmd.Execute(null);
+                }
+            }
         }
     }
 }

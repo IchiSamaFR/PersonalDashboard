@@ -69,7 +69,6 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             get { return Config.Instance.APIKey; }
         }
-
         public string ApiSecret
         {
             get { return Config.Instance.SecretKey; }
@@ -139,7 +138,6 @@ namespace ModernDesign.ViewModel.Dashboard
 
         public async Task<BinanceSocketClient> IsSet()
         {
-            TaskCompletionSource<BinanceSocketClient> tcs = new TaskCompletionSource<BinanceSocketClient>();
             while (socketClient == null)
             {
                 await Task.Delay(100);
