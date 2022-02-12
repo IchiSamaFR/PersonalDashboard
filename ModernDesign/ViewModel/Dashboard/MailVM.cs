@@ -68,7 +68,7 @@ namespace ModernDesign.ViewModel.Dashboard
 
         public async Task GetMails()
         {
-            try
+            await App.Current.Dispatcher.Invoke(async () =>  
             {
                 using (ImapClient client = new ImapClient())
                 {
@@ -78,13 +78,12 @@ namespace ModernDesign.ViewModel.Dashboard
                     var inbox = client.Inbox;
                     inbox.Open(FolderAccess.ReadOnly);
 
-
-                    if (inbox.Count > MailItems?.Count || MailItems == null)
+                    int mailItemsCount = MailItems?.Count ?? 0;
+                    if (inbox.Count > mailItemsCount)
                     {
-                        int pageStartIndex = inbox.Count - 10 - (MailItems?.Count ?? 0);
-                        int pageEndIndex = inbox.Count - 1 - (MailItems?.Count ?? 0);
-                        
-                        var messages = await inbox.FetchAsync(pageStartIndex, pageEndIndex, MessageSummaryItems.UniqueId);
+                        var lastMessages = Enumerable.Range(inbox.Count - 20 - mailItemsCount, 20).ToList();
+                        var messages = await inbox.FetchAsync(lastMessages, MailKit.MessageSummaryItems.UniqueId);
+
                         List<MailItem> tempList = new List<MailItem>();
                         foreach (var message in messages)
                         {
@@ -101,19 +100,15 @@ namespace ModernDesign.ViewModel.Dashboard
                                 HasAttachment = mimeMessage.Attachments.Count() > 0 ? true : false,
                                 Attachments = mimeMessage.Attachments.ToList(),
                                 HtmlBody = mimeMessage.HtmlBody,
+                                TextBody = mimeMessage.TextBody,
                             };
                             tempList.Insert(0, tempEmail);
                         }
-                        tempList = tempList.OrderByDescending(item => item.TimeReceived).ToList();
                         await MailItems.AddRangeAsync(tempList);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-
-            }
-            NotifyPropertyChanged(nameof(MailItems));
+                NotifyPropertyChanged(nameof(MailItems));
+            });
         }
     }
 }

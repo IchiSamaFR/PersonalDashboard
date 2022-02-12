@@ -13,18 +13,12 @@ namespace ModernDesign.ViewModel.Tools
         {
             try
             {
-                int index = list.Count;
                 foreach (var item in items)
                 {
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    await App.Current.Dispatcher.Invoke(async() =>
                     {
                         list.Add(item);
                     });
-                    while (index == list.Count)
-                    {
-                        await Task.Delay(1);
-                    }
-                    index++;
                 }
             }
             catch (Exception ex)

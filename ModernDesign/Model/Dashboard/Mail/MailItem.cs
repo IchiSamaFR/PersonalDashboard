@@ -1,16 +1,21 @@
 ﻿using MailKit;
 using MimeKit;
+using ModernDesign.View.Dashboard.Mail;
 using ModernDesign.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace ModernDesign.Model.Dashboard.Mail
 {
     public class MailItem : ObservableObject
     {
+        public UserControl UserControl = new MailItemView();
+
         public bool IsOpened { get; set; }
 
         public UniqueId Uid { get; set; }
@@ -68,12 +73,47 @@ namespace ModernDesign.Model.Dashboard.Mail
         {
             get
             {
-                return TimeReceived.ToString("ddd dd/MM/yyyy");
+                return TimeReceived.ToString("ddd dd/MM/yy");
             }
         }
+
         public bool HasAttachment { get; set; }
         public List<MimeEntity> Attachments { get; set; }
 
         public string HtmlBody { get; set; }
+        public string textBody { get; set; }
+        public string TextBody
+        {
+            get
+            {
+                return textBody;
+            }
+            set
+            {
+                textBody = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(TextDisplay));
+            }
+        }
+
+        public string TextDisplay
+        {
+            get
+            {
+                if (TextBody == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return Regex.Replace(TextBody?.Replace("\r", " ").Replace("\n", " ").Trim(), @"\s+", " ");
+                }
+            }
+        }
+
+        public MailItem()
+        {
+            UserControl.DataContext = this;
+        }
     }
 }

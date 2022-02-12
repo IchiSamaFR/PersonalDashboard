@@ -4,16 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ModernDesign.View.Dashboard"
+             xmlns:mail="clr-namespace:ModernDesign.View.Dashboard.Mail"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="480"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10">
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding MailItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -22,18 +23,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Height="56" Background="{DynamicResource bru_BackgroundItem}" Margin="10 0 10 0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding FromDisplay}" Foreground="{DynamicResource bru_LightForeground}"/>
-                                    <TextBlock Text="{Binding SubjectSub}" Foreground="{DynamicResource bru_LightForeground}"/>
-                                    <TextBlock Text="{Binding TimeDisplay}" Foreground="{DynamicResource bru_SubLightForeground}"/>
-                                </WrapPanel>
-                            </Grid>
+                            <mail:MailItemView></mail:MailItemView>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

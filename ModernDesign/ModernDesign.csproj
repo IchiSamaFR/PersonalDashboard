@@ -70,6 +70,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -90,6 +91,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
+    <Compile Include="Model\Dashboard\Mail\DateItem.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Resources\Icons.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -132,6 +134,12 @@
     </Compile>
     <Compile Include="View\Dashboard\DashboardView.xaml.cs">
       <DependentUpon>DashboardView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Mail\MailDateView.xaml.cs">
+      <DependentUpon>MailDateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Mail\MailItemView.xaml.cs">
+      <DependentUpon>MailItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
@@ -183,6 +191,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dashboard\DashboardView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Mail\MailDateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Mail\MailItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
