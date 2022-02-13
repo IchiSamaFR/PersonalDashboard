@@ -15,17 +15,12 @@
         <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10">
 
             <ScrollViewer x:Name="MainScrollView" HorizontalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged">
-                <ItemsControl ItemsSource="{Binding MailItems}">
+                <ItemsControl ItemsSource="{Binding MailControls}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Vertical" Margin="0 10 0 10"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <mail:MailItemView></mail:MailItemView>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </Border>

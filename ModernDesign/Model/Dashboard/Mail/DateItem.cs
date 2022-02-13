@@ -22,8 +22,9 @@ namespace ModernDesign.Model.Dashboard.Mail
             }
         }
 
-        public DateItem()
+        public DateItem(DateTime dateTime)
         {
+            TimeReceived = dateTime;
             UserControl.DataContext = this;
         }
     }

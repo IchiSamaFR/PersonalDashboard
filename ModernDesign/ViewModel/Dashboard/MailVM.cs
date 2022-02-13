@@ -32,6 +32,19 @@ namespace ModernDesign.ViewModel.Dashboard
             set
             {
                 _mailItems = value;
+            }
+        }
+
+        private ObservableCollection<DateItem> _mailDateItems = new ObservableCollection<DateItem>();
+        public ObservableCollection<DateItem> MailDateItems
+        {
+            get
+            {
+                return _mailDateItems;
+            }
+            set
+            {
+                _mailDateItems = value;
                 NotifyPropertyChanged();
             }
         }
@@ -46,7 +59,6 @@ namespace ModernDesign.ViewModel.Dashboard
             set
             {
                 _mailControls = value;
-                NotifyPropertyChanged();
             }
         }
         
@@ -76,7 +88,7 @@ namespace ModernDesign.ViewModel.Dashboard
             Task.Run(() => InitMails());
         }
 
-        public async void LoadMails()
+        public void LoadMails()
         {
             if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted)
             {
@@ -95,7 +107,7 @@ namespace ModernDesign.ViewModel.Dashboard
             }
             else
             {
-                if (GetMailsTask != null && GetMailsTask.IsCompleted)
+                if (GetMailsTask != null && (GetMailsTask.IsCompleted || GetMailsTask.IsCanceled))
                 {
                     GetMailsTask.Dispose();
                 }
@@ -119,6 +131,7 @@ namespace ModernDesign.ViewModel.Dashboard
             await imapClient.ConnectAsync("outlook.office365.com", 993, true);
             await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
             inbox = imapClient.Inbox;
+            LoadMails();
         }
 
         public async Task GetMails()
@@ -127,7 +140,7 @@ namespace ModernDesign.ViewModel.Dashboard
 
             await App.Current.Dispatcher.Invoke(async () =>
             {
-                inbox.Open(FolderAccess.ReadOnly);
+                await inbox.OpenAsync(FolderAccess.ReadOnly);
 
                 int mailItemsCount = MailItems?.Count ?? 0;
                 if (inbox.Count > mailItemsCount)
@@ -137,8 +150,8 @@ namespace ModernDesign.ViewModel.Dashboard
 
                     foreach (var message in messages.Reverse())
                     {
-                        MimeMessage mimeMessage = inbox.GetMessage(message.UniqueId);
-                        MailItem tempEmail = new MailItem()
+                        MimeMessage mimeMessage = await inbox.GetMessageAsync(message.UniqueId);
+                        MailItem tempMail = new MailItem()
                         {
                             Uid = message.UniqueId,
                             FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
@@ -152,12 +165,22 @@ namespace ModernDesign.ViewModel.Dashboard
                             HtmlBody = mimeMessage.HtmlBody,
                             TextBody = mimeMessage.TextBody,
                         };
-                        MailItems.Add(tempEmail);
-                        NotifyPropertyChanged(nameof(MailItems));
-                        await Task.Delay(1);
+                        AddMail(tempMail);
                     }
                 }
             });
+            NotifyPropertyChanged(nameof(MailItems));
+            NotifyPropertyChanged(nameof(MailControls));
+        }
+
+        public void AddMail(MailItem mail)
+        {
+            if (MailItems.Count > 0 && MailItems[MailItems.Count - 1].TimeReceived.Date != mail.TimeReceived.Date)
+            {
+                MailControls.Add(new DateItem(mail.TimeReceived).UserControl);
+            }
+            MailControls.Add(mail.UserControl);
+            MailItems.Add(mail);
         }
     }
 }

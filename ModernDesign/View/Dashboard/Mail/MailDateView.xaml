@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              Height="30" d:DesignWidth="200">
     <Grid Background="{DynamicResource bru_BackgroundDarker}">
-        <TextBlock Text="{Binding Text}" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="{Binding TimeDisplay}" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>
