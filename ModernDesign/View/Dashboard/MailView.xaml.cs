@@ -30,7 +30,7 @@ namespace ModernDesign.View.Dashboard
         {
             if (e.VerticalChange > 0)
             {
-                if (e.VerticalOffset + e.ViewportHeight == e.ExtentHeight)
+                if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight - 30)
                 {
                     var viewModel = (MailVM)DataContext;
                     if (viewModel.LoadNewMailsCmd.CanExecute(null))

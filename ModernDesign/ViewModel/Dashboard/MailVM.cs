@@ -88,30 +88,11 @@ namespace ModernDesign.ViewModel.Dashboard
             Task.Run(() => InitMails());
         }
 
-        public void LoadMails()
+        public void LoadMails(int amount = 10)
         {
-            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted)
+            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
             {
-                GetMailsTask = Task.Run(() => GetMails());
-            }
-        }
-
-        public override void OnFocus()
-        {
-            if (Focused)
-            {
-                if(MailItems.Count <= 0)
-                {
-                    LoadMails();
-                }
-            }
-            else
-            {
-                if (GetMailsTask != null && (GetMailsTask.IsCompleted || GetMailsTask.IsCanceled))
-                {
-                    GetMailsTask.Dispose();
-                }
-                GetMailsTask = null;
+                GetMailsTask = Task.Run(() => GetMails(amount));
             }
         }
 
@@ -131,10 +112,10 @@ namespace ModernDesign.ViewModel.Dashboard
             await imapClient.ConnectAsync("outlook.office365.com", 993, true);
             await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
             inbox = imapClient.Inbox;
-            LoadMails();
+            LoadMails(20);
         }
 
-        public async Task GetMails()
+        public async Task GetMails(int amount)
         {
             await IsSet();
 
@@ -145,11 +126,12 @@ namespace ModernDesign.ViewModel.Dashboard
                 int mailItemsCount = MailItems?.Count ?? 0;
                 if (inbox.Count > mailItemsCount)
                 {
-                    var lastMessages = Enumerable.Range(inbox.Count - 20 - mailItemsCount, 20).ToList();
+                    var lastMessages = Enumerable.Range(inbox.Count - amount - mailItemsCount, amount).ToList();
+                    //This fetch some times wait for nothing
                     var messages = await inbox.FetchAsync(lastMessages, MailKit.MessageSummaryItems.UniqueId);
-
                     foreach (var message in messages.Reverse())
                     {
+                        // Item 38811 bug car trop grand, trop de data
                         MimeMessage mimeMessage = await inbox.GetMessageAsync(message.UniqueId);
                         MailItem tempMail = new MailItem()
                         {
@@ -169,8 +151,7 @@ namespace ModernDesign.ViewModel.Dashboard
                     }
                 }
             });
-            NotifyPropertyChanged(nameof(MailItems));
-            NotifyPropertyChanged(nameof(MailControls));
+            GetMailsTask.Dispose();
         }
 
         public void AddMail(MailItem mail)

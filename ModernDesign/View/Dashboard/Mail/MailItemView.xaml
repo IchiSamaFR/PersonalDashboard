@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ModernDesign.View.Dashboard.Mail"
              mc:Ignorable="d" 
              d:DesignHeight="56" d:DesignWidth="300">
-    <Grid Height="56" Background="{DynamicResource bru_BackgroundItem}" Margin="10 0 10 0">
+    <Grid Height="56" Background="{DynamicResource bru_BackgroundItem}" Margin="10 0 20 0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="*"/>
