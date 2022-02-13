@@ -1,6 +1,7 @@
 ﻿using ModernDesign.ViewModel.Dashboard;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,14 @@ namespace ModernDesign.View.Dashboard
     /// </summary>
     public partial class MailView : UserControl
     {
+        public WebBrowser WebBrowser { get { return webBrowser; } }
+
         public MailView()
         {
             InitializeComponent();
+
+            string test = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
+            webBrowser.NavigateToString($"<html style=\"background-color:{test}\"/>");
         }
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)

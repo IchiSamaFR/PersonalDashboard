@@ -80,7 +80,39 @@ namespace ModernDesign.Model.Dashboard.Mail
         public bool HasAttachment { get; set; }
         public List<MimeEntity> Attachments { get; set; }
 
-        public string HtmlBody { get; set; }
+        public string htmlBody { get; set; }
+        public string HtmlBody
+        {
+            get
+            {
+                return htmlBody;
+            }
+            set
+            {
+                htmlBody = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(HtmlDisplay));
+            }
+        }
+        public string HtmlDisplay
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(HtmlBody))
+                {
+                    return htmlBody;
+                }
+                else if (!string.IsNullOrEmpty(TextBody))
+                {
+                    return TextBody.Replace("\r", "<br/>");
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
         public string textBody { get; set; }
         public string TextBody
         {
@@ -95,7 +127,7 @@ namespace ModernDesign.Model.Dashboard.Mail
                 NotifyPropertyChanged(nameof(TextDisplay));
             }
         }
-
+        
         public string TextDisplay
         {
             get

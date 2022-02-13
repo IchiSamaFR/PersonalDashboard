@@ -23,5 +23,8 @@
                 </ItemsControl>
             </ScrollViewer>
         </Border>
+
+        <WebBrowser Grid.Column="1" Margin="10 0 0 0" x:Name="webBrowser" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        </WebBrowser>
     </Grid>
 </UserControl>

@@ -75,6 +75,54 @@ namespace ModernDesign.ViewModel.Dashboard
             }
         }
 
+        private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
+
+        private UserControl UsercontrolSelected
+        {
+            get
+            {
+                return MailSelected.UserControl;
+            }
+            set
+            {
+                MailItem selected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                if(selected != null)
+                {
+                    MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                }
+            }
+        }
+
+        private MailItem _mailSelected;
+        public MailItem MailSelected
+        {
+            get
+            {
+                return _mailSelected;
+            }
+            set
+            {
+                if(_mailSelected != value)
+                {
+                    try
+                    {
+                        _mailSelected = value;
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            string test = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
+                            MailViewer.NavigateToString($"<html style=\"background-color:{test}\"/>" + MailSelected.HtmlDisplay);
+                        });
+                        NotifyPropertyChanged();
+                        NotifyPropertyChanged(nameof(MailViewer));
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
+                }
+            }
+        }
+
         private ImapClient imapClient;
         private IMailFolder inbox;
         private Task GetMailsTask;
@@ -151,6 +199,7 @@ namespace ModernDesign.ViewModel.Dashboard
                     }
                 }
             });
+            MailSelected = MailItems[0];
             GetMailsTask.Dispose();
         }
 
