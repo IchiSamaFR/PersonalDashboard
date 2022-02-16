@@ -28,6 +28,8 @@ namespace ModernDesign.View.Dashboard
         {
             InitializeComponent();
 
+            ListView.Items.Clear();
+
             string test = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
             webBrowser.NavigateToString($"<html style=\"background-color:{test}\"/>");
         }

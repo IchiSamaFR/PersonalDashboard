@@ -9,22 +9,13 @@ namespace ModernDesign.ViewModel.Tools
 {
     public static class VariablesExtensions
     {
-        public static async Task AddRange<T>(this ObservableCollection<T> list, List<T> items)
+        public static ObservableCollection<T> AddRange<T>(this ObservableCollection<T> list, List<T> items)
         {
-            try
+            foreach (var item in items)
             {
-                foreach (var item in items)
-                {
-                    await App.Current.Dispatcher.Invoke(async() =>
-                    {
-                        list.Add(item);
-                    });
-                }
+                list.Add(item);
             }
-            catch (Exception ex)
-            {
-
-            }
+            return list;
         }
     }
 }

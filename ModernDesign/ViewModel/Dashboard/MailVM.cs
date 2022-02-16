@@ -102,24 +102,31 @@ namespace ModernDesign.ViewModel.Dashboard
             }
             set
             {
-                if(_mailSelected != value)
+                if (value != null && _mailSelected != value)
                 {
-                    try
+                    _mailSelected = value;
+                    App.Current.Dispatcher.Invoke(() =>
                     {
-                        _mailSelected = value;
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-                            string test = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
-                            MailViewer.NavigateToString($"<html style=\"background-color:{test}\"/>" + MailSelected.HtmlDisplay);
-                        });
-                        NotifyPropertyChanged();
-                        NotifyPropertyChanged(nameof(MailViewer));
-                    }
-                    catch(Exception e)
-                    {
-
-                    }
+                        string background = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
+                        string foreground = "#" + App.Current.Resources["col_LightForeground"].ToString().Substring(3);
+                        MailViewer.NavigateToString($"<html style=\"background-color:{background};color:{foreground}\"/>" + MailSelected.HtmlDisplay);
+                    });
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(MailViewer));
                 }
+            }
+        }
+        private UserControl _controlSelected;
+        public UserControl ControlSelected
+        {
+            get
+            {
+                return _controlSelected;
+            }
+            set
+            {
+                _controlSelected = value;
+                MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
             }
         }
 
@@ -199,7 +206,6 @@ namespace ModernDesign.ViewModel.Dashboard
                     }
                 }
             });
-            MailSelected = MailItems[0];
             GetMailsTask.Dispose();
         }
 

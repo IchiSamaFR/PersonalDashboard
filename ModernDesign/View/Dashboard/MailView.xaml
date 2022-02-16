@@ -12,16 +12,19 @@
             <ColumnDefinition Width="480"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="1">
-            <ScrollViewer x:Name="MainScrollView" HorizontalScrollBarVisibility="Disabled" ScrollChanged="ScrollViewer_ScrollChanged">
-                <ItemsControl ItemsSource="{Binding MailControls}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Vertical" Margin="0 10 0 10"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </ScrollViewer>
+        <Border CornerRadius="1" x:Name="border">
+            <ListView x:Name="ListView" 
+                      ItemsSource="{Binding MailControls}" SelectedItem="{Binding ControlSelected}"
+                      Background="{DynamicResource bru_BackgroundItem}" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0">
+                <Style TargetType="ListViewItem">
+                    <Setter Property="MaxWidth" Value="{Binding Path=ActualWidth, ElementName=border}" />
+                </Style>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Vertical" Margin="0 10 0 10"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
         </Border>
 
         <WebBrowser Grid.Column="1" Margin="10 0 0 0" x:Name="webBrowser" ScrollViewer.VerticalScrollBarVisibility="Disabled">
