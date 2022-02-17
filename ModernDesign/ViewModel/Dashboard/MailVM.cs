@@ -109,7 +109,7 @@ namespace ModernDesign.ViewModel.Dashboard
                     {
                         string background = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
                         string foreground = "#" + App.Current.Resources["col_LightForeground"].ToString().Substring(3);
-                        MailViewer.NavigateToString($"<html style=\"background-color:{background};color:{foreground}\"/>" + MailSelected.HtmlDisplay);
+                        MailViewer.NavigateToString($"<html style=\"background-color:#DDD;\"/>" + MailSelected.HtmlDisplay);
                     });
                     NotifyPropertyChanged();
                     NotifyPropertyChanged(nameof(MailViewer));

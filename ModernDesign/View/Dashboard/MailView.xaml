@@ -15,7 +15,9 @@
         <Border CornerRadius="1" x:Name="border">
             <ListView x:Name="ListView" 
                       ItemsSource="{Binding MailControls}" SelectedItem="{Binding ControlSelected}"
-                      Background="{DynamicResource bru_BackgroundItem}" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0">
+                      Background="{DynamicResource bru_BackgroundItem}" 
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      BorderThickness="0" ScrollViewer.ScrollChanged="ScrollViewer_ScrollChanged">
                 <Style TargetType="ListViewItem">
                     <Setter Property="MaxWidth" Value="{Binding Path=ActualWidth, ElementName=border}" />
                 </Style>

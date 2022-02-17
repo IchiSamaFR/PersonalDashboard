@@ -123,7 +123,7 @@
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border x:Name="rectangle"
                             SnapsToDevicePixels="True"
-                            Background="{DynamicResource bru_Background}"
+                            Background="{DynamicResource bru_BackgroundLighter}"
                             Opacity="0.6"
                             CornerRadius="2"
                             Height="{TemplateBinding Height}"
