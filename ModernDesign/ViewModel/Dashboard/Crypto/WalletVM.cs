@@ -48,14 +48,15 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
             Name = "Wallet";
             Icon = ModernDesign.Properties.Resources.wallet;
 
-            Task.Run(() => GetWallet());
         }
 
         public override void OnFocus()
         {
             if (Focused)
             {
-                GetSymbolTask = Task.Run(() => GetSymbolsValues());
+                AllPrices = new ObservableCollection<SymbolItem>();
+                LstSymbols = new List<string>();
+                Task.Run(() => GetWallet());
             }
             else
             {
@@ -87,21 +88,24 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
         {
             socketClient = await cryptoVM.IsSet();
             isInit = true;
-
             using (var client = new BinanceClient())
             {
-                var accountResult = await client.General.GetAccountInfoAsync();
-                if (accountResult.Success)
+                var spotResult = await client.General.GetAccountInfoAsync();
+                if (spotResult.Success)
                 {
-                    foreach (var item in accountResult.Data.Balances.Where(b => b.Free != 0 || b.Locked != 0))
+                    foreach (var item in spotResult.Data.Balances.Where(b => b.Free != 0 || b.Locked != 0 || b.Total != 0))
                     {
                         var modify = cryptoVM.AllPrices.FirstOrDefault(price => price.Symbol.IndexOf(item.Asset + "USDT") >= 0);
-                        if(modify != null)
+                        if (modify != null)
                         {
+                            modify.Wallet = "Spot";
                             modify.WalletFree = item.Free;
                             modify.WalletLock = item.Locked;
-                            AllPrices.Add(modify);
-                            LstSymbols.Add(modify.Symbol);
+                            await App.Current.Dispatcher.BeginInvoke((Action)delegate ()
+                            {
+                                AllPrices.Add(modify);
+                                LstSymbols.Add(modify.Symbol);
+                            });
                         }
                     }
                 }

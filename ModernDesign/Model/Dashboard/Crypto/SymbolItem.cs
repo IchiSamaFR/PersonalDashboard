@@ -30,6 +30,17 @@ namespace ModernDesign.Model.Dashboard.Crypto
         }
 
         #region Wallet
+        private string wallet;
+        public string Wallet
+        {
+            get { return wallet; }
+            set
+            {
+                wallet = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private decimal price;
         public decimal Price
         {

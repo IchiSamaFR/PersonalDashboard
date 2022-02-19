@@ -33,18 +33,10 @@
                                 <TextBlock Text="{Binding SymbolNoUSDT}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <Image Source="{Binding Source={x:Static properties:Resources.dollar}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
-                                <TextBlock Text="{Binding Price}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Column="2">
-                                <Image Source="{Binding Source={x:Static properties:Resources.stats}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
-                                <TextBlock Text="{Binding PriceChangeInf}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Column="3">
                                 <Image Source="{Binding Source={x:Static properties:Resources.wallet}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
                                 <TextBlock Text="{Binding WalletTotal}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Column="4">
+                            <StackPanel Orientation="Horizontal" Grid.Column="2">
                                 <Image Source="{Binding Source={x:Static properties:Resources.dollar_bag}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20"/>
                                 <TextBlock Text="{Binding WalletDollarInf}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" HorizontalAlignment="Right"/>
                             </StackPanel>
