@@ -135,7 +135,7 @@ namespace ModernDesign.Model.Dashboard.Crypto
         {
             get
             {
-                return WalletDollar.ToString("0.00");
+                return WalletDollar.ToString("0.00") + " $";
             }
         }
         #endregion

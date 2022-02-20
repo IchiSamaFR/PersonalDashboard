@@ -24,5 +24,15 @@ namespace ModernDesign.View.Dashboard
         {
             InitializeComponent();
         }
+
+        private void UserControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Width = 150;
+        }
+
+        private void UserControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Width = 40;
+        }
     }
 }
