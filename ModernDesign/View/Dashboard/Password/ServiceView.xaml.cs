@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard
+namespace ModernDesign.View.Dashboard.Password
 {
     /// <summary>
-    /// Logique d'interaction pour PasswordView.xaml
+    /// Logique d'interaction pour ServiceView.xaml
     /// </summary>
-    public partial class PasswordView : UserControl
+    public partial class ServiceView : UserControl
     {
-        public PasswordView()
+        public ServiceView()
         {
             InitializeComponent();
             ListView.Items.Clear();

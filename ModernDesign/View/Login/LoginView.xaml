@@ -29,7 +29,7 @@
                     </WrapPanel.Resources>
                     <Control Template="{StaticResource LoginInput}" DataContext="{Binding LoginInput}"/>
                     <Control Template="{StaticResource PassInput}" DataContext="{Binding PassInput}"/>
-                    <Button Content="{Binding ConnextionInput.Value}" Style="{StaticResource Button}" Margin="0 5 0 0"
+                    <Button Content="{Binding ConnextionInput.Value}" Style="{StaticResource CenterButton}" Margin="0 5 0 0"
                             Command="{Binding LogCmd}"/>
                 </WrapPanel>
             </Grid>

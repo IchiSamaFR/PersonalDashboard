@@ -38,6 +38,9 @@
   <PropertyGroup>
     <StartupObject>ModernDesign.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>dashboard.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Binance.Net, Version=7.2.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Binance.Net.7.2.7\lib\netstandard2.0\Binance.Net.dll</HintPath>
@@ -93,6 +96,8 @@
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
     <Compile Include="Model\Dashboard\Mail\DateItem.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
+    <Compile Include="Model\Dashboard\Password\PasswordItem.cs" />
+    <Compile Include="Model\Dashboard\Password\ServiceItem.cs" />
     <Compile Include="Resources\Icons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -111,6 +116,7 @@
     <Compile Include="ViewModel\Dashboard\MailVM.cs" />
     <Compile Include="ViewModel\Dashboard\MenuVM.cs" />
     <Compile Include="ViewModel\Dashboard\PasswordVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Password\ServiceVM.cs" />
     <Compile Include="ViewModel\Dashboard\SettingVM.cs" />
     <Compile Include="ViewModel\Login\LoginVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
@@ -155,6 +161,9 @@
     </Compile>
     <Compile Include="View\Dashboard\PasswordView.xaml.cs">
       <DependentUpon>PasswordView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Password\ServiceView.xaml.cs">
+      <DependentUpon>ServiceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\SettingView.xaml.cs">
       <DependentUpon>SettingView.xaml</DependentUpon>
@@ -222,6 +231,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dashboard\Password\ServiceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dashboard\SettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -283,6 +296,8 @@
     <Resource Include="Resources\Images\Background\renault-megane-rs.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Icons\key.png" />
+    <Resource Include="Resources\Images\Icons\user.png" />
     <Resource Include="Resources\Images\Icons\security-shield-green.png" />
     <Resource Include="Resources\Images\Icons\bitcoin.png" />
     <Resource Include="Resources\Images\Icons\dollar-bag.png" />
@@ -294,6 +309,8 @@
     <Resource Include="Resources\Images\Icons\sent.png" />
     <Resource Include="Resources\Images\Background\back.png" />
     <Resource Include="Resources\Images\Icons\bot.png" />
+    <Resource Include="Resources\Images\Icons\dashboard.png" />
+    <Resource Include="dashboard.ico" />
     <Content Include="Resources\Images\Icons\document.png" />
     <Resource Include="Resources\Images\Icons\edit.png" />
     <Resource Include="Resources\Images\Icons\file.png" />
