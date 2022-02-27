@@ -67,11 +67,11 @@ namespace ModernDesign.ViewModel.Dashboard
 
         public string ApiKey
         {
-            get { return Config.Instance.APIKey; }
+            get { return ConfigItem.Instance.APIKey; }
         }
         public string ApiSecret
         {
-            get { return Config.Instance.SecretKey; }
+            get { return ConfigItem.Instance.SecretKey; }
         }
 
         private ObservableCollection<SymbolItem> allPrices;

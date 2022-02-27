@@ -45,7 +45,7 @@ namespace ModernDesign.Model.Dashboard.Password
 
         public void AddPassword(string login, string password)
         {
-            PasswordItems.Add(new PasswordItem(Name, login, password));
+            PasswordItems.Add(new PasswordItem(login, password));
         }
     }
 }

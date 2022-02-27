@@ -9,20 +9,6 @@ namespace ModernDesign.Model.Dashboard.Password
 {
     public class PasswordItem : ObservableObject
     {
-        private string service;
-        public string Service
-        {
-            get
-            {
-                return service;
-            }
-            set
-            {
-                service = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         private string login;
         public string Login
         {
@@ -60,9 +46,8 @@ namespace ModernDesign.Model.Dashboard.Password
             }
         }
 
-        public PasswordItem(string service, string login, string password)
+        public PasswordItem(string login, string password)
         {
-            Service = service;
             Login = login;
             Password = password;
         }

@@ -1,6 +1,7 @@
 ﻿using ModernDesign.Model.Dashboard.Password;
 using ModernDesign.View.Dashboard;
 using ModernDesign.ViewModel.Dashboard.Password;
+using ModernDesign.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -97,34 +98,21 @@ namespace ModernDesign.ViewModel.Dashboard
             ServiceVM = new ServiceVM(this);
 
             LoadPasswords();
+
+            ServiceItems = new ObservableCollection<ServiceItem>(JsonTool.LoadPasswords(ServiceItems.ToList()));
         }
 
         public void LoadPasswords()
         {
             var fbservice = new ServiceItem("Facebook");
-            fbservice.AddPassword("log", "pass");
-            fbservice.AddPassword("log2", "pass2");
+            fbservice.AddPassword("mylogin", "pass");
+            fbservice.AddPassword("fblogin", "pass2");
 
             var isservice = new ServiceItem("Insta");
-            isservice.AddPassword("log", "pass");
-            isservice.AddPassword("log2", "pass2");
-            isservice.AddPassword("log3", "pass3");
-
-            var ytservice = new ServiceItem("Youtube");
-            ytservice.AddPassword("log", "pass");
+            isservice.AddPassword("mylogin", "pass");
+            isservice.AddPassword("fblogin", "pass2");
 
             ServiceItems.Add(fbservice);
-            ServiceItems.Add(isservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
-            ServiceItems.Add(ytservice);
         }
 
         public void SavePasswords()

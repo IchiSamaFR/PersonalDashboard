@@ -174,7 +174,7 @@ namespace ModernDesign.ViewModel.Dashboard
                 imapClient = new ImapClient();
 
                 await imapClient.ConnectAsync("outlook.office365.com", 993, true);
-                await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
+                await imapClient.AuthenticateAsync(new NetworkCredential(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
                 inbox = imapClient.Inbox;
                 LoadMails(20);
             }

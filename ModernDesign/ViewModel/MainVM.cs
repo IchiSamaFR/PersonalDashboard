@@ -1,6 +1,7 @@
 ﻿using ModernDesign.Model;
 using ModernDesign.ViewModel.Dashboard;
 using ModernDesign.ViewModel.Login;
+using ModernDesign.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace ModernDesign.ViewModel
         public LoginVM LoginVM;
         public DashboardVM DashboardVM;
 
-        private Config config;
+        private ConfigItem config;
 
         private AbstractVM actualVM;
         public AbstractVM ActualVM
@@ -69,7 +70,8 @@ namespace ModernDesign.ViewModel
 
         public MainVM()
         {
-            config = new Config();
+            config = JsonTool.LoadConfig();
+
             LoginVM = new LoginVM(this);
             NotificationsVM = new NotificationsVM(this);
             ActualVM = LoginVM;
