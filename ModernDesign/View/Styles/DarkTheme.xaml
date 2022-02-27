@@ -9,6 +9,7 @@
     <Color x:Key="col_DarkForeground">#1E1E3E</Color>
     <Color x:Key="col_LightForeground">#FFFFFF</Color>
     <Color x:Key="col_SubLightForeground">#DDDDDD</Color>
+    <Color x:Key="col_ErrorForeground">#FF4343</Color>
 
 
 
@@ -20,4 +21,5 @@
     <SolidColorBrush x:Key="bru_DarkForeground" Color="{DynamicResource col_DarkForeground}"/>
     <SolidColorBrush x:Key="bru_LightForeground" Color="{DynamicResource col_LightForeground}"/>
     <SolidColorBrush x:Key="bru_SubLightForeground" Color="{DynamicResource col_SubLightForeground}"/>
+    <SolidColorBrush x:Key="bru_ErrorForeground" Color="{DynamicResource col_ErrorForeground}"/>
 </ResourceDictionary>

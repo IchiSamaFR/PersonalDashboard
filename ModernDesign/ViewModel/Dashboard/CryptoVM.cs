@@ -157,7 +157,7 @@ namespace ModernDesign.ViewModel.Dashboard
                 }
                 else
                 {
-                    ErrorText = result.ResponseStatusCode.ToString();
+                    NotificationsVM.instance.AddNotification(this, "Could not connect to the binance API.");
                 }
             }
 

@@ -9,6 +9,12 @@
         Title="MainWindow" Height="720" Width="1280"
         Icon="dashboard.ico">
     <Grid Background="{DynamicResource bru_Background}">
-        <ContentPresenter Content="{Binding UserControl}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+        <ContentPresenter Content="{Binding UserControl}" Grid.ColumnSpan="2"/>
+        
+        <ContentPresenter Content="{Binding NotificationControl}" Grid.Column="1"/>
     </Grid>
 </Window>

@@ -35,11 +35,13 @@ namespace ModernDesign.ViewModel.Login
 
         public LoginVM(MainVM mainVM)
         {
+            Name = "Login";
             this.mainVM = mainVM;
         }
 
         public void Log()
         {
+            NotificationsVM.instance.AddNotification(this, "Connecté");
             mainVM.Log();
         }
     }

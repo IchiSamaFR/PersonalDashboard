@@ -49,10 +49,12 @@ namespace ModernDesign.ViewModel.Dashboard.Password
 
         public void CopyPass(PasswordItem passwordItem)
         {
+            NotificationsVM.instance.AddNotification(this, "Password copied.");
             Clipboard.SetText(passwordItem.Password);
         }
         public void CopyLogin(PasswordItem passwordItem)
         {
+            NotificationsVM.instance.AddNotification(this, "Login copied.");
             Clipboard.SetText(passwordItem.Login);
         }
 

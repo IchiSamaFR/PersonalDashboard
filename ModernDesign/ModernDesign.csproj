@@ -98,6 +98,7 @@
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Model\Dashboard\Password\PasswordItem.cs" />
     <Compile Include="Model\Dashboard\Password\ServiceItem.cs" />
+    <Compile Include="Model\Notifications\NotificationItem.cs" />
     <Compile Include="Resources\Icons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -120,6 +121,7 @@
     <Compile Include="ViewModel\Dashboard\SettingVM.cs" />
     <Compile Include="ViewModel\Login\LoginVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="ViewModel\NotificationsVM.cs" />
     <Compile Include="ViewModel\Tools\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
@@ -170,6 +172,9 @@
     </Compile>
     <Compile Include="View\Login\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\NotificationsView.xaml.cs">
+      <DependentUpon>NotificationsView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -240,6 +245,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Login\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NotificationsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

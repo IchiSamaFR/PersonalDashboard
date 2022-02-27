@@ -41,24 +41,6 @@ namespace ModernDesign.ViewModel
             }
         }
 
-        private string _errorText;
-        public string ErrorText
-        {
-            get
-            {
-                return _errorText;
-            }
-            set
-            {
-                if (_errorText != value)
-                {
-                    _errorText = value;
-                    NotifyPropertyChanged();
-                    OnErrorChange();
-                }
-            }
-        }
-
         private bool _focused;
         public bool Focused
         {

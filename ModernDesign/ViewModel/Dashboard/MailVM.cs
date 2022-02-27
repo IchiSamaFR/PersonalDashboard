@@ -139,8 +139,6 @@ namespace ModernDesign.ViewModel.Dashboard
             this.dashboardVM = dashboardVM;
             Name = "Mail";
             Icon = ModernDesign.Properties.Resources.envelope;
-
-            Task.Run(() => InitMails());
         }
 
         public void LoadMails(int amount = 10)
@@ -148,6 +146,15 @@ namespace ModernDesign.ViewModel.Dashboard
             if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
             {
                 GetMailsTask = Task.Run(() => GetMails(amount));
+            }
+        }
+
+        public override void OnFocus()
+        {
+            base.OnFocus();
+            if (Focused && imapClient == null)
+            {
+                Task.Run(() => InitMails());
             }
         }
 
@@ -162,12 +169,19 @@ namespace ModernDesign.ViewModel.Dashboard
 
         public async Task InitMails()
         {
-            imapClient = new ImapClient();
+            try
+            {
+                imapClient = new ImapClient();
 
-            await imapClient.ConnectAsync("outlook.office365.com", 993, true);
-            await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
-            inbox = imapClient.Inbox;
-            LoadMails(20);
+                await imapClient.ConnectAsync("outlook.office365.com", 993, true);
+                await imapClient.AuthenticateAsync(new NetworkCredential(Config.Instance.MailAdress, Config.Instance.MailPass));
+                inbox = imapClient.Inbox;
+                LoadMails(20);
+            }
+            catch
+            {
+                NotificationsVM.instance.AddNotification(this, "Could not connect to the mailbox.");
+            }
         }
 
         public async Task GetMails(int amount)

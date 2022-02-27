@@ -44,11 +44,34 @@ namespace ModernDesign.ViewModel
                 return ActualVM?.UserControl;
             }
         }
+        
+        private NotificationsVM notificationsVM;
+        public NotificationsVM NotificationsVM
+        {
+            get
+            {
+                return notificationsVM;
+            }
+            set
+            {
+                notificationsVM = value;
+                notificationsVM.Show();
+                NotifyPropertyChanged();
+            }
+        }
+        public UserControl NotificationControl
+        {
+            get
+            {
+                return NotificationsVM?.UserControl;
+            }
+        }
 
         public MainVM()
         {
             config = new Config();
             LoginVM = new LoginVM(this);
+            NotificationsVM = new NotificationsVM(this);
             ActualVM = LoginVM;
         }
 
