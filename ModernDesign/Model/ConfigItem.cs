@@ -1,11 +1,11 @@
-﻿using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernDesign.Model
+namespace PersonalDashboard.Model
 {
     public class ConfigItem
     {

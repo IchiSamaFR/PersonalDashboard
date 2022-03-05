@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Login
+namespace PersonalDashboard.View.Login
 {
     /// <summary>
     /// Logique d'interaction pour LoginView.xaml

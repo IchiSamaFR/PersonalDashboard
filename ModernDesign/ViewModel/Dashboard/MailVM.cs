@@ -1,5 +1,5 @@
-﻿using ModernDesign.Model.Dashboard.Mail;
-using ModernDesign.View.Dashboard;
+﻿using PersonalDashboard.Model.Dashboard.Mail;
+using PersonalDashboard.View.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,11 @@ using System.Net;
 using MailKit;
 using MimeKit;
 using System.Collections.ObjectModel;
-using ModernDesign.Model;
-using ModernDesign.ViewModel.Tools;
+using PersonalDashboard.Model;
+using PersonalDashboard.ViewModel.Tools;
 using System.Windows.Input;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class MailVM : AbstractVM
     {
@@ -138,7 +138,7 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             this.dashboardVM = dashboardVM;
             Name = "Mail";
-            Icon = ModernDesign.Properties.Resources.envelope;
+            Icon = PersonalDashboard.Properties.Resources.envelope;
         }
 
         public void LoadMails(int amount = 10)

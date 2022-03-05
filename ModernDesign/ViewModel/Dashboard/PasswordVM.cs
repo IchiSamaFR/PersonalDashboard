@@ -1,7 +1,7 @@
-﻿using ModernDesign.Model.Dashboard.Password;
-using ModernDesign.View.Dashboard;
-using ModernDesign.ViewModel.Dashboard.Password;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.Model.Dashboard.Password;
+using PersonalDashboard.View.Dashboard;
+using PersonalDashboard.ViewModel.Dashboard.Password;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class PasswordVM : AbstractVM
     {
@@ -93,7 +93,7 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             this.dashboardVM = dashboardVM;
             Name = "Password";
-            Icon = ModernDesign.Properties.Resources.security_shield_green;
+            Icon = PersonalDashboard.Properties.Resources.security_shield_green;
 
             ServiceVM = new ServiceVM(this);
 

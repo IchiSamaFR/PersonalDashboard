@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard.Crypto
+namespace PersonalDashboard.View.Dashboard.Crypto
 {
     /// <summary>
     /// Logique d'interaction pour BotView.xaml

@@ -1,9 +1,9 @@
-﻿using ModernDesign.View.Dashboard;
+﻿using PersonalDashboard.View.Dashboard;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class DashboardVM : AbstractVM
     {

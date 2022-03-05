@@ -1,6 +1,6 @@
 ﻿using InputFields;
-using ModernDesign.View.Login;
-using ModernDesign.ViewModel.Tools;
+using PersonalDashboard.View.Login;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ModernDesign.ViewModel.Login
+namespace PersonalDashboard.ViewModel.Login
 {
     public class LoginVM : AbstractVM
     {

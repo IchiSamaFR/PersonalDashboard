@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:ModernDesign.View.Styles.Templates"
+                    xmlns:local="clr-namespace:PersonalDashboard.View.Styles.Templates"
                     xmlns:models="clr-namespace:InputFields;assembly=InputFields"
-                    xmlns:converter="clr-namespace:ModernDesign.View.Convertors">
+                    xmlns:converter="clr-namespace:PersonalDashboard.View.Convertors">
 
     <converter:StringNullOrEmptyConverter x:Key="StringNullOrEmptyConverter" />
 

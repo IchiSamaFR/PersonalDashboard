@@ -1,12 +1,12 @@
-﻿using ModernDesign.ViewModel;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.ViewModel;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernDesign.Model.Notifications
+namespace PersonalDashboard.Model.Notifications
 {
     public class NotificationItem : ObservableObject
     {

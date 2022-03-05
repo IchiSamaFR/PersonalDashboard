@@ -1,4 +1,4 @@
-﻿using ModernDesign.View.Dashboard;
+﻿using PersonalDashboard.View.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class HomeVM : AbstractVM
     {
@@ -17,7 +17,7 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             this.dashboardVM = dashboardVM;
             Name = "Home";
-            Icon = ModernDesign.Properties.Resources.home_page;
+            Icon = PersonalDashboard.Properties.Resources.home_page;
         }
     }
 }

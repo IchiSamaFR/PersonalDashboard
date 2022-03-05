@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace ModernDesign.View.Convertors
+namespace PersonalDashboard.View.Convertors
 {
     public class StringNullOrEmptyConverter : IValueConverter
     {

@@ -1,12 +1,12 @@
 ﻿using Binance.Net.Enums;
-using ModernDesign.ViewModel.Tools;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernDesign.Model.Dashboard.Crypto
+namespace PersonalDashboard.Model.Dashboard.Crypto
 {
     public class OrderItem : ObservableObject
     {

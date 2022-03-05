@@ -1,5 +1,5 @@
-﻿using ModernDesign.View.Dashboard.Mail;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.View.Dashboard.Mail;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.Model.Dashboard.Mail
+namespace PersonalDashboard.Model.Dashboard.Mail
 {
     public class DateItem : ObservableObject
     {

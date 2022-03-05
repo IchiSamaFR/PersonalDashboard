@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1525
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernDesign", "ModernDesign\ModernDesign.csproj", "{9E39F29D-5FC0-414D-9138-7E7DD265B7DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalDashboard", "ModernDesign\PersonalDashboard.csproj", "{9E39F29D-5FC0-414D-9138-7E7DD265B7DC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DED65BC9-EA4B-45BD-98B9-D43E1698FE43} = {DED65BC9-EA4B-45BD-98B9-D43E1698FE43}
 	EndProjectSection

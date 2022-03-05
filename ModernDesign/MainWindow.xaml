@@ -1,10 +1,10 @@
-﻿<Window x:Class="ModernDesign.MainWindow"
+﻿<Window x:Class="PersonalDashboard.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ModernDesign"
-        xmlns:properties="clr-namespace:ModernDesign.Properties"
+        xmlns:local="clr-namespace:PersonalDashboard"
+        xmlns:properties="clr-namespace:PersonalDashboard.Properties"
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="1280"
         Icon="dashboard.ico">

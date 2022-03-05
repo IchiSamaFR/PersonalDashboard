@@ -6,12 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ModernDesign.Model;
-using ModernDesign.Model.Dashboard.Password;
+using PersonalDashboard.Model;
+using PersonalDashboard.Model.Dashboard.Password;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ModernDesign.ViewModel.Tools
+namespace PersonalDashboard.ViewModel.Tools
 {
     public static class JsonTool
     {

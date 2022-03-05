@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernDesign.ViewModel.Tools
+namespace PersonalDashboard.ViewModel.Tools
 {
     public static class VariablesExtensions
     {

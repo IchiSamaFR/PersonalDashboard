@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard.Password
+namespace PersonalDashboard.View.Dashboard.Password
 {
     /// <summary>
     /// Logique d'interaction pour ServiceView.xaml

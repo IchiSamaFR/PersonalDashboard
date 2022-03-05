@@ -1,4 +1,4 @@
-﻿using ModernDesign.Resources;
+﻿using PersonalDashboard.Resources;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace ModernDesign.View.Convertors
+namespace PersonalDashboard.View.Convertors
 {
     public class BitmapToImageSourceConverter : IValueConverter
     {

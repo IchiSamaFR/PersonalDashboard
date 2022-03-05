@@ -1,7 +1,7 @@
-﻿using ModernDesign.Model;
-using ModernDesign.ViewModel.Dashboard;
-using ModernDesign.ViewModel.Login;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.Model;
+using PersonalDashboard.ViewModel.Dashboard;
+using PersonalDashboard.ViewModel.Login;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel
+namespace PersonalDashboard.ViewModel
 {
     public class MainVM : AbstractVM
     {

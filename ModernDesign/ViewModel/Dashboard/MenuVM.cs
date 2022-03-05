@@ -1,5 +1,5 @@
-﻿using ModernDesign.View.Dashboard;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.View.Dashboard;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class MenuVM : AbstractVM
     {

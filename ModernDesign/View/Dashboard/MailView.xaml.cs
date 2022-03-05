@@ -1,4 +1,4 @@
-﻿using ModernDesign.ViewModel.Dashboard;
+﻿using PersonalDashboard.ViewModel.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign.View.Dashboard
+namespace PersonalDashboard.View.Dashboard
 {
     /// <summary>
     /// Logique d'interaction pour MailView.xaml

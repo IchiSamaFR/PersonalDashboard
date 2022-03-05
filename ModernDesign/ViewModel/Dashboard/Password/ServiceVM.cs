@@ -1,6 +1,6 @@
-﻿using ModernDesign.Model.Dashboard.Password;
-using ModernDesign.View.Dashboard.Password;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.Model.Dashboard.Password;
+using PersonalDashboard.View.Dashboard.Password;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ModernDesign.ViewModel.Dashboard.Password
+namespace PersonalDashboard.ViewModel.Dashboard.Password
 {
     public class ServiceVM : AbstractVM
     {

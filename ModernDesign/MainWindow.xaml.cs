@@ -1,4 +1,4 @@
-﻿using ModernDesign.ViewModel;
+﻿using PersonalDashboard.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ModernDesign
+namespace PersonalDashboard
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml

@@ -12,13 +12,13 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace ModernDesign.Resources
+namespace PersonalDashboard.Resources
 {
     public static class ResourceTool
     {
         public static ResourceManager GetResource(string resource)
         {
-            return new ResourceManager("ModernDesign.Resource", Assembly.GetExecutingAssembly());
+            return new ResourceManager("PersonalDashboard.Resource", Assembly.GetExecutingAssembly());
         }
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]

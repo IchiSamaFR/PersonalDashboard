@@ -1,6 +1,6 @@
-﻿using ModernDesign.Model.Notifications;
-using ModernDesign.View;
-using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.Model.Notifications;
+using PersonalDashboard.View;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel
+namespace PersonalDashboard.ViewModel
 {
     public class NotificationsVM : AbstractVM
     {
@@ -44,7 +44,7 @@ namespace ModernDesign.ViewModel
 
             this.mainVM = mainVM;
             Name = "Notifications";
-            Icon = ModernDesign.Properties.Resources.security_shield_green;
+            Icon = PersonalDashboard.Properties.Resources.security_shield_green;
         }
 
         public void AddNotification(AbstractVM fromVM, string message, float seconds = 5)

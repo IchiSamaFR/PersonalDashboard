@@ -1,11 +1,11 @@
-﻿using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernDesign.Model.Dashboard.Password
+namespace PersonalDashboard.Model.Dashboard.Password
 {
     public class PasswordItem : ObservableObject
     {

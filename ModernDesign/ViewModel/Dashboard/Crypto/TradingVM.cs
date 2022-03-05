@@ -1,6 +1,6 @@
 ﻿using Binance.Net;
-using ModernDesign.Model.Dashboard.Crypto;
-using ModernDesign.View.Dashboard.Crypto;
+using PersonalDashboard.Model.Dashboard.Crypto;
+using PersonalDashboard.View.Dashboard.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel.Dashboard.Crypto
+namespace PersonalDashboard.ViewModel.Dashboard.Crypto
 {
     public class TradingVM : AbstractVM
     {
@@ -44,7 +44,7 @@ namespace ModernDesign.ViewModel.Dashboard.Crypto
         {
             this.cryptoVM = cryptoVM;
             Name = "Trading";
-            Icon = ModernDesign.Properties.Resources.stats;
+            Icon = PersonalDashboard.Properties.Resources.stats;
 
             Task.Run(() => InitSymbols());
         }

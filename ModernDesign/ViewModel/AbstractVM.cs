@@ -1,4 +1,4 @@
-﻿using ModernDesign.ViewModel.Tools;
+﻿using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ModernDesign.ViewModel
+namespace PersonalDashboard.ViewModel
 {
     public abstract class AbstractVM : ObservableObject
     {

@@ -1,4 +1,4 @@
-﻿using ModernDesign.View.Dashboard;
+﻿using PersonalDashboard.View.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Binance;
 using Binance.Net;
-using ModernDesign.Model.Dashboard.Crypto;
+using PersonalDashboard.Model.Dashboard.Crypto;
 using System.Collections.ObjectModel;
 using System.Windows;
-using ModernDesign.ViewModel.Dashboard.Crypto;
+using PersonalDashboard.ViewModel.Dashboard.Crypto;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Authentication;
 using Binance.Net.Objects;
-using ModernDesign.Model;
+using PersonalDashboard.Model;
 
-namespace ModernDesign.ViewModel.Dashboard
+namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class CryptoVM : AbstractVM
     {
@@ -92,7 +92,7 @@ namespace ModernDesign.ViewModel.Dashboard
         {
             this.dashboardVM = dashboardVM;
             Name = "Crypto";
-            Icon = ModernDesign.Properties.Resources.wallet;
+            Icon = PersonalDashboard.Properties.Resources.wallet;
 
             BinanceClient.SetDefaultOptions(new BinanceClientOptions() { ApiCredentials = new ApiCredentials(ApiKey, ApiSecret) });
 
