@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PersonalDashboard.View.Dashboard.Password"
+                    xmlns:properties="clr-namespace:PersonalDashboard.Properties"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="{DynamicResource bru_Background}">
@@ -18,8 +19,8 @@
                     <ColumnDefinition Width="65"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Image Source="C:\Users\IchiSamaFR\source\repos\PersonalDashboard\PersonalDashboard\Resources\Images\Icons\user.png" Margin="15 10 10 10"/>
-                <TextBlock Text="{Binding ServiceItem.Name}" FontSize="18" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource bru_LightForeground}"/>
+                <Image Source="{Binding Source={x:Static properties:Resources.user}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="15 10 10 10"/>
+                <TextBlock Text="{Binding ServiceItem.Name}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource bru_LightForeground}" Grid.ColumnSpan="2"/>
             </Grid>
         </Border>
         
@@ -38,9 +39,9 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10" 
+                    <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10"
                             Height="40" Grid.Row="1"
-                            Margin="0 5 0 0"
+                            Margin="-1 1 -1 1"
                             Width="{Binding Path=ActualWidth, ElementName=ListView}">
                         <Grid Margin="10 0 10 0">
                             <Grid.ColumnDefinitions>
@@ -58,7 +59,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="C:\Users\IchiSamaFR\source\repos\PersonalDashboard\PersonalDashboard\Resources\Images\Icons\user.png" Margin="5"/>
+                                    <Image Source="{Binding Source={x:Static properties:Resources.user}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="5"/>
                                     <TextBlock Text="{Binding Login}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" Grid.Column="1"/>
                                 </Grid>
                             </Button>
@@ -70,7 +71,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="C:\Users\IchiSamaFR\source\repos\PersonalDashboard\PersonalDashboard\Resources\Images\Icons\key.png" Margin="5"/>
+                                    <Image Source="{Binding Source={x:Static properties:Resources.key}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="5"/>
                                     <TextBlock Text="{Binding PasswordDisplay}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" Grid.Column="1"/>
                                 </Grid>
                             </Button>

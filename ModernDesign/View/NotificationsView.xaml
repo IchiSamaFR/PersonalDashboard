@@ -10,7 +10,7 @@
         <ItemsControl x:Name="ListView" Grid.Column="1"
                       ItemsSource="{Binding NotificationItems}"
                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      BorderThickness="0" Margin="5 15 5 5"
+                      BorderThickness="0" Margin="15 15 15 15"
                       HorizontalContentAlignment="Right">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -19,8 +19,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{DynamicResource bru_Background}" CornerRadius="11" Margin="0 0 0 0">
-                        <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10" Margin="2">
+                    <Border Background="{DynamicResource bru_Background}" CornerRadius="11" Margin="0 0 0 2">
+                        <Border Background="{DynamicResource bru_BackgroundItem}" CornerRadius="10" Margin="1">
                             <Grid Margin="10 10 30 10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="20"/>

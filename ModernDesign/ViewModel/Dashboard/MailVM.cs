@@ -14,6 +14,8 @@ using System.Collections.ObjectModel;
 using PersonalDashboard.Model;
 using PersonalDashboard.ViewModel.Tools;
 using System.Windows.Input;
+using System.Windows;
+using MailKit.Search;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
@@ -75,6 +77,14 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
         }
 
+        public Visibility MailViewerVisible
+        {
+            get
+            {
+                return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
         private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
 
         private UserControl UsercontrolSelected
@@ -102,20 +112,24 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             set
             {
-                if (value != null && _mailSelected != value)
+                if (value != null && (!inbox.IsOpen || value.Flags == MessageFlags.Seen))
                 {
+                    if (!inbox.IsOpen)
+                    {
+                        SeenMail(_mailSelected);
+                    }
+
                     _mailSelected = value;
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        string background = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
-                        string foreground = "#" + App.Current.Resources["col_LightForeground"].ToString().Substring(3);
-                        MailViewer.NavigateToString($"<html style=\"background-color:#DDD;\"/>" + MailSelected.HtmlDisplay);
+                        MailViewer.NavigateToString(MailSelected.HtmlDisplay);
                     });
                     NotifyPropertyChanged();
-                    NotifyPropertyChanged(nameof(MailViewer));
+                    NotifyPropertyChanged(nameof(MailViewerVisible));
                 }
             }
         }
+
         private UserControl _controlSelected;
         public UserControl ControlSelected
         {
@@ -141,20 +155,20 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Icon = PersonalDashboard.Properties.Resources.envelope;
         }
 
-        public void LoadMails(int amount = 10)
-        {
-            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
-            {
-                GetMailsTask = Task.Run(() => GetMails(amount));
-            }
-        }
-
         public override void OnFocus()
         {
             base.OnFocus();
             if (Focused && imapClient == null)
             {
                 Task.Run(() => InitMails());
+            }
+        }
+        
+        public void LoadMails(int amount = 10)
+        {
+            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
+            {
+                GetMailsTask = Task.Run(() => GetMails(amount));
             }
         }
 
@@ -169,18 +183,27 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public async Task InitMails()
         {
+            if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
+            {
+                LoadMails(20);
+            }
+        }
+
+        public async Task<bool> ConnectMailBox(string mail, string pass)
+        {
             try
             {
                 imapClient = new ImapClient();
 
                 await imapClient.ConnectAsync("outlook.office365.com", 993, true);
-                await imapClient.AuthenticateAsync(new NetworkCredential(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
+                await imapClient.AuthenticateAsync(new NetworkCredential(mail, pass));
                 inbox = imapClient.Inbox;
-                LoadMails(20);
+                return true;
             }
             catch
             {
                 NotificationsVM.instance.AddNotification(this, "Could not connect to the mailbox.");
+                return false;
             }
         }
 
@@ -195,14 +218,15 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 int mailItemsCount = MailItems?.Count ?? 0;
                 if (inbox.Count > mailItemsCount)
                 {
-                    var lastMessages = Enumerable.Range(inbox.Count - amount - mailItemsCount, amount).ToList();
-                    //This fetch some times wait for nothing
-                    var messages = await inbox.FetchAsync(lastMessages, MailKit.MessageSummaryItems.UniqueId);
-                    foreach (var message in messages.Reverse())
+                    var lstMsg = await inbox.SearchAsync(SearchQuery.All);
+                    var messages = await inbox.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
+                    messages = messages.OrderByDescending(item => item.UniqueId).ToList();
+                    for (int i = 0; i < messages.Count; i++)
                     {
-                        // Item 38811 bug car trop grand, trop de data
+                        var message = messages[i];
                         MimeMessage mimeMessage = await inbox.GetMessageAsync(message.UniqueId);
-                        MailItem tempMail = new MailItem()
+
+                        MailItem tempMail = new MailItem(this)
                         {
                             Uid = message.UniqueId,
                             FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
@@ -215,10 +239,12 @@ namespace PersonalDashboard.ViewModel.Dashboard
                             Attachments = mimeMessage.Attachments.ToList(),
                             HtmlBody = mimeMessage.HtmlBody,
                             TextBody = mimeMessage.TextBody,
+                            Flags = messages[i].Flags,
                         };
                         AddMail(tempMail);
                     }
                 }
+                await inbox.CloseAsync();
             });
             GetMailsTask.Dispose();
         }
@@ -231,6 +257,25 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             MailControls.Add(mail.UserControl);
             MailItems.Add(mail);
+        }
+
+        public async void SeenMail(MailItem mail)
+        {
+            await App.Current.Dispatcher.Invoke(async () =>
+            {
+                await inbox.OpenAsync(FolderAccess.ReadWrite);
+                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Seen, true);
+                await inbox.CloseAsync();
+            });
+        }
+        public async void DeleteMail(MailItem mail)
+        {
+            await App.Current.Dispatcher.Invoke(async () =>
+            {
+                await inbox.OpenAsync(FolderAccess.ReadWrite);
+                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Deleted, true);
+                await inbox.CloseAsync();
+            });
         }
     }
 }

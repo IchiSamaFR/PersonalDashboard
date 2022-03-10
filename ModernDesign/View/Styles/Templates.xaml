@@ -2,9 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:PersonalDashboard.View.Styles.Templates"
                     xmlns:models="clr-namespace:InputFields;assembly=InputFields"
-                    xmlns:converter="clr-namespace:PersonalDashboard.View.Convertors">
+                    xmlns:converter="clr-namespace:PersonalDashboard.View.Convertors"
+                    xmlns:properties="clr-namespace:PersonalDashboard.Properties">
 
     <converter:StringNullOrEmptyConverter x:Key="StringNullOrEmptyConverter" />
+    <converter:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
 
     <ControlTemplate x:Key="LoginInput">
         <Border x:Name="borderMail" BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="1">
@@ -14,6 +16,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Rectangle x:Name="filler" Fill="{DynamicResource bru_BackgroundDarker}"/>
+                <Image Source="{Binding Source={x:Static properties:Resources.user}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="2"/>
                 <TextBlock x:Name="placeholder" Foreground="{DynamicResource bru_Background}" Padding="7 0 0 0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                             Text="{Binding Placeholder}"/>
                 <TextBox x:Name="textValue" Style="{StaticResource TextBox}" BorderThickness="0" Grid.Column="1"
@@ -39,6 +42,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Rectangle x:Name="filler" Fill="{DynamicResource bru_BackgroundDarker}"/>
+                <Image Source="{Binding Source={x:Static properties:Resources.key}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="3"/>
                 <TextBlock x:Name="placeholder" Foreground="{DynamicResource bru_Background}" Padding="7 0 0 0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                             Text="{Binding Placeholder}"/>
                 <models:BindablePasswordBox x:Name="textValue" BorderThickness="0" Grid.Column="1"

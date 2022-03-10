@@ -1,6 +1,8 @@
 ﻿using MailKit;
 using MimeKit;
 using PersonalDashboard.View.Dashboard.Mail;
+using PersonalDashboard.ViewModel;
+using PersonalDashboard.ViewModel.Dashboard;
 using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
@@ -9,12 +11,30 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PersonalDashboard.Model.Dashboard.Mail
 {
     public class MailItem : ObservableObject
     {
+        private MailVM mailVM;
         public UserControl UserControl = new MailItemView();
+
+        #region Commands
+
+        private ICommand _deleteMailCmd;
+        public ICommand DeleteMailCmd
+        {
+            get
+            {
+                if (_deleteMailCmd == null)
+                {
+                    _deleteMailCmd = new RelayCommand(o => { DeleteMail(); });
+                }
+                return _deleteMailCmd;
+            }
+        }
+        #endregion
 
         public bool IsOpened { get; set; }
 
@@ -127,7 +147,21 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged(nameof(TextDisplay));
             }
         }
-        
+
+        private MessageFlags? flags;
+        public MessageFlags? Flags
+        {
+            get
+            {
+                return flags;
+            }
+            set
+            {
+                flags = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public string TextDisplay
         {
             get
@@ -143,9 +177,15 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             }
         }
 
-        public MailItem()
+        public MailItem(MailVM vm)
         {
             UserControl.DataContext = this;
+            mailVM = vm;
+        }
+
+        public void DeleteMail()
+        {
+            mailVM.DeleteMail(this);
         }
     }
 }
