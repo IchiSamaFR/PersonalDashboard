@@ -29,20 +29,22 @@
                         <Image Source="{Binding Source={x:Static properties:Resources.refresh}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
                     </Button>
                 </Grid>
-                <ListView x:Name="ListView" Grid.Row="1"
-                      ItemsSource="{Binding MailControls}" SelectedItem="{Binding ControlSelected}"
-                      Background="Transparent" 
-                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      BorderThickness="0" ScrollViewer.ScrollChanged="ScrollViewer_ScrollChanged">
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="MaxWidth" Value="{Binding Path=ActualWidth, ElementName=border}" />
-                    </Style>
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Vertical" Margin="0 0 0 0"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                </ListView>
+                <ScrollViewer Grid.Row="1"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.ScrollChanged="ScrollViewer_ScrollChanged">
+                    <ItemsControl  Background="Transparent" ItemsSource="{Binding MailGroups}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Vertical" Margin="0 0 0 0"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentPresenter Content="{Binding UserControl}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </Border>
 

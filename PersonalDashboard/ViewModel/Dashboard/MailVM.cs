@@ -24,13 +24,15 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private DashboardVM dashboardVM { get; set; }
         public override UserControl UserControl { get; } = new MailView();
 
+        private UniqueId lowerId = UniqueId.MaxValue;
+        private UniqueId higherId = UniqueId.MinValue;
         private ImapClient imapClient;
         private IMailFolder inbox;
         private Task GetMailsTask;
         private UserControl _controlSelected;
         private MailItem _mailSelected;
         private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
-        private ObservableCollection<DateItem> _mailDateItems = new ObservableCollection<DateItem>();
+        private ObservableCollection<Model.Dashboard.Mail.MailGroup> _mailDateItems = new ObservableCollection<Model.Dashboard.Mail.MailGroup>();
         private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
 
         public UserControl ControlSelected
@@ -81,7 +83,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 _mailItems = value;
             }
         }
-        public ObservableCollection<DateItem> MailDateItems
+        public ObservableCollection<Model.Dashboard.Mail.MailGroup> MailGroups
         {
             get
             {
@@ -168,7 +170,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         {
             if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
             {
-                LoadMails(20);
+                LoadMails(50);
             }
         }
         public async Task<bool> ConnectMailBox(string mail, string pass)
@@ -200,11 +202,15 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 if (inbox.Count > mailItemsCount)
                 {
                     var lstMsg = await inbox.SearchAsync(SearchQuery.All);
-                    lstMsg.OrderByDescending(msg => msg.Id);
+                    lstMsg = lstMsg.Where(id => id < lowerId || id > higherId).OrderByDescending(msg => msg).Take(amount).ToList();
                     var messages = await inbox.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
                     messages = messages.OrderByDescending(item => item.UniqueId).ToList();
                     for (int i = 0; i < messages.Count; i++)
                     {
+                        UniqueId mailId = messages[i].UniqueId;
+                        higherId = mailId > higherId ? mailId : higherId;
+                        lowerId = mailId < lowerId ? mailId : lowerId;
+
                         var message = messages[i];
                         MimeMessage mimeMessage = await inbox.GetMessageAsync(message.UniqueId);
 
@@ -233,13 +239,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public void AddMail(MailItem mail)
         {
-            if (MailItems.Count > 0 && MailItems.LastOrDefault().TimeReceived.Date != mail.TimeReceived.Date)
+            if (!MailGroups.Any(group => group.TimeReceived.Date == mail.TimeReceived.Date))
             {
-                MailControls.Add(new DateItem(mail.TimeReceived).UserControl);
+                MailGroups.Add(new MailGroup(mail.TimeReceived));
             }
-            MailControls.Add(mail.UserControl);
-            MailItems.Add(mail);
+            MailGroups.FirstOrDefault(group => group.TimeReceived.Date == mail.TimeReceived.Date).AddMail(mail);
         }
+
         public async void SeenMail(MailItem mail)
         {
             await App.Current.Dispatcher.Invoke(async () =>

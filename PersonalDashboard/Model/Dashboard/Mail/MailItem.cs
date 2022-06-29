@@ -18,7 +18,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     public class MailItem : ObservableObject
     {
         private MailVM mailVM;
-        public UserControl UserControl = new MailItemView();
+        public UserControl UserControl { get; } = new MailItemView();
 
         #region Commands
 

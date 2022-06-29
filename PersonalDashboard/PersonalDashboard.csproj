@@ -111,7 +111,7 @@
     <Compile Include="Model\ConfigItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
-    <Compile Include="Model\Dashboard\Mail\DateItem.cs" />
+    <Compile Include="Model\Dashboard\Mail\MailGroup.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Model\Dashboard\Password\PasswordItem.cs" />
     <Compile Include="Model\Dashboard\Password\ServiceItem.cs" />
@@ -144,6 +144,7 @@
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
+    <Compile Include="View\Convertors\BooleanToVisibilityConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
     <Compile Include="View\Dashboard\Crypto\BotView.xaml.cs">
@@ -161,8 +162,8 @@
     <Compile Include="View\Dashboard\DashboardView.xaml.cs">
       <DependentUpon>DashboardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dashboard\Mail\MailDateView.xaml.cs">
-      <DependentUpon>MailDateView.xaml</DependentUpon>
+    <Compile Include="View\Dashboard\Mail\MailGroupView.xaml.cs">
+      <DependentUpon>MailGroupView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\Mail\MailItemView.xaml.cs">
       <DependentUpon>MailItemView.xaml</DependentUpon>
@@ -226,7 +227,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dashboard\Mail\MailDateView.xaml">
+    <Page Include="View\Dashboard\Mail\MailGroupView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

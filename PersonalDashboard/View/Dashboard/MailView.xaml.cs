@@ -27,11 +27,6 @@ namespace PersonalDashboard.View.Dashboard
         public MailView()
         {
             InitializeComponent();
-
-            ListView.Items.Clear();
-
-            string test = "#" + App.Current.Resources["col_Background"].ToString().Substring(3);
-            webBrowser.NavigateToString($"<html style=\"background-color:{test}\"/>");
         }
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)

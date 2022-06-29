@@ -18,9 +18,9 @@ namespace PersonalDashboard.View.Dashboard.Mail
     /// <summary>
     /// Logique d'interaction pour MailDateView.xaml
     /// </summary>
-    public partial class MailDateView : UserControl
+    public partial class MailGroupView : UserControl
     {
-        public MailDateView()
+        public MailGroupView()
         {
             InitializeComponent();
         }
