@@ -16,7 +16,10 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
         private CryptoVM cryptoVM { get; set; }
         public override UserControl UserControl { get; } = new BotView();
 
+        private BinanceSocketClient _socketClient;
         private List<string> _lstSymbols = new List<string>();
+        private ObservableCollection<SymbolItem> _allPrices;
+
         public List<string> lstSymbols
         {
             get { return _lstSymbols; }
@@ -26,8 +29,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
                 NotifyPropertyChanged();
             }
         }
-
-        private ObservableCollection<SymbolItem> _allPrices;
         public ObservableCollection<SymbolItem> AllPrices
         {
             get { return _allPrices; }
@@ -38,8 +39,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
             }
         }
 
-        private BinanceSocketClient socketClient;
-
         public BotVM(CryptoVM cryptoVM)
         {
             this.cryptoVM = cryptoVM;
@@ -48,10 +47,9 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
 
             Task.Run(() => InitSymbols());
         }
-
         public async Task InitSymbols()
         {
-            socketClient = await cryptoVM.IsSet();
+            _socketClient = await cryptoVM.IsSet();
         }
     }
 }

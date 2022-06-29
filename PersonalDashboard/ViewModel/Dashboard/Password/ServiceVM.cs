@@ -19,46 +19,13 @@ namespace PersonalDashboard.ViewModel.Dashboard.Password
         public override UserControl UserControl { get; } = new ServiceView();
 
         #region Commands
-
-        private ICommand _copyPasswordCmd;
-        public ICommand CopyPasswordCmd
-        {
-            get
-            {
-                if (_copyPasswordCmd == null)
-                {
-                    _copyPasswordCmd = new RelayCommand(o => { CopyPass((PasswordItem)o); });
-                }
-                return _copyPasswordCmd;
-            }
-        }
-        private ICommand _copyLogin;
-        public ICommand CopyLoginCmd
-        {
-            get
-            {
-                if (_copyLogin == null)
-                {
-                    _copyLogin = new RelayCommand(o => { CopyLogin((PasswordItem)o); });
-                }
-                return _copyLogin;
-            }
-        }
+        public ICommand CopyPasswordCmd { get; }
+        public ICommand CopyLoginCmd { get; }
         #endregion
 
-
-        public void CopyPass(PasswordItem passwordItem)
-        {
-            NotificationsVM.instance.AddNotification(this, "Password copied.");
-            Clipboard.SetText(passwordItem.Password);
-        }
-        public void CopyLogin(PasswordItem passwordItem)
-        {
-            NotificationsVM.instance.AddNotification(this, "Login copied.");
-            Clipboard.SetText(passwordItem.Login);
-        }
-
         private ServiceItem serviceItem;
+        private ObservableCollection<PasswordItem> passwordItems = new ObservableCollection<PasswordItem>();
+
         public ServiceItem ServiceItem
         {
             get
@@ -71,8 +38,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Password
                 NotifyPropertyChanged();
             }
         }
-
-        private ObservableCollection<PasswordItem> passwordItems = new ObservableCollection<PasswordItem>();
         public ObservableCollection<PasswordItem> PasswordItems
         {
             get
@@ -86,10 +51,24 @@ namespace PersonalDashboard.ViewModel.Dashboard.Password
             }
         }
 
+
+        public void CopyPass(PasswordItem passwordItem)
+        {
+            NotificationsVM.instance.AddNotification(this, "Password copied.");
+            Clipboard.SetText(passwordItem.Password);
+        }
+        public void CopyLogin(PasswordItem passwordItem)
+        {
+            NotificationsVM.instance.AddNotification(this, "Login copied.");
+            Clipboard.SetText(passwordItem.Login);
+        }
+
         public ServiceVM(PasswordVM passwordVM)
         {
             this.passwordVM = passwordVM;
             Name = "Service";
+            CopyPasswordCmd = new RelayCommand(o => { CopyPass((PasswordItem)o); });
+            CopyLoginCmd = new RelayCommand(o => { CopyLogin((PasswordItem)o); });
         }
 
         public void LoadService(ServiceItem serviceItem)

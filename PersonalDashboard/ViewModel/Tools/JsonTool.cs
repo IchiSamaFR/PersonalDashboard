@@ -47,27 +47,6 @@ namespace PersonalDashboard.ViewModel.Tools
                     new JProperty("MailAdress", configItem.MailAdress),
                     new JProperty("MailPass", configItem.MailPass));
             File.WriteAllText(GetConfigFile(ConfigFile), toSave.ToString());
-            /*
-            JObject rss =
-                new JObject(
-                    new JProperty("channel",
-                        new JObject(
-                            new JProperty("title", "James Newton-King"),
-                            new JProperty("link", "http://james.newtonking.com"),
-                            new JProperty("description", "James Newton-King's blog."),
-                            new JProperty("item",
-                                new JArray(
-                                    from p in posts
-                                    orderby p.Title
-                                    select new JObject(
-                                        new JProperty("title", p.Title),
-                                        new JProperty("description", p.Description),
-                                        new JProperty("link", p.Link),
-                                        new JProperty("category",
-                                            new JArray(
-                                                from c in p.Categories
-                                                select new JValue(c)))))))));
-                                                */
         }
         public static ConfigItem LoadConfig()
         {

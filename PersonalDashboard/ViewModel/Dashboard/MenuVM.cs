@@ -12,7 +12,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class MenuVM : AbstractVM
     {
-        public DashboardVM dashboardVM { get; set; }
+        public DashboardVM dashboardVM { get; }
         public override UserControl UserControl { get; } = new MenuView();
 
         private List<AbstractVM> _menus = new List<AbstractVM>();
@@ -23,27 +23,14 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return dashboardVM.AllVM;
             }
         }
+
+        public ICommand ChangeVMCmd { get; }
+
         public MenuVM(DashboardVM dashboardVM)
         {
             this.dashboardVM = dashboardVM;
-        }
-        
-        public void SetDashboard(DashboardVM dashboardVM)
-        {
-            this.dashboardVM = dashboardVM;
-        }
 
-        private ICommand _changeVMCmd;
-        public ICommand ChangeVMCmd
-        {
-            get
-            {
-                if (_changeVMCmd == null)
-                {
-                    _changeVMCmd = new RelayCommand(o => { ChangeVM((AbstractVM)o); });
-                }
-                return _changeVMCmd;
-            }
+            ChangeVMCmd = new RelayCommand(o => { ChangeVM((AbstractVM)o); });
         }
 
         public void ChangeVM(AbstractVM vm)

@@ -19,6 +19,8 @@ namespace PersonalDashboard.ViewModel
         private ConfigItem config;
 
         private AbstractVM actualVM;
+        private NotificationsVM notificationsVM;
+
         public AbstractVM ActualVM
         {
             get
@@ -46,7 +48,6 @@ namespace PersonalDashboard.ViewModel
             }
         }
         
-        private NotificationsVM notificationsVM;
         public NotificationsVM NotificationsVM
         {
             get
@@ -76,7 +77,6 @@ namespace PersonalDashboard.ViewModel
             NotificationsVM = new NotificationsVM(this);
             ActualVM = LoginVM;
         }
-
         public void Log()
         {
             DashboardVM = new DashboardVM(this);

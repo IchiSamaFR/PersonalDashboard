@@ -24,86 +24,27 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private DashboardVM dashboardVM { get; set; }
         public override UserControl UserControl { get; } = new MailView();
 
-        private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
-        public ObservableCollection<MailItem> MailItems
-        {
-            get
-            {
-                return _mailItems;
-            }
-            set
-            {
-                _mailItems = value;
-            }
-        }
-
-        private ObservableCollection<DateItem> _mailDateItems = new ObservableCollection<DateItem>();
-        public ObservableCollection<DateItem> MailDateItems
-        {
-            get
-            {
-                return _mailDateItems;
-            }
-            set
-            {
-                _mailDateItems = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
-        public ObservableCollection<UserControl> MailControls
-        {
-            get
-            {
-                return _mailControls;
-            }
-            set
-            {
-                _mailControls = value;
-            }
-        }
-        
-        private ICommand _loadNewMailsCmd;
-        public ICommand LoadNewMailsCmd
-        {
-            get
-            {
-                if (_loadNewMailsCmd == null)
-                {
-                    _loadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
-                }
-                return _loadNewMailsCmd;
-            }
-        }
-
-        public Visibility MailViewerVisible
-        {
-            get
-            {
-                return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
-
-        private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
-
-        private UserControl UsercontrolSelected
-        {
-            get
-            {
-                return MailSelected.UserControl;
-            }
-            set
-            {
-                MailItem selected = MailItems.FirstOrDefault(item => item.UserControl == value);
-                if(selected != null)
-                {
-                    MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
-                }
-            }
-        }
-
+        private ImapClient imapClient;
+        private IMailFolder inbox;
+        private Task GetMailsTask;
+        private UserControl _controlSelected;
         private MailItem _mailSelected;
+        private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
+        private ObservableCollection<DateItem> _mailDateItems = new ObservableCollection<DateItem>();
+        private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
+
+        public UserControl ControlSelected
+        {
+            get
+            {
+                return _controlSelected;
+            }
+            set
+            {
+                _controlSelected = value;
+                MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+            }
+        }
         public MailItem MailSelected
         {
             get
@@ -129,32 +70,75 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 }
             }
         }
-
-        private UserControl _controlSelected;
-        public UserControl ControlSelected
+        public ObservableCollection<MailItem> MailItems
         {
             get
             {
-                return _controlSelected;
+                return _mailItems;
             }
             set
             {
-                _controlSelected = value;
-                MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                _mailItems = value;
+            }
+        }
+        public ObservableCollection<DateItem> MailDateItems
+        {
+            get
+            {
+                return _mailDateItems;
+            }
+            set
+            {
+                _mailDateItems = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public ObservableCollection<UserControl> MailControls
+        {
+            get
+            {
+                return _mailControls;
+            }
+            set
+            {
+                _mailControls = value;
             }
         }
 
-        private ImapClient imapClient;
-        private IMailFolder inbox;
-        private Task GetMailsTask;
+        public ICommand LoadNewMailsCmd { get; }
+        public Visibility MailViewerVisible
+        {
+            get
+            {
+                return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+        private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
+
+        private UserControl UsercontrolSelected
+        {
+            get
+            {
+                return MailSelected.UserControl;
+            }
+            set
+            {
+                MailItem selected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                if(selected != null)
+                {
+                    MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                }
+            }
+        }
 
         public MailVM(DashboardVM dashboardVM)
         {
             this.dashboardVM = dashboardVM;
             Name = "Mail";
             Icon = PersonalDashboard.Properties.Resources.envelope;
-        }
 
+            LoadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
+        }
         public override void OnFocus()
         {
             base.OnFocus();
@@ -180,7 +164,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             return imapClient;
         }
-
         public async Task InitMails()
         {
             if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
@@ -188,7 +171,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 LoadMails(20);
             }
         }
-
         public async Task<bool> ConnectMailBox(string mail, string pass)
         {
             try
@@ -206,7 +188,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return false;
             }
         }
-
         public async Task GetMails(int amount)
         {
             await IsSet();
@@ -219,6 +200,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 if (inbox.Count > mailItemsCount)
                 {
                     var lstMsg = await inbox.SearchAsync(SearchQuery.All);
+                    lstMsg.OrderByDescending(msg => msg.Id);
                     var messages = await inbox.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
                     messages = messages.OrderByDescending(item => item.UniqueId).ToList();
                     for (int i = 0; i < messages.Count; i++)
@@ -251,14 +233,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public void AddMail(MailItem mail)
         {
-            if (MailItems.Count > 0 && MailItems[MailItems.Count - 1].TimeReceived.Date != mail.TimeReceived.Date)
+            if (MailItems.Count > 0 && MailItems.LastOrDefault().TimeReceived.Date != mail.TimeReceived.Date)
             {
                 MailControls.Add(new DateItem(mail.TimeReceived).UserControl);
             }
             MailControls.Add(mail.UserControl);
             MailItems.Add(mail);
         }
-
         public async void SeenMail(MailItem mail)
         {
             await App.Current.Dispatcher.Invoke(async () =>

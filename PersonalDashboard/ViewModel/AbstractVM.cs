@@ -14,6 +14,9 @@ namespace PersonalDashboard.ViewModel
     public abstract class AbstractVM : ObservableObject
     {
         private string _name;
+        private Bitmap _icon;
+        private bool _focused;
+
         public string Name
         {
             get
@@ -26,8 +29,6 @@ namespace PersonalDashboard.ViewModel
                 NotifyPropertyChanged();
             }
         }
-
-        private Bitmap _icon;
         public Bitmap Icon
         {
             get
@@ -40,8 +41,6 @@ namespace PersonalDashboard.ViewModel
                 NotifyPropertyChanged();
             }
         }
-
-        private bool _focused;
         public bool Focused
         {
             get
@@ -63,7 +62,6 @@ namespace PersonalDashboard.ViewModel
         {
 
         }
-
         public virtual void OnErrorChange()
         {
 

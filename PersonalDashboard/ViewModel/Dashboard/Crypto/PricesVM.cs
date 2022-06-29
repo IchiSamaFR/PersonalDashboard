@@ -17,7 +17,12 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
         public override UserControl UserControl { get; } = new PricesView();
         private bool isInit;
 
+        private BinanceSocketClient _socketClient;
+        private Task GetSymbolTask;
+
         private List<string> _lstSymbols = new List<string>();
+        private ObservableCollection<SymbolItem> _allPrices;
+
         public List<string> lstSymbols
         {
             get { return _lstSymbols; }
@@ -27,8 +32,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
                 NotifyPropertyChanged();
             }
         }
-
-        private ObservableCollection<SymbolItem> _allPrices;
         public ObservableCollection<SymbolItem> AllPrices
         {
             get { return _allPrices; }
@@ -39,9 +42,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
             }
         }
 
-        private BinanceSocketClient socketClient;
-        private Task GetSymbolTask;
-
         public PricesVM(CryptoVM cryptoVM)
         {
             this.cryptoVM = cryptoVM;
@@ -50,7 +50,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
 
             Task.Run(() => InitSymbols());
         }
-
         public override void OnFocus()
         {
             if (Focused)
@@ -66,16 +65,14 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
                 GetSymbolTask = null;
             }
         }
-
         public async Task InitSymbols()
         {
-            socketClient = await cryptoVM.IsSet();
+            _socketClient = await cryptoVM.IsSet();
             AllPrices = new ObservableCollection<SymbolItem>(cryptoVM.AllPrices.Where(item => item.Symbol.Contains("USDT")));
             lstSymbols = AllPrices.Select(item => item.Symbol).ToList();
             isInit = true;
             await cryptoVM.GetSymbolsValues(lstSymbols);
         }
-
         public async Task GetSymbolsValues()
         {
             while (!isInit)

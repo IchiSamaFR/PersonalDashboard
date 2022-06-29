@@ -18,6 +18,7 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
         private bool isInit;
 
         private List<string> _lstSymbols = new List<string>();
+        private ObservableCollection<SymbolItem> _allPrices = new ObservableCollection<SymbolItem>();
         public List<string> LstSymbols
         {
             get { return _lstSymbols; }
@@ -28,7 +29,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
             }
         }
 
-        private ObservableCollection<SymbolItem> _allPrices = new ObservableCollection<SymbolItem>();
         public ObservableCollection<SymbolItem> AllPrices
         {
             get { return _allPrices; }

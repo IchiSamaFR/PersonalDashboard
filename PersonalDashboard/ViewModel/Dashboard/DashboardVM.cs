@@ -11,6 +11,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
         public override UserControl UserControl { get; } = new DashboardView();
 
         private MenuVM MenuVM { get; set; }
+        private AbstractVM _actualVM;
+        private List<AbstractVM> _allVM = new List<AbstractVM>();
+
         public UserControl MenuView
         {
             get
@@ -18,22 +21,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return MenuVM?.UserControl;
             }
         }
-
-        private List<AbstractVM> _allVM = new List<AbstractVM>();
-        public List<AbstractVM> AllVM
-        {
-            get
-            {
-                return _allVM;
-            }
-            private set
-            {
-                _allVM = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private AbstractVM _actualVM;
         public AbstractVM ActualVM
         {
             get
@@ -50,6 +37,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
                     NotifyPropertyChanged();
                     NotifyPropertyChanged(nameof(ActualView));
                 }
+            }
+        }
+        public List<AbstractVM> AllVM
+        {
+            get
+            {
+                return _allVM;
+            }
+            private set
+            {
+                _allVM = value;
+                NotifyPropertyChanged();
             }
         }
         public UserControl ActualView

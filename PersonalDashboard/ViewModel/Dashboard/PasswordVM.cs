@@ -18,24 +18,10 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private DashboardVM dashboardVM { get; set; }
         public override UserControl UserControl { get; } = new PasswordView();
 
-        public string ServiceNameToAdd { get; set; }
-        public string LoginToAdd { get; set; }
-        public string PassToAdd { get; set; }
-
-        private ObservableCollection<ServiceItem> serviceItems = new ObservableCollection<ServiceItem>();
-        public ObservableCollection<ServiceItem> ServiceItems
-        {
-            get
-            {
-                return serviceItems;
-            }
-            set
-            {
-                serviceItems = value;
-            }
-        }
-
         private ServiceItem serviceSelected;
+        private Double actualWidth = Double.NaN;
+        private ObservableCollection<ServiceItem> serviceItems = new ObservableCollection<ServiceItem>();
+
         public ServiceItem ServiceSelected
         {
             get
@@ -58,8 +44,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 }
             }
         }
-
-        public ServiceVM ServiceVM;
         public UserControl ActualView
         {
             get
@@ -74,8 +58,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return ServiceSelected == null ? Visibility.Collapsed : Visibility.Visible;
             }
         }
-
-        private Double actualWidth = Double.NaN;
         public Double ActualWidth
         {
             get
@@ -88,6 +70,22 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 NotifyPropertyChanged();
             }
         }
+        public ObservableCollection<ServiceItem> ServiceItems
+        {
+            get
+            {
+                return serviceItems;
+            }
+            set
+            {
+                serviceItems = value;
+            }
+        }
+
+        public ServiceVM ServiceVM;
+        public string ServiceNameToAdd { get; set; }
+        public string LoginToAdd { get; set; }
+        public string PassToAdd { get; set; }
 
         public PasswordVM(DashboardVM dashboardVM)
         {
