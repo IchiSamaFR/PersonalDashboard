@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PersonalDashboard.View.Dashboard"
              mc:Ignorable="d" 
-             d:DesignHeight="450" Width="40" MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave">
+             d:DesignHeight="450" Width="40">
     <Grid Background="{DynamicResource bru_BackgroundDarker}">
         <ItemsControl ItemsSource="{Binding Menus}">
             <ItemsControl.ItemTemplate>
@@ -13,7 +13,7 @@
                     <Button x:Name="Button"
                             Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=DataContext.ChangeVMCmd}"
                             CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
-                            Width="170" Height="40">
+                            Width="40" Height="40">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource MenuButton}"/>
                         </Button.Style>

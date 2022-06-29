@@ -84,7 +84,6 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Image Source="{Binding Path=Icon, Converter={StaticResource BitmapToImageSourceConverter}}" Width="20" Height="20"/>
-                        <TextBlock Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" HorizontalAlignment="Stretch"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

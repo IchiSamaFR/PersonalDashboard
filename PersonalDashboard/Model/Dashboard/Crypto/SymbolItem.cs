@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +82,9 @@ namespace PersonalDashboard.Model.Dashboard.Crypto
         {
             get
             {
-                string price = PriceChange > 0 ? $"+{PriceChange.ToString("0.00")}" : $"{PriceChange.ToString("0.00")}";
+                var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+                nfi.NumberGroupSeparator = " ";
+                string price = PriceChange > 0 ? $"+{PriceChange.ToString("0.00", nfi)}" : $"{PriceChange.ToString("0.00")}";
                 string percent = PriceChangePercent > 0 ? $"+{PriceChangePercent.ToString("0.00")}" : $"{PriceChangePercent.ToString("0.00")}";
                 return $"{price} ({percent}%)";
             }
@@ -135,7 +138,9 @@ namespace PersonalDashboard.Model.Dashboard.Crypto
         {
             get
             {
-                return WalletDollar.ToString("0.00") + " $";
+                var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+                nfi.NumberGroupSeparator = " ";
+                return WalletDollar.ToString("0.00", nfi);
             }
         }
         #endregion
