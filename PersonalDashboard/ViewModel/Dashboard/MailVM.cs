@@ -16,12 +16,19 @@ using PersonalDashboard.ViewModel.Tools;
 using System.Windows.Input;
 using System.Windows;
 using MailKit.Search;
+using System.IO;
+using System.Reflection;
+using System.Net.Mail;
+using Newtonsoft.Json.Linq;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class MailVM : AbstractVM
     {
         private DashboardVM dashboardVM { get; set; }
+        private const string MAILSFOLDER = @".\mails";
+        private const string MAILSCONFIG = @"\config.txt";
+        private const string MAILSTEMP = @"\cache";
         public override UserControl UserControl { get; } = new MailView();
 
         private UniqueId lowerId = UniqueId.MaxValue;
@@ -32,7 +39,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private UserControl _controlSelected;
         private MailItem _mailSelected;
         private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
-        private ObservableCollection<Model.Dashboard.Mail.MailGroup> _mailDateItems = new ObservableCollection<Model.Dashboard.Mail.MailGroup>();
+        private ObservableCollection<MailGroup> _mailDateItems = new ObservableCollection<MailGroup>();
         private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
 
         public UserControl ControlSelected
@@ -83,7 +90,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 _mailItems = value;
             }
         }
-        public ObservableCollection<Model.Dashboard.Mail.MailGroup> MailGroups
+        public ObservableCollection<MailGroup> MailGroups
         {
             get
             {
@@ -95,15 +102,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 NotifyPropertyChanged();
             }
         }
-        public ObservableCollection<UserControl> MailControls
+        public string ConfigFilePath
         {
             get
             {
-                return _mailControls;
+                return Path.Combine(MAILSFOLDER, MAILSCONFIG);
             }
-            set
+        }
+        public string TempFolderPath
+        {
+            get
             {
-                _mailControls = value;
+                return Path.Combine(MAILSFOLDER, MAILSCONFIG);
             }
         }
 
@@ -117,21 +127,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
         }
         private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
 
-        private UserControl UsercontrolSelected
-        {
-            get
-            {
-                return MailSelected.UserControl;
-            }
-            set
-            {
-                MailItem selected = MailItems.FirstOrDefault(item => item.UserControl == value);
-                if(selected != null)
-                {
-                    MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
-                }
-            }
-        }
 
         public MailVM(DashboardVM dashboardVM)
         {
@@ -140,14 +135,23 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Icon = PersonalDashboard.Properties.Resources.envelope;
 
             LoadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
+            Task.Run(() => InitMails());
+            AddMail(new MailItem(this)
+            {
+                Uid = new UniqueId(1),
+                FromDisplayName = "DisplayName",
+                FromEmail = "FromMail",
+                ToName = new List<string>() { "test" },
+                ToEmail = new List<string>() { "test" },
+                Subject = "",
+                TimeReceived = new DateTime(),
+                HasAttachment = true,
+                TextBody = "text body",
+            });
         }
         public override void OnFocus()
         {
             base.OnFocus();
-            if (Focused && imapClient == null)
-            {
-                Task.Run(() => InitMails());
-            }
         }
         
         public void LoadMails(int amount = 10)
@@ -170,7 +174,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         {
             if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
             {
-                LoadMails(50);
+                LoadMails(20);
             }
         }
         public async Task<bool> ConnectMailBox(string mail, string pass)
@@ -219,7 +223,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                             Uid = message.UniqueId,
                             FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
                             FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault(),
-                            ToDisplayName = mimeMessage.To.Select(item => item.Name).ToList(),
+                            ToName = mimeMessage.To.Select(item => item.Name).ToList(),
                             ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList(),
                             Subject = mimeMessage.Subject,
                             TimeReceived = mimeMessage.Date.DateTime,
@@ -229,6 +233,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                             TextBody = mimeMessage.TextBody,
                             Flags = messages[i].Flags,
                         };
+                        MailMessage test = new MailMessage();
                         AddMail(tempMail);
                     }
                 }
@@ -245,7 +250,26 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             MailGroups.FirstOrDefault(group => group.TimeReceived.Date == mail.TimeReceived.Date).AddMail(mail);
         }
+        public bool MailIsCache(UniqueId id)
+        {
+            return true;
+        }
+        public bool GetMailBody(UniqueId id)
+        {
+            return true;
+        }
+        public bool GetMailAttachments(UniqueId id)
+        {
+            return true;
+        }
+        
+        public bool LoadMailsCache()
+        {
+        }
+        public bool SaveMailsCache()
+        {
 
+        }
         public async void SeenMail(MailItem mail)
         {
             await App.Current.Dispatcher.Invoke(async () =>

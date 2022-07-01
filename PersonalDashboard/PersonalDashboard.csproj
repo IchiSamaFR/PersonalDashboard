@@ -235,6 +235,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dashboard\Mail\MailStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dashboard\MenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -341,6 +345,7 @@
     <Resource Include="Resources\Images\Icons\bot.png" />
     <Resource Include="Resources\Images\Icons\dashboard.png" />
     <Resource Include="dashboard.ico" />
+    <Resource Include="Resources\Images\Icons\attach.png" />
     <Content Include="Resources\Images\Icons\document.png" />
     <Resource Include="Resources\Images\Icons\edit.png" />
     <Resource Include="Resources\Images\Icons\file.png" />

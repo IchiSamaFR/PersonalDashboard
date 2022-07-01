@@ -20,6 +20,11 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         private MailVM mailVM;
         public UserControl UserControl { get; } = new MailItemView();
 
+        private string fromDisplayName;
+        private string fromEmail;
+        private string _htmlBody;
+        private MessageFlags? flags;
+        private string _textBody;
         #region Commands
 
         private ICommand _deleteMailCmd;
@@ -39,7 +44,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public bool IsOpened { get; set; }
 
         public UniqueId Uid { get; set; }
-        private string fromDisplayName;
         public string FromDisplayName
         {
             get
@@ -54,7 +58,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             }
         }
 
-        private string fromEmail;
         public string FromEmail
         {
             get
@@ -68,7 +71,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged(nameof(FromDisplay));
             }
         }
-
         public string FromDisplay
         {
             get
@@ -76,8 +78,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 return string.IsNullOrEmpty(FromDisplayName) ? FromEmail : FromDisplayName;
             }
         }
-
-        public List<string> ToDisplayName { get; set; }
+        public List<string> ToName { get; set; }
         public List<string> ToEmail { get; set; }
         public string Subject { get; set; }
         public string SubjectSub
@@ -100,16 +101,15 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public bool HasAttachment { get; set; }
         public List<MimeEntity> Attachments { get; set; }
 
-        public string htmlBody { get; set; }
         public string HtmlBody
         {
             get
             {
-                return htmlBody;
+                return _htmlBody;
             }
             set
             {
-                htmlBody = value;
+                _htmlBody = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(HtmlDisplay));
             }
@@ -120,7 +120,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 if (!string.IsNullOrEmpty(HtmlBody))
                 {
-                    return htmlBody;
+                    return _htmlBody;
                 }
                 else if (!string.IsNullOrEmpty(TextBody))
                 {
@@ -132,23 +132,19 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 }
             }
         }
-
-        public string textBody { get; set; }
         public string TextBody
         {
             get
             {
-                return textBody;
+                return _textBody;
             }
             set
             {
-                textBody = value;
+                _textBody = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(TextDisplay));
             }
         }
-
-        private MessageFlags? flags;
         public MessageFlags? Flags
         {
             get
@@ -161,7 +157,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged();
             }
         }
-
         public string TextDisplay
         {
             get
@@ -186,6 +181,11 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public void DeleteMail()
         {
             mailVM.DeleteMail(this);
+        }
+        public override string ToString()
+        {
+
+            return "";
         }
     }
 }
