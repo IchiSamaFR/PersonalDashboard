@@ -10,18 +10,24 @@ using PersonalDashboard.Model;
 using PersonalDashboard.Model.Dashboard.Password;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PersonalDashboard.Model.Dashboard.Mail;
 
 namespace PersonalDashboard.ViewModel.Tools
 {
     public static class JsonTool
     {
-        public const string ConfigFolder = "Config";
-        public const string ConfigFile = "config";
-        public const string PassFile = "passwords";
+        private const string CONFIGFOLDER = "config";
+        private const string CONFIGFILE = "config.txt";
+
+        private const string PASSFOLDER = "password";
+        private const string PASSFILE = "passwords";
+
+        private const string MAILFOLDER = "mail";
+        private const string MAILFILE = "mails";
 
         public static string GetConfigFolder()
         {
-            string configPath = Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), ConfigFolder);
+            string configPath = Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), CONFIGFOLDER);
             if (Directory.Exists(configPath))
             {
                 return configPath;
@@ -32,100 +38,91 @@ namespace PersonalDashboard.ViewModel.Tools
                 return configPath;
             }
         }
-
-        public static string GetConfigFile(string name)
+        
+        public static void SaveConfig(ConfigItem configItem)
         {
-            return Path.Combine(GetConfigFolder(), name + ".txt");
-        }
-
-        public static void SaveConfig(this ConfigItem configItem)
-        {
-            JObject toSave =
-                new JObject(
-                    new JProperty("APIKey", configItem.APIKey),
-                    new JProperty("SecretKey", configItem.SecretKey),
-                    new JProperty("MailAdress", configItem.MailAdress),
-                    new JProperty("MailPass", configItem.MailPass));
-            File.WriteAllText(GetConfigFile(ConfigFile), toSave.ToString());
+            SaveJson(Path.Combine(Directory.GetCurrentDirectory(), CONFIGFOLDER, CONFIGFILE), 
+                    JsonConvert.SerializeObject(configItem));
         }
         public static ConfigItem LoadConfig()
         {
             ConfigItem configItem = new ConfigItem();
             try
             {
-                JObject loaded = (JObject)JToken.Parse(File.ReadAllText(GetConfigFile(ConfigFile)));
-                configItem.APIKey = loaded.GetValue("APIKey").ToString();
-                configItem.SecretKey = loaded.GetValue("SecretKey").ToString();
-                configItem.MailAdress = loaded.GetValue("MailAdress").ToString();
-                configItem.MailPass = loaded.GetValue("MailPass").ToString();
+                string path = Path.Combine(Directory.GetCurrentDirectory(), CONFIGFOLDER, CONFIGFILE);
+                configItem = (JsonConvert.DeserializeObject(File.ReadAllText(path)) as JToken).ToObject<ConfigItem>();
             }
-            catch
+            catch (Exception e)
             {
                 SaveConfig(configItem);
             }
-
             return configItem;
         }
         
         public static void SavePasswords(this List<ServiceItem> serviceItems)
         {
-            JObject toSave =
-                new JObject(
-                    new JProperty("services",
-                        new JArray(
-                             from service in serviceItems orderby service.Name select 
-                             new JObject(
-                                 new JProperty("name", service.Name),
-                                 new JProperty("passwords",
-                                     new JArray(
-                                         from password in service.PasswordItems select 
-                                         new JObject(
-                                             new JProperty("login", password.Login),
-                                             new JProperty("password", password.Password)
-                                             )))))));
-            File.WriteAllText(GetConfigFile(PassFile), toSave.ToString());
+            SaveJson(Path.Combine(Directory.GetCurrentDirectory(), PASSFOLDER, PASSFILE),
+                    JsonConvert.SerializeObject(serviceItems));
         }
-        public static List<ServiceItem> LoadPasswords(List<ServiceItem> serviceItems)
+        public static List<ServiceItem> LoadPasswords()
         {
-            List<ServiceItem> configItem = new List<ServiceItem>();
+            List<ServiceItem> passwords = new List<ServiceItem>();
             try
             {
-                JObject loaded = (JObject)JToken.Parse(File.ReadAllText(GetConfigFile(PassFile)));
-                foreach (JObject service in loaded.GetValue("services"))
-                {
-                    ServiceItem serviceItem = new ServiceItem(service.GetValue("name").ToString());
-                    foreach (JObject pass in service.GetValue("passwords"))
-                    {
-                        serviceItem.PasswordItems.Add(new PasswordItem(pass.GetValue("login").ToString(),
-                                                           pass.GetValue("password").ToString()));
-                    }
-
-                    configItem.Add(serviceItem);
-                }
+                string path = Path.Combine(Directory.GetCurrentDirectory(), CONFIGFOLDER, CONFIGFILE);
+                passwords = (JsonConvert.DeserializeObject(File.ReadAllText(path)) as JToken).ToObject<List<ServiceItem>>();
             }
             catch
             {
-                SavePasswords(serviceItems);
+                SavePasswords(passwords);
             }
-
-            return configItem;
+            return passwords;
         }
 
-        public static void Save(string name, object toSerializeObject)
+        public static void SaveMails(List<MailItem> mails)
         {
-            string jsonString = JsonConvert.SerializeObject(toSerializeObject);
-            File.WriteAllText(GetConfigFile(name), jsonString);
+            try
+            {
+                JArray array = new JArray();
+                foreach (var mail in mails)
+                {
+                    array.Add(new JObject(
+                        new JProperty(nameof(MailItem.Uid), JsonConvert.SerializeObject(mail.Uid)),
+                        new JProperty(nameof(MailItem.FromEmail), mail.FromEmail),
+                        new JProperty(nameof(MailItem.ToEmail), mail.ToEmail),
+                        new JProperty(nameof(MailItem.HtmlBody), mail.HtmlBody)
+                        ));
+                }
+                SaveJson(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE),
+                        array.ToString());
+            }
+            catch(Exception e)
+            {
+
+            }
         }
-        public static void Load(string name, object toDerializeObject)
+        public static List<MailItem> LoadMails()
         {
-            if (File.Exists(GetConfigFile(name)))
+            List<MailItem> mails = new List<MailItem>();
+            try
             {
-                toDerializeObject = JsonConvert.DeserializeObject(File.ReadAllText(GetConfigFile(name)));
+                string path = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE);
+                mails = (JsonConvert.DeserializeObject(File.ReadAllText(path)) as JArray).ToObject<List<MailItem>>();
             }
-            else
+            catch (Exception e)
             {
-                Save(name, toDerializeObject);
             }
+            return mails;
+        }
+
+        public static void SaveJson(string path, string file)
+        {
+            string dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            File.WriteAllText(path, file);
         }
     }
 }

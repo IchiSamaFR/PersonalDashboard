@@ -26,7 +26,7 @@
 
                     <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock Text="{Binding FromDisplay}" Foreground="{DynamicResource bru_LightForeground}"/>
-                        <TextBlock Text="{Binding SubjectSub}" Foreground="{DynamicResource bru_LightForeground}"/>
+                        <TextBlock Text="{Binding Subject}" Foreground="{DynamicResource bru_LightForeground}"/>
                         <TextBlock Text="{Binding TextDisplay}" Foreground="{DynamicResource bru_SubLightForeground}"/>
                     </WrapPanel>
                     <Grid Grid.Column="2" Margin="0 0 10 0">

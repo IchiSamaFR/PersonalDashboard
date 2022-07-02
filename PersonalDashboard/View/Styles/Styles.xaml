@@ -5,6 +5,8 @@
 
     <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     <converters:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
+    <converters:DateTimeOffsetToDateConverter x:Key="DateTimeOffsetToDateConverter"/>
+    <converters:TextToPasswordDisplayConverter x:Key="TextToPasswordDisplayConverter"/>
 
     <Style TargetType="Button" x:Key="Button">
         <Setter Property="Background" Value="{DynamicResource bru_BackgroundItem}"/>

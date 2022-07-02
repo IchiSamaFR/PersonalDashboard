@@ -74,7 +74,7 @@ namespace PersonalDashboard.ViewModel.Dashboard.Password
         public void LoadService(ServiceItem serviceItem)
         {
             ServiceItem = serviceItem;
-            PasswordItems = ServiceItem.PasswordItems;
+            PasswordItems = ServiceItem.Passwords;
         }
     }
 }

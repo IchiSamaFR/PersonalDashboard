@@ -140,13 +140,16 @@
     <Compile Include="ViewModel\NotificationsVM.cs" />
     <Compile Include="ViewModel\Tools\ConnectionTool.cs" />
     <Compile Include="ViewModel\Tools\JsonTool.cs" />
+    <Compile Include="ViewModel\Tools\MailMessageExtensions.cs" />
     <Compile Include="ViewModel\Tools\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
     <Compile Include="View\Convertors\BooleanToVisibilityConverter.cs" />
+    <Compile Include="View\Convertors\DateTimeOffsetToDateConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
+    <Compile Include="View\Convertors\TextToPasswordDisplayConverter.cs" />
     <Compile Include="View\Dashboard\Crypto\BotView.xaml.cs">
       <DependentUpon>BotView.xaml</DependentUpon>
     </Compile>

@@ -6,7 +6,9 @@ using PersonalDashboard.ViewModel.Dashboard;
 using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -78,17 +80,11 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 return string.IsNullOrEmpty(FromDisplayName) ? FromEmail : FromDisplayName;
             }
         }
-        public List<string> ToName { get; set; }
+        public List<string> ReplyTo { get; set; }
         public List<string> ToEmail { get; set; }
+        public List<string> CcEmail { get; set; }
         public string Subject { get; set; }
-        public string SubjectSub
-        {
-            get
-            {
-                return Subject?.Length > 33 ? $"{Subject?.Substring(0, 30)}..." : Subject;
-            }
-        }
-
+        public List<MimeEntity> Attachments { get; set; }
         public DateTime TimeReceived { get; set; }
         public string TimeDisplay
         {
@@ -97,10 +93,13 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 return TimeReceived.ToString("ddd dd/MM/yy");
             }
         }
-
-        public bool HasAttachment { get; set; }
-        public List<MimeEntity> Attachments { get; set; }
-
+        public bool HasAttachment
+        {
+            get
+            {
+                return Attachments.Count() > 0;
+            }
+        }
         public string HtmlBody
         {
             get
@@ -112,24 +111,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 _htmlBody = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged(nameof(HtmlDisplay));
-            }
-        }
-        public string HtmlDisplay
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(HtmlBody))
-                {
-                    return _htmlBody;
-                }
-                else if (!string.IsNullOrEmpty(TextBody))
-                {
-                    return TextBody.Replace("\r", "<br/>");
-                }
-                else
-                {
-                    return "";
-                }
             }
         }
         public string TextBody
@@ -157,6 +138,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged();
             }
         }
+
         public string TextDisplay
         {
             get
@@ -171,11 +153,71 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 }
             }
         }
+        public string HtmlDisplay
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(HtmlBody))
+                {
+                    return _htmlBody;
+                }
+                else if (!string.IsNullOrEmpty(TextBody))
+                {
+                    return TextBody.Replace("\r", "<br/>");
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
 
-        public MailItem(MailVM vm)
+        public MailItem()
         {
             UserControl.DataContext = this;
+        }
+        public MailItem(MailVM vm) : base()
+        {
+            Init(vm);
+        }
+
+        public void Init(MailVM vm)
+        {
             mailVM = vm;
+        }
+        public void Fill(MimeMessage mimeMessage)
+        {
+            FromDisplayName = mimeMessage.From.FirstOrDefault().Name;
+            FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault();
+            ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList();
+            Subject = mimeMessage.Subject;
+            TimeReceived = mimeMessage.Date.DateTime;
+            Attachments = mimeMessage.Attachments.ToList();
+            HtmlBody = mimeMessage.HtmlBody;
+            TextBody = mimeMessage.TextBody;
+        }
+        public void Fill(UniqueId id)
+        {
+            Uid = id;
+        }
+        public void Fill(MessageFlags? flags)
+        {
+            Flags = flags;
+        }
+
+        public string ToEml(string path)
+        {
+            MailMessage msg = new MailMessage();
+
+            msg.From = new MailAddress(FromEmail);
+            ReplyTo.ForEach(email => msg.ReplyToList.Add(email));
+            ToEmail.ForEach(email => msg.To.Add(email));
+            CcEmail.ForEach(email => msg.CC.Add(email));
+            Attachments.ForEach(att => msg.Attachments.Add(new Attachment(att.ContentBase.AbsolutePath)));
+            msg.Subject = Subject;
+            msg.Body = HtmlBody;
+
+            return msg.ToEml();
         }
 
         public void DeleteMail()

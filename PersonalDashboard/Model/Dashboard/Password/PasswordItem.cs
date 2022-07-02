@@ -36,15 +36,6 @@ namespace PersonalDashboard.Model.Dashboard.Password
                 NotifyPropertyChanged();
             }
         }
-        
-        public string PasswordDisplay
-        {
-            get
-            {
-                string str = "";
-                return str.PadLeft(Password.Length, '*');
-            }
-        }
 
         public PasswordItem(string login, string password)
         {
