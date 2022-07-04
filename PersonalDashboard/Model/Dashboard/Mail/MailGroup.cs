@@ -12,8 +12,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
 {
     public class MailGroup : ObservableObject
     {
-        public UserControl UserControl { get; } = new MailGroupView();
-
         private ObservableCollection<MailItem> _mailItems;
         private bool _isOpen = true;
 
@@ -59,7 +57,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
 
         public MailGroup(DateTime dateTime)
         {
-            UserControl.DataContext = this;
             TimeReceived = dateTime.Date;
             MailItems = new ObservableCollection<MailItem>();
         }

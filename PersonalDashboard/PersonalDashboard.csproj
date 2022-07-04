@@ -147,6 +147,7 @@
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />
     <Compile Include="View\Convertors\BooleanToVisibilityConverter.cs" />
     <Compile Include="View\Convertors\DateTimeOffsetToDateConverter.cs" />
+    <Compile Include="View\Convertors\DatetimeToStringConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
     <Compile Include="View\Convertors\TextToPasswordDisplayConverter.cs" />

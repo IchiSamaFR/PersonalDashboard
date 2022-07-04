@@ -87,9 +87,10 @@ namespace PersonalDashboard.ViewModel.Tools
                 foreach (var mail in mails)
                 {
                     array.Add(new JObject(
-                        new JProperty(nameof(MailItem.Uid), JsonConvert.SerializeObject(mail.Uid)),
+                        new JProperty(nameof(MailItem.Uid), mail.Uid),
                         new JProperty(nameof(MailItem.FromEmail), mail.FromEmail),
                         new JProperty(nameof(MailItem.ToEmail), mail.ToEmail),
+                        new JProperty(nameof(MailItem.Date), mail.Date),
                         new JProperty(nameof(MailItem.HtmlBody), mail.HtmlBody)
                         ));
                 }

@@ -20,7 +20,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     public class MailItem : ObservableObject
     {
         private MailVM mailVM;
-        public UserControl UserControl { get; } = new MailItemView();
 
         private string fromDisplayName;
         private string fromEmail;
@@ -45,7 +44,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
 
         public bool IsOpened { get; set; }
 
-        public UniqueId Uid { get; set; }
+        public uint Uid { get; set; }
         public string FromDisplayName
         {
             get
@@ -84,15 +83,8 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public List<string> ToEmail { get; set; }
         public List<string> CcEmail { get; set; }
         public string Subject { get; set; }
-        public List<MimeEntity> Attachments { get; set; }
-        public DateTime TimeReceived { get; set; }
-        public string TimeDisplay
-        {
-            get
-            {
-                return TimeReceived.ToString("ddd dd/MM/yy");
-            }
-        }
+        public List<MimeEntity> Attachments { get; set; } = new List<MimeEntity>();
+        public DateTime Date { get; set; }
         public bool HasAttachment
         {
             get
@@ -110,7 +102,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 _htmlBody = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(HtmlDisplay));
             }
         }
         public string TextBody
@@ -123,7 +114,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 _textBody = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(TextDisplay));
             }
         }
         public MessageFlags? Flags
@@ -139,48 +129,11 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             }
         }
 
-        public string TextDisplay
-        {
-            get
-            {
-                if (TextBody == null)
-                {
-                    return "";
-                }
-                else
-                {
-                    return Regex.Replace(TextBody?.Replace("\r", " ").Replace("\n", " ").Trim(), @"\s+", " ");
-                }
-            }
-        }
-        public string HtmlDisplay
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(HtmlBody))
-                {
-                    return _htmlBody;
-                }
-                else if (!string.IsNullOrEmpty(TextBody))
-                {
-                    return TextBody.Replace("\r", "<br/>");
-                }
-                else
-                {
-                    return "";
-                }
-            }
-        }
 
-        public MailItem()
-        {
-            UserControl.DataContext = this;
-        }
         public MailItem(MailVM vm) : base()
         {
             Init(vm);
         }
-
         public void Init(MailVM vm)
         {
             mailVM = vm;
@@ -191,14 +144,14 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault();
             ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList();
             Subject = mimeMessage.Subject;
-            TimeReceived = mimeMessage.Date.DateTime;
+            Date = mimeMessage.Date.DateTime;
             Attachments = mimeMessage.Attachments.ToList();
             HtmlBody = mimeMessage.HtmlBody;
             TextBody = mimeMessage.TextBody;
         }
         public void Fill(UniqueId id)
         {
-            Uid = id;
+            Uid = uint.Parse(id.ToString());
         }
         public void Fill(MessageFlags? flags)
         {

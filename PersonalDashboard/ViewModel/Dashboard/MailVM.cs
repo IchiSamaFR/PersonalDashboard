@@ -58,7 +58,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                     _mailSelected = value;
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        MailViewer.NavigateToString(MailSelected.HtmlDisplay);
+                        MailViewer.NavigateToString(MailSelected.HtmlBody);
                     });
                     NotifyPropertyChanged();
                     NotifyPropertyChanged(nameof(MailViewerVisible));
@@ -211,12 +211,12 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public void AddMail(MailItem mail)
         {
-            if (!MailGroups.Any(group => group.TimeReceived.Date == mail.TimeReceived.Date))
+            if (!MailGroups.Any(group => group.TimeReceived.Date == mail.Date.Date))
             {
-                MailGroups.Add(new MailGroup(mail.TimeReceived));
+                MailGroups.Add(new MailGroup(mail.Date));
             }
             MailItems.Add(mail);
-            MailGroups.FirstOrDefault(group => group.TimeReceived.Date == mail.TimeReceived.Date).AddMail(mail);
+            MailGroups.FirstOrDefault(group => group.TimeReceived.Date == mail.Date.Date).AddMail(mail);
         }
         public bool MailIsCache(UniqueId id)
         {
@@ -231,13 +231,15 @@ namespace PersonalDashboard.ViewModel.Dashboard
             return true;
         }
         
-        public bool LoadMailsCache()
+        public async void LoadMailsCache()
         {
-            foreach (var item in JsonTool.LoadMails())
+            await App.Current.Dispatcher.Invoke(async () =>
             {
-                AddMail(item);
-            }
-            return false;
+                foreach (var item in JsonTool.LoadMails())
+                {
+                    AddMail(item);
+                }
+            });
         }
         public void SaveMailsCache()
         {
@@ -248,7 +250,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             await App.Current.Dispatcher.Invoke(async () =>
             {
                 await inbox.OpenAsync(FolderAccess.ReadWrite);
-                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Seen, true);
+                await inbox.AddFlagsAsync(new UniqueId(mail.Uid), MessageFlags.Seen, true);
                 await inbox.CloseAsync();
             });
         }
@@ -257,7 +259,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             await App.Current.Dispatcher.Invoke(async () =>
             {
                 await inbox.OpenAsync(FolderAccess.ReadWrite);
-                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Deleted, true);
+                await inbox.AddFlagsAsync(new UniqueId(mail.Uid), MessageFlags.Deleted, true);
                 await inbox.CloseAsync();
             });
         }

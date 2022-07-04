@@ -21,7 +21,8 @@
             <ColumnDefinition Width="480"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border CornerRadius="1" x:Name="border" Background="{DynamicResource bru_BackgroundItem}" >
+        <Border CornerRadius="1" x:Name="border" Background="{DynamicResource bru_BackgroundItem}" 
+                BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
@@ -37,7 +38,7 @@
                         <Image Source="{Binding Source={x:Static properties:Resources.refresh}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
                     </Button>
                 </Grid>
-                <ScrollViewer Grid.Row="1"
+                <ScrollViewer Grid.Row="1" 
                         ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.ScrollChanged="ScrollViewer_ScrollChanged">
                     <ItemsControl Background="Transparent" ItemsSource="{Binding MailGroups}" x:Name="MailList">
@@ -48,7 +49,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentPresenter Content="{Binding UserControl}" Width="{Binding ActualWidth, ElementName=MailList}"/>
+                                <mail:MailGroupView Width="{Binding ActualWidth, ElementName=MailList}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
