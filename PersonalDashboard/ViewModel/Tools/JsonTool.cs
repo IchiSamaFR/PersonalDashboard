@@ -11,19 +11,21 @@ using PersonalDashboard.Model.Dashboard.Password;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PersonalDashboard.Model.Dashboard.Mail;
+using MimeKit;
 
 namespace PersonalDashboard.ViewModel.Tools
 {
     public static class JsonTool
     {
-        private const string CONFIGFOLDER = "config";
+        private const string CONFIGFOLDER = @"config\";
         private const string CONFIGFILE = "config.txt";
 
-        private const string PASSFOLDER = "password";
-        private const string PASSFILE = "passwords";
+        private const string PASSFOLDER = @"password\";
+        private const string PASSFILE = "passwords.txt";
 
-        private const string MAILFOLDER = "mail";
-        private const string MAILFILE = "mails";
+        private const string MAILFOLDER = @"mail\";
+        private const string MAILFILE = @"mails.txt";
+        private const string MAILCACHEFOLDER = @"cache\";
 
         public static string GetConfigFolder()
         {
@@ -41,7 +43,7 @@ namespace PersonalDashboard.ViewModel.Tools
         
         public static void SaveConfig(ConfigItem configItem)
         {
-            SaveJson(Path.Combine(Directory.GetCurrentDirectory(), CONFIGFOLDER, CONFIGFILE), 
+            SaveFile(Path.Combine(Directory.GetCurrentDirectory(), CONFIGFOLDER, CONFIGFILE), 
                     JsonConvert.SerializeObject(configItem));
         }
         public static ConfigItem LoadConfig()
@@ -61,7 +63,7 @@ namespace PersonalDashboard.ViewModel.Tools
         
         public static void SavePasswords(this List<ServiceItem> serviceItems)
         {
-            SaveJson(Path.Combine(Directory.GetCurrentDirectory(), PASSFOLDER, PASSFILE),
+            SaveFile(Path.Combine(Directory.GetCurrentDirectory(), PASSFOLDER, PASSFILE),
                     JsonConvert.SerializeObject(serviceItems));
         }
         public static List<ServiceItem> LoadPasswords()
@@ -83,23 +85,24 @@ namespace PersonalDashboard.ViewModel.Tools
         {
             try
             {
+                string cachePath = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILCACHEFOLDER);
                 JArray array = new JArray();
+
+                SaveFolder(cachePath);
                 foreach (var mail in mails)
                 {
                     array.Add(new JObject(
                         new JProperty(nameof(MailItem.Uid), mail.Uid),
-                        new JProperty(nameof(MailItem.FromEmail), mail.FromEmail),
-                        new JProperty(nameof(MailItem.ToEmail), mail.ToEmail),
-                        new JProperty(nameof(MailItem.Date), mail.Date),
-                        new JProperty(nameof(MailItem.HtmlBody), mail.HtmlBody)
+                        new JProperty(nameof(MailItem.Flags), mail.Flags)
                         ));
+                    mail.SaveToEml(Path.Combine(cachePath, mail.Uid.ToString()));
                 }
-                SaveJson(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE),
+                SaveFile(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE),
                         array.ToString());
             }
             catch(Exception e)
             {
-
+                NotificationsVM.instance.AddNotification("JsonSerializer", e.Message);
             }
         }
         public static List<MailItem> LoadMails()
@@ -108,22 +111,36 @@ namespace PersonalDashboard.ViewModel.Tools
             try
             {
                 string path = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE);
+                if (!File.Exists(path))
+                {
+                    return mails;
+                }
+
                 mails = (JsonConvert.DeserializeObject(File.ReadAllText(path)) as JArray).ToObject<List<MailItem>>();
+                foreach (var mail in mails)
+                {
+                    mail.Fill(MimeMessage.Load(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILCACHEFOLDER, mail.Uid.ToString())));
+                }
             }
             catch (Exception e)
             {
+                NotificationsVM.instance.AddNotification("JsonSerializer", e.Message);
             }
             return mails;
         }
 
-        public static void SaveJson(string path, string file)
+        public static void SaveFile(string path, string file)
+        {
+            SaveFolder(path);
+            File.WriteAllText(path, file);
+        }
+        public static void SaveFolder(string path)
         {
             string dir = Path.GetDirectoryName(path);
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
-            File.WriteAllText(path, file);
         }
     }
 }

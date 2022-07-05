@@ -164,7 +164,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 }
                 else
                 {
-                    NotificationsVM.instance.AddNotification(this, "Could not connect to the binance API.");
+                    NotificationsVM.instance.AddNotification(Name, "Could not connect to the binance API.");
                 }
             }
 

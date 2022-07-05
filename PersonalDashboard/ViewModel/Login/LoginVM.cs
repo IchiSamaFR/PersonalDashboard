@@ -41,7 +41,7 @@ namespace PersonalDashboard.ViewModel.Login
 
         public void Log()
         {
-            NotificationsVM.instance.AddNotification(this, "Connecté");
+            NotificationsVM.instance.AddNotification(Name, "Connecté");
             mainVM.Log();
         }
     }

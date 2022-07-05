@@ -47,11 +47,11 @@ namespace PersonalDashboard.ViewModel
             Icon = PersonalDashboard.Properties.Resources.security_shield_green;
         }
 
-        public void AddNotification(AbstractVM fromVM, string message, float seconds = 5)
+        public void AddNotification(string title, string message, float seconds = 5)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                NotificationItem notificationItem = new NotificationItem(fromVM.Name, message);
+                NotificationItem notificationItem = new NotificationItem(title, message);
                 NotificationItems.Add(notificationItem);
                 Task.Run(() => Destroy(seconds, notificationItem));
             });

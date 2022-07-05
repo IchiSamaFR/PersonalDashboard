@@ -31,6 +31,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private const string MAILSCACHE = @"cache";
         public override UserControl UserControl { get; } = new MailView();
 
+        #region Private
         private UniqueId lowerId = UniqueId.MaxValue;
         private UniqueId higherId = UniqueId.MinValue;
         private ImapClient imapClient;
@@ -39,7 +40,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private MailItem _mailSelected;
         private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
         private ObservableCollection<MailGroup> _mailDateItems = new ObservableCollection<MailGroup>();
+        #endregion
 
+        #region public
         public MailItem MailSelected
         {
             get
@@ -102,8 +105,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return Path.Combine(Directory.GetCurrentDirectory(), MAILSFOLDER, MAILSCACHE);
             }
         }
-
-        public ICommand LoadNewMailsCmd { get; }
         public Visibility MailViewerVisible
         {
             get
@@ -111,7 +112,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+        #endregion
+
         private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
+
+        #region Commands
+        public ICommand LoadNewMailsCmd { get; }
+        #endregion
 
 
         public MailVM(DashboardVM dashboardVM)
@@ -120,20 +127,12 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Name = "Mail";
             Icon = PersonalDashboard.Properties.Resources.envelope;
 
-            LoadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
+            LoadNewMailsCmd = new RelayCommand(o => { StartLoadMails(); });
             Task.Run(() => InitMails());
         }
         public override void OnFocus()
         {
             base.OnFocus();
-        }
-        
-        public void LoadMails(int amount = 10)
-        {
-            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
-            {
-                GetMailsTask = Task.Run(() => GetMails(amount));
-            }
         }
 
         public async Task<ImapClient> IsSet()
@@ -151,7 +150,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 LoadMailsCache();
                 if(MailItems.Count < 20)
                 {
-                    LoadMails(20);
+                    StartLoadMails(20);
                 }
             }
         }
@@ -168,11 +167,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             catch
             {
-                NotificationsVM.instance.AddNotification(this, "Could not connect to the mailbox.");
+                NotificationsVM.instance.AddNotification(Name, "Could not connect to the mailbox.");
                 return false;
             }
         }
-        public async Task GetMails(int amount)
+        public void StartLoadMails(int amount = 10)
+        {
+            if (GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
+            {
+                GetMailsTask = Task.Run(() => LoadMailsAsync(amount));
+            }
+        }
+        public async Task LoadMailsAsync(int amount)
         {
             await IsSet();
 
@@ -209,6 +215,22 @@ namespace PersonalDashboard.ViewModel.Dashboard
             GetMailsTask.Dispose();
         }
 
+        public void LoadMailsCache()
+        {
+            App.Current.Dispatcher.Invoke(async () =>
+            {
+                foreach (var item in JsonTool.LoadMails())
+                {
+                    item.Init(this);
+                    AddMail(item);
+                }
+            });
+        }
+        public void SaveMailsCache()
+        {
+            JsonTool.SaveMails(MailItems.ToList());
+        }
+
         public void AddMail(MailItem mail)
         {
             if (!MailGroups.Any(group => group.TimeReceived.Date == mail.Date.Date))
@@ -231,20 +253,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
             return true;
         }
         
-        public async void LoadMailsCache()
-        {
-            await App.Current.Dispatcher.Invoke(async () =>
-            {
-                foreach (var item in JsonTool.LoadMails())
-                {
-                    AddMail(item);
-                }
-            });
-        }
-        public void SaveMailsCache()
-        {
-            JsonTool.SaveMails(MailItems.ToList());
-        }
         public async void SeenMail(MailItem mail)
         {
             await App.Current.Dispatcher.Invoke(async () =>

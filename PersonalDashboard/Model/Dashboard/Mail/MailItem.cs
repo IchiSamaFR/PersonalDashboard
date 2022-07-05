@@ -20,9 +20,8 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     public class MailItem : ObservableObject
     {
         private MailVM mailVM;
-
-        private string fromDisplayName;
-        private string fromEmail;
+        
+        private MailboxAddress fromEmail;
         private string _htmlBody;
         private MessageFlags? flags;
         private string _textBody;
@@ -45,21 +44,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public bool IsOpened { get; set; }
 
         public uint Uid { get; set; }
-        public string FromDisplayName
-        {
-            get
-            {
-                return fromDisplayName;
-            }
-            set
-            {
-                fromDisplayName = value;
-                NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(FromDisplay));
-            }
-        }
-
-        public string FromEmail
+        public MailboxAddress FromEmail
         {
             get
             {
@@ -69,19 +54,11 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 fromEmail = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(FromDisplay));
             }
         }
-        public string FromDisplay
-        {
-            get
-            {
-                return string.IsNullOrEmpty(FromDisplayName) ? FromEmail : FromDisplayName;
-            }
-        }
-        public List<string> ReplyTo { get; set; }
-        public List<string> ToEmail { get; set; }
-        public List<string> CcEmail { get; set; }
+        public List<MailboxAddress> ReplyTo { get; set; }
+        public List<MailboxAddress> ToEmail { get; set; }
+        public List<MailboxAddress> CcEmail { get; set; }
         public string Subject { get; set; }
         public List<MimeEntity> Attachments { get; set; } = new List<MimeEntity>();
         public DateTime Date { get; set; }
@@ -129,7 +106,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             }
         }
 
-
         public MailItem(MailVM vm) : base()
         {
             Init(vm);
@@ -140,9 +116,10 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         }
         public void Fill(MimeMessage mimeMessage)
         {
-            FromDisplayName = mimeMessage.From.FirstOrDefault().Name;
-            FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault();
-            ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList();
+            FromEmail = mimeMessage.From.Mailboxes.FirstOrDefault();
+            ReplyTo = mimeMessage.ReplyTo.Select(email => (MailboxAddress)email).ToList();
+            ToEmail = mimeMessage.To.Select(email => (MailboxAddress)email).ToList();
+            CcEmail = mimeMessage.Cc.Select(email => (MailboxAddress)email).ToList();
             Subject = mimeMessage.Subject;
             Date = mimeMessage.Date.DateTime;
             Attachments = mimeMessage.Attachments.ToList();
@@ -158,19 +135,32 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             Flags = flags;
         }
 
-        public string ToEml(string path)
+        public void SaveToEml(string path)
         {
-            MailMessage msg = new MailMessage();
+            try
+            {
+                MimeMessage msg = new MimeMessage();
+                BodyBuilder bodyBuilder = new BodyBuilder();
+                bodyBuilder.HtmlBody = HtmlBody;
+                bodyBuilder.TextBody = TextBody;
+                Attachments.ForEach(att => bodyBuilder.Attachments.Add(att));
 
-            msg.From = new MailAddress(FromEmail);
-            ReplyTo.ForEach(email => msg.ReplyToList.Add(email));
-            ToEmail.ForEach(email => msg.To.Add(email));
-            CcEmail.ForEach(email => msg.CC.Add(email));
-            Attachments.ForEach(att => msg.Attachments.Add(new Attachment(att.ContentBase.AbsolutePath)));
-            msg.Subject = Subject;
-            msg.Body = HtmlBody;
+                msg.From.Add(FromEmail);
+                ReplyTo?.ForEach(email => msg.ReplyTo.Add(email));
+                ToEmail?.ForEach(email => msg.To.Add(email));
+                CcEmail?.ForEach(email => msg.Cc.Add(email));
 
-            return msg.ToEml();
+                msg.Subject = Subject;
+                msg.Body = bodyBuilder.ToMessageBody();
+                msg.Date = Date;
+                msg.ResentDate = Date;
+
+                msg.WriteTo(path);
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         public void DeleteMail()

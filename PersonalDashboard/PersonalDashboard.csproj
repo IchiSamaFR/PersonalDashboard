@@ -111,6 +111,7 @@
     <Compile Include="Model\ConfigItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
+    <Compile Include="Model\Dashboard\Mail\AttachmentItem.cs" />
     <Compile Include="Model\Dashboard\Mail\MailGroup.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Model\Dashboard\Password\PasswordItem.cs" />
