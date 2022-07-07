@@ -25,23 +25,8 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         private string _htmlBody;
         private MessageFlags? flags;
         private string _textBody;
-        #region Commands
 
-        private ICommand _deleteMailCmd;
-        public ICommand DeleteMailCmd
-        {
-            get
-            {
-                if (_deleteMailCmd == null)
-                {
-                    _deleteMailCmd = new RelayCommand(o => { DeleteMail(); });
-                }
-                return _deleteMailCmd;
-            }
-        }
-        #endregion
-
-        public bool IsOpened { get; set; }
+        public bool IsFocused { get; set; }
 
         public uint Uid { get; set; }
         public MailboxAddress FromEmail
@@ -106,7 +91,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             }
         }
 
-        public MailItem(MailVM vm) : base()
+        public MailItem(MailVM vm)
         {
             Init(vm);
         }
@@ -122,8 +107,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             CcEmail = mimeMessage.Cc.Select(email => (MailboxAddress)email).ToList();
             Subject = mimeMessage.Subject;
             Date = mimeMessage.Date.DateTime;
-            Attachments = mimeMessage.Attachments.ToList();
-            HtmlBody = mimeMessage.HtmlBody;
             TextBody = mimeMessage.TextBody;
         }
         public void Fill(UniqueId id)

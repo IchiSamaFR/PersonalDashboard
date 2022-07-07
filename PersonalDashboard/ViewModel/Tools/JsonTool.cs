@@ -110,13 +110,14 @@ namespace PersonalDashboard.ViewModel.Tools
             List<MailItem> mails = new List<MailItem>();
             try
             {
-                string path = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE);
-                if (!File.Exists(path))
+                string mailsPath = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE);
+                if (!File.Exists(mailsPath))
                 {
                     return mails;
                 }
 
-                mails = (JsonConvert.DeserializeObject(File.ReadAllText(path)) as JArray).ToObject<List<MailItem>>();
+                mails = (JsonConvert.DeserializeObject(File.ReadAllText(mailsPath)) as JArray).ToObject<List<MailItem>>();
+                mails.RemoveAll(mail => !File.Exists(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILCACHEFOLDER, mail.Uid.ToString())));
                 foreach (var mail in mails)
                 {
                     mail.Fill(MimeMessage.Load(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILCACHEFOLDER, mail.Uid.ToString())));

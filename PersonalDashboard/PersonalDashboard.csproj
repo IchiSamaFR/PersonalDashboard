@@ -111,17 +111,12 @@
     <Compile Include="Model\ConfigItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\OrderItem.cs" />
     <Compile Include="Model\Dashboard\Crypto\SymbolItem.cs" />
-    <Compile Include="Model\Dashboard\Mail\AttachmentItem.cs" />
+    <Compile Include="Model\Dashboard\Mail\MailBox.cs" />
     <Compile Include="Model\Dashboard\Mail\MailGroup.cs" />
     <Compile Include="Model\Dashboard\Mail\MailItem.cs" />
     <Compile Include="Model\Dashboard\Password\PasswordItem.cs" />
     <Compile Include="Model\Dashboard\Password\ServiceItem.cs" />
     <Compile Include="Model\Notifications\NotificationItem.cs" />
-    <Compile Include="Resources\Icons.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Icons.resx</DependentUpon>
-    </Compile>
     <Compile Include="Resources\ResourceTool.cs" />
     <Compile Include="ViewModel\AbstractVM.cs" />
     <Compile Include="ViewModel\Dashboard\CryptoVM.cs" />
@@ -141,7 +136,6 @@
     <Compile Include="ViewModel\NotificationsVM.cs" />
     <Compile Include="ViewModel\Tools\ConnectionTool.cs" />
     <Compile Include="ViewModel\Tools\JsonTool.cs" />
-    <Compile Include="ViewModel\Tools\MailMessageExtensions.cs" />
     <Compile Include="ViewModel\Tools\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
@@ -311,10 +305,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Icons.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Icons.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -343,21 +333,14 @@
     <Resource Include="Resources\Images\Icons\dollar.png" />
     <Resource Include="Resources\Images\Icons\stats.png" />
     <Resource Include="Resources\Images\Icons\wallet.png" />
-    <Resource Include="Resources\Images\Icons\open-envelope.png" />
-    <Resource Include="Resources\Images\Icons\envelope.png" />
     <Resource Include="Resources\Images\Icons\sent.png" />
     <Resource Include="Resources\Images\Background\back.png" />
     <Resource Include="Resources\Images\Icons\bot.png" />
     <Resource Include="Resources\Images\Icons\dashboard.png" />
     <Resource Include="dashboard.ico" />
     <Resource Include="Resources\Images\Icons\attach.png" />
-    <Content Include="Resources\Images\Icons\document.png" />
     <Resource Include="Resources\Images\Icons\edit.png" />
-    <Resource Include="Resources\Images\Icons\file.png" />
-    <Resource Include="Resources\Images\Icons\folder.png" />
     <Resource Include="Resources\Images\Icons\home-page.png" />
-    <Resource Include="Resources\Images\Icons\image-file.png" />
-    <Resource Include="Resources\Images\Icons\opened-folder.png" />
     <Resource Include="Resources\Images\Icons\search.png" />
     <Resource Include="Resources\Images\Icons\settings.png" />
     <Resource Include="Resources\Images\Icons\support.png" />
@@ -376,6 +359,15 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Icons\mail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Icons\arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Icons\down-arrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -17,5 +17,23 @@ namespace PersonalDashboard.ViewModel.Tools
             }
             return list;
         }
+        public static ObservableCollection<T> InsertWhere<T>(this ObservableCollection<T> list, Func<T, bool> func, T item)
+        {
+            bool found = false;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (func(list[i]))
+                {
+                    list.Insert(i, item);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                list.Add(item);
+            }
+            return list;
+        }
     }
 }
