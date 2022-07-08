@@ -14,21 +14,26 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Button Height="56" Margin="0 0 0 0">
+    <Button Height="56" Margin="0 0 0 0" Background="{StaticResource bru_BackgroundItem}" Foreground="{StaticResource bru_LightForeground}"
+            Command="{Binding Path=DataContext.SelectMailCmd, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}, AncestorLevel=2}}"
+            CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
         <Button.Template>
             <ControlTemplate>
-                <Border BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="0 0 0 1">
-                    <Grid Background="{DynamicResource bru_BackgroundItem}">
+                <Border BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="0 0 0 1"
+                        Background="{StaticResource bru_BackgroundItem}" x:Name="MainGrid">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Rectangle x:Name="indicator" Fill="{StaticResource bru_Background}" Visibility="Collapsed"
+                                   Width="10" HorizontalAlignment="Left"/>
 
-                        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding FromEmail.Name}" Foreground="{DynamicResource bru_LightForeground}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Subject}" Foreground="{DynamicResource bru_LightForeground}"/>
-                            <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{DynamicResource bru_SubLightForeground}"/>
+                        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 10 0">
+                            <TextBlock Text="{Binding FromEmail.Name}" Foreground="{TemplateBinding Foreground}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Subject}" Foreground="{TemplateBinding Foreground}"/>
+                            <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{TemplateBinding Foreground}"/>
                         </WrapPanel>
                         <Grid Grid.Column="2" Margin="0 0 14 0">
                             <Grid.RowDefinitions>
@@ -43,7 +48,7 @@
                                     <Image Source="{Binding Source={x:Static properties:Resources.remove}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
                                 </Button>
                             </WrapPanel>
-                            <TextBlock Text="{Binding Date, Converter={StaticResource DatetimeToStringConverter}, ConverterParameter='ddd dd/MM/yyy'}" Foreground="{DynamicResource bru_SubLightForeground}" 
+                            <TextBlock Text="{Binding Date, Converter={StaticResource DatetimeToStringConverter}, ConverterParameter='ddd dd/MM/yyy'}" Foreground="{TemplateBinding Foreground}" 
                                        Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
@@ -51,11 +56,16 @@
                 <ControlTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter TargetName="DeleteBtn" Property="Visibility" Value="Visible"/>
-                        <Setter Property="Background" Value="{DynamicResource bru_Background}"/>
+                        <Setter TargetName="DeleteBtn" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter}"/>
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="indicator" Property="Fill" Value="{DynamicResource bru_BackgroundFocused}"/>
                     </Trigger>
                     <DataTrigger Binding="{Binding IsFocused}" Value="True">
+                        <Setter TargetName="DeleteBtn" Property="Visibility" Value="Visible"/>
                         <Setter TargetName="DeleteBtn" Property="Background" Value="{DynamicResource bru_Background}"/>
-                        <Setter Property="Background" Value="{DynamicResource bru_Background}"/>
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_Background}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Collapsed"/>
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>

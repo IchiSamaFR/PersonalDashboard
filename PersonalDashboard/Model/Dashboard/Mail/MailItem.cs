@@ -26,7 +26,19 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         private MessageFlags? flags;
         private string _textBody;
 
-        public bool IsFocused { get; set; }
+        private bool _isFocused;
+        public bool IsFocused
+        {
+            get
+            {
+                return _isFocused;
+            }
+            set
+            {
+                _isFocused = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public uint Uid { get; set; }
         public MailboxAddress FromEmail
@@ -119,32 +131,25 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             Flags = flags;
         }
 
-        public void SaveToEml(string path)
+        public void SaveAsEml(string path)
         {
-            try
-            {
-                MimeMessage msg = new MimeMessage();
-                BodyBuilder bodyBuilder = new BodyBuilder();
-                bodyBuilder.HtmlBody = HtmlBody;
-                bodyBuilder.TextBody = TextBody;
-                Attachments.ForEach(att => bodyBuilder.Attachments.Add(att));
+            MimeMessage msg = new MimeMessage();
+            BodyBuilder bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = HtmlBody;
+            bodyBuilder.TextBody = TextBody;
+            Attachments.ForEach(att => bodyBuilder.Attachments.Add(att));
 
-                msg.From.Add(FromEmail);
-                ReplyTo?.ForEach(email => msg.ReplyTo.Add(email));
-                ToEmail?.ForEach(email => msg.To.Add(email));
-                CcEmail?.ForEach(email => msg.Cc.Add(email));
+            msg.From.Add(FromEmail);
+            ReplyTo?.ForEach(email => msg.ReplyTo.Add(email));
+            ToEmail?.ForEach(email => msg.To.Add(email));
+            CcEmail?.ForEach(email => msg.Cc.Add(email));
 
-                msg.Subject = Subject;
-                msg.Body = bodyBuilder.ToMessageBody();
-                msg.Date = Date;
-                msg.ResentDate = Date;
+            msg.Subject = Subject;
+            msg.Body = bodyBuilder.ToMessageBody();
+            msg.Date = Date;
+            msg.ResentDate = Date;
 
-                msg.WriteTo(path);
-            }
-            catch (Exception e)
-            {
-
-            }
+            msg.WriteTo(path);
         }
 
         public void DeleteMail()

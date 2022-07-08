@@ -22,8 +22,6 @@ namespace PersonalDashboard.View.Dashboard
     /// </summary>
     public partial class MailView : UserControl
     {
-        public WebBrowser WebBrowser { get { return webBrowser; } }
-
         public MailView()
         {
             InitializeComponent();

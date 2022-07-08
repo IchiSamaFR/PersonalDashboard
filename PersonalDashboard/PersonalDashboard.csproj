@@ -127,6 +127,7 @@
     <Compile Include="ViewModel\Dashboard\DashboardVM.cs" />
     <Compile Include="ViewModel\Dashboard\HomeVM.cs" />
     <Compile Include="ViewModel\Dashboard\MailVM.cs" />
+    <Compile Include="ViewModel\Dashboard\Mail\MailViewerVM.cs" />
     <Compile Include="ViewModel\Dashboard\MenuVM.cs" />
     <Compile Include="ViewModel\Dashboard\PasswordVM.cs" />
     <Compile Include="ViewModel\Dashboard\Password\ServiceVM.cs" />
@@ -168,6 +169,9 @@
     </Compile>
     <Compile Include="View\Dashboard\Mail\MailItemView.xaml.cs">
       <DependentUpon>MailItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dashboard\Mail\MailViewerView.xaml.cs">
+      <DependentUpon>MailViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dashboard\MenuView.xaml.cs">
       <DependentUpon>MenuView.xaml</DependentUpon>
@@ -237,6 +241,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dashboard\Mail\MailStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dashboard\Mail\MailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -318,7 +326,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewModel\Dashboard\Home\" />
-    <Folder Include="ViewModel\Dashboard\Mail\" />
     <Folder Include="ViewModel\Dashboard\Setting\" />
   </ItemGroup>
   <ItemGroup>

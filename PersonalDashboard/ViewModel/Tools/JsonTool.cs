@@ -95,7 +95,7 @@ namespace PersonalDashboard.ViewModel.Tools
                         new JProperty(nameof(MailItem.Uid), mail.Uid),
                         new JProperty(nameof(MailItem.Flags), mail.Flags)
                         ));
-                    mail.SaveToEml(Path.Combine(cachePath, mail.Uid.ToString()));
+                    mail.SaveAsEml(Path.Combine(cachePath, mail.Uid.ToString()));
                 }
                 SaveFile(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, $"{folderName}.txt"),
                         array.ToString());

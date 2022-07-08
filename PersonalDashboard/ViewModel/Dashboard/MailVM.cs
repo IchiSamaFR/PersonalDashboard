@@ -20,6 +20,7 @@ using System.IO;
 using System.Reflection;
 using System.Net.Mail;
 using Newtonsoft.Json.Linq;
+using PersonalDashboard.ViewModel.Dashboard.Mail;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
@@ -29,6 +30,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         public override UserControl UserControl { get; } = new MailView();
 
         #region Private
+        private MailViewerVM _mailViewerVM;
         private ImapClient imapClient;
         private MailBox _selectedMailBox;
         private List<MailBox> _mailBoxes = new List<MailBox>();
@@ -37,6 +39,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
         #endregion
 
         #region public
+        public MailViewerVM MailViewerVM
+        {
+            get
+            {
+                return _mailViewerVM;
+            }
+        }
         public MailBox SelectedMailBox
         {
             get
@@ -62,7 +71,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 NotifyPropertyChanged();
             }
         }
-        public MailItem MailSelected
+        public MailItem SelectedMail
         {
             get
             {
@@ -70,45 +79,43 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             set
             {
-                if (value != null && (!SelectedMailBox.MailFolder.IsOpen || value.Flags == MessageFlags.Seen))
+                _mailSelected = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsMailViewerVisible));
+
+                if (_mailSelected != null)
                 {
-                    if (!SelectedMailBox.MailFolder.IsOpen)
+                    _mailViewerVM.LoadMail(_mailSelected);
+                    if (!SelectedMailBox.MailFolder.IsOpen && SelectedMail.Flags != MessageFlags.Seen)
                     {
                         SeenMail(_mailSelected);
                     }
-
-                    _mailSelected = value;
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        MailViewer.NavigateToString(MailSelected.HtmlBody);
-                    });
-                    NotifyPropertyChanged();
-                    NotifyPropertyChanged(nameof(MailViewerVisible));
                 }
             }
         }
-        public Visibility MailViewerVisible
+        public bool IsMailViewerVisible
         {
             get
             {
-                return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
+                return SelectedMailBox?.MailItems.Where(mail => mail.IsFocused).Count() == 1;
             }
         }
         #endregion
 
-        private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
-
         #region Commands
+        public ICommand SelectMailCmd { get; }
         public ICommand LoadNewMailsCmd { get; }
         #endregion
 
 
         public MailVM(DashboardVM dashboard)
         {
+            _mailViewerVM = new MailViewerVM();
             _dashboardVM = dashboard;
             Name = "Mail";
             Icon = Properties.Resources.mail;
 
+            SelectMailCmd = new RelayCommand(o => { StartSelectMail((MailItem)o); });
             LoadNewMailsCmd = new RelayCommand(o => { StartLoadMails(); });
         }
         public override void OnFocus()
@@ -163,6 +170,34 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 GetMailsTask = LoadMailsAsync(amount);
                 await GetMailsTask;
                 GetMailsTask.Dispose();
+            }
+        }
+        public void StartSelectMail(MailItem mail)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                mail.IsFocused = true;
+                if (SelectedMail != null)
+                {
+                    SelectedMail = null;
+                }
+                else
+                {
+                    SelectedMail = mail;
+                }
+            }
+            else
+            {
+                UnselectAllMails();
+                mail.IsFocused = true;
+                SelectedMail = mail;
+            }
+        }
+        private void UnselectAllMails()
+        {
+            foreach (var mail in SelectedMailBox.MailItems.Where(mailItem => mailItem.IsFocused))
+            {
+                mail.IsFocused = false;
             }
         }
         public async Task LoadMailsAsync(int amount)
@@ -259,12 +294,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
         
         public async void SeenMail(MailItem mail)
         {
-            await App.Current.Dispatcher.Invoke(async () =>
-            {
-                await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
-                await SelectedMailBox.MailFolder.AddFlagsAsync(new UniqueId(mail.Uid), MessageFlags.Seen, true);
-                await SelectedMailBox.MailFolder.CloseAsync();
-            });
+            await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
+            await SelectedMailBox.MailFolder.AddFlagsAsync(new UniqueId(mail.Uid), MessageFlags.Seen, true);
+            await SelectedMailBox.MailFolder.CloseAsync();
         }
         public async void DeleteMail(MailItem mail)
         {

@@ -63,8 +63,7 @@
             </Grid>
         </Border>
 
-        <WebBrowser Grid.Column="1" Margin="10 0 0 0" x:Name="webBrowser" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                    Visibility="{Binding MailViewerVisible}"/>
+        <ContentPresenter Content="{Binding MailViewerVM.UserControl}" Grid.Column="1" Visibility="{Binding IsMailViewerVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
     </Grid>
 </UserControl>
