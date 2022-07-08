@@ -20,13 +20,14 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     public class MailItem : ObservableObject
     {
         private MailVM mailVM;
-        
+
+        private bool _isFocused;
         private MailboxAddress fromEmail;
         private string _htmlBody;
         private MessageFlags? flags;
         private string _textBody;
+        private List<MimeEntity> _attachments = new List<MimeEntity>();
 
-        private bool _isFocused;
         public bool IsFocused
         {
             get
@@ -39,7 +40,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged();
             }
         }
-
         public uint Uid { get; set; }
         public MailboxAddress FromEmail
         {
@@ -57,7 +57,19 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public List<InternetAddress> ToEmail { get; set; }
         public List<InternetAddress> CcEmail { get; set; }
         public string Subject { get; set; }
-        public List<MimeEntity> Attachments { get; set; } = new List<MimeEntity>();
+        public List<MimeEntity> Attachments
+        {
+            get
+            {
+                return _attachments;
+            }
+            set
+            {
+                _attachments = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(HasAttachment));
+            }
+        }
         public DateTime Date { get; set; }
         public bool HasAttachment
         {
@@ -113,6 +125,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         }
         public void Fill(MimeMessage mimeMessage)
         {
+            Attachments = mimeMessage.Attachments.ToList();
             FromEmail = mimeMessage.From.Mailboxes.FirstOrDefault();
             ReplyTo = mimeMessage.ReplyTo.Select(email => email).ToList();
             ToEmail = mimeMessage.To.Select(email => email).ToList();
@@ -139,7 +152,10 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             bodyBuilder.TextBody = TextBody;
             Attachments.ForEach(att => bodyBuilder.Attachments.Add(att));
 
-            msg.From.Add(FromEmail);
+            if(FromEmail != null)
+            {
+                msg.From.Add(FromEmail);
+            }
             ReplyTo?.ForEach(email => msg.ReplyTo.Add(email));
             ToEmail?.ForEach(email => msg.To.Add(email));
             CcEmail?.ForEach(email => msg.Cc.Add(email));

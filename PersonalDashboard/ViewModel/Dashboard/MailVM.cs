@@ -126,7 +126,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public async Task<ImapClient> IsSet()
         {
-            while (SelectedMailBox.MailFolder == null)
+            while (SelectedMailBox == null)
             {
                 await Task.Delay(100);
             }
@@ -143,7 +143,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             });
             if(SelectedMailBox.MailItems.Count < 20)
             {
-                StartLoadMails(20);
+                StartLoadMails(50);
             }
         }
         public async Task ConnectMailBoxAsync(string mail, string pass)
@@ -212,7 +212,8 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 if (SelectedMailBox.MailFolder.Count > mailItemsCount)
                 {
                     var lstMsg = await SelectedMailBox.MailFolder.SearchAsync(SearchQuery.All);
-                    lstMsg = lstMsg.Where(id => id < SelectedMailBox.LowerId || id > SelectedMailBox.HigherId).OrderByDescending(msg => msg).Take(amount).ToList();
+                    lstMsg = lstMsg.Where(id => !SelectedMailBox.MailItems.Any(mail => mail.Uid == uint.Parse(id.ToString())))
+                                   .OrderByDescending(msg => msg).Take(amount).ToList();
                     var messages = await SelectedMailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
                     messages = messages.OrderByDescending(item => item.UniqueId).ToList();
                     for (int i = 0; i < messages.Count; i++)
@@ -231,8 +232,8 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
                         SelectedMailBox.MailItems.Add(mail);
                         AddMailToGroup(mail);
+                        SaveMailsCache();
                     }
-                    SaveMailsCache();
                 }
                 await SelectedMailBox.MailFolder.CloseAsync();
             });
