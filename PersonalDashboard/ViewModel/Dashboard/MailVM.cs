@@ -31,9 +31,8 @@ namespace PersonalDashboard.ViewModel.Dashboard
         #region Private
         private ImapClient imapClient;
         private MailBox _selectedMailBox;
-        private List<MailBox> mailBoxes = new List<MailBox>();
+        private List<MailBox> _mailBoxes = new List<MailBox>();
         private Task GetMailsTask;
-
         private MailItem _mailSelected;
         #endregion
 
@@ -48,18 +47,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
             {
                 _selectedMailBox = value;
                 NotifyPropertyChanged();
-                ReloadMailGroups();
+                Task.Run(() => InitMails());
             }
         }
         public List<MailBox> MailBoxes
         {
             get
             {
-                return mailBoxes;
+                return _mailBoxes;
             }
             set
             {
-                mailBoxes = value;
+                _mailBoxes = value;
                 NotifyPropertyChanged();
             }
         }
@@ -111,15 +110,11 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Icon = Properties.Resources.mail;
 
             LoadNewMailsCmd = new RelayCommand(o => { StartLoadMails(); });
-            Task.Run(() => InitMails());
-        }
-        private void Init()
-        {
-
         }
         public override void OnFocus()
         {
             base.OnFocus();
+            Task.Run(() => ConnectMailBoxAsync(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
         }
 
         public async Task<ImapClient> IsSet()
@@ -132,16 +127,19 @@ namespace PersonalDashboard.ViewModel.Dashboard
         }
         public async Task InitMails()
         {
-            if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
+            await IsSet();
+
+            await App.Current.Dispatcher.Invoke(async () =>
             {
+                ReloadMailGroups();
                 LoadMailsCache();
-                if(SelectedMailBox.MailItems.Count < 20)
-                {
-                    StartLoadMails(20);
-                }
+            });
+            if(SelectedMailBox.MailItems.Count < 20)
+            {
+                StartLoadMails(20);
             }
         }
-        public async Task<bool> ConnectMailBox(string mail, string pass)
+        public async Task ConnectMailBoxAsync(string mail, string pass)
         {
             try
             {
@@ -152,19 +150,19 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
                 MailBoxes = imapClient.GetFolder(imapClient.PersonalNamespaces[0]).GetSubfolders().Select(fold => new MailBox(fold)).ToList();
                 SelectedMailBox = MailBoxes.First(box => box.Name.ToLower() == "inbox");
-                return true;
             }
             catch (Exception e)
             {
                 NotificationsVM.instance.AddNotification(Name, $"Could not connect to the mailbox. {MethodBase.GetCurrentMethod().Name}");
-                return false;
             }
         }
-        public void StartLoadMails(int amount = 10)
+        public async void StartLoadMails(int amount = 10)
         {
             if (GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
             {
-                GetMailsTask = Task.Run(() => LoadMailsAsync(amount));
+                GetMailsTask = LoadMailsAsync(amount);
+                await GetMailsTask;
+                GetMailsTask.Dispose();
             }
         }
         public async Task LoadMailsAsync(int amount)
@@ -173,14 +171,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
             await App.Current.Dispatcher.Invoke(async () =>
             {
-                try
-                {
-                    await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
-                }
-                catch (Exception e)
-                {
-
-                }
+                await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
 
                 int mailItemsCount = SelectedMailBox.MailItems?.Count ?? 0;
                 if (SelectedMailBox.MailFolder.Count > mailItemsCount)
@@ -196,6 +187,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                         SelectedMailBox.LowerId = mailId < SelectedMailBox.LowerId ? mailId : SelectedMailBox.LowerId;
 
                         var message = messages[i];
+
                         MimeMessage mimeMessage = await SelectedMailBox.MailFolder.GetMessageAsync(message.UniqueId);
                         MailItem mail = new MailItem(this);
                         mail.Fill(mimeMessage);
@@ -209,14 +201,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 }
                 await SelectedMailBox.MailFolder.CloseAsync();
             });
-            GetMailsTask.Dispose();
         }
 
         public void LoadMailsCache()
         {
             App.Current.Dispatcher.Invoke(async () =>
             {
-                foreach (var mail in JsonTool.LoadMails())
+                foreach (var mail in JsonTool.LoadMails(SelectedMailBox.Name))
                 {
                     if(mail.Uid > SelectedMailBox.HigherId.Id)
                     {
@@ -234,7 +225,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         }
         public void SaveMailsCache()
         {
-            JsonTool.SaveMails(SelectedMailBox.MailItems.ToList());
+            JsonTool.SaveMails(SelectedMailBox.MailItems.ToList(), SelectedMailBox.Name);
         }
 
         public void AddMailToGroup(MailItem mail)

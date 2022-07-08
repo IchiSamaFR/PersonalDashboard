@@ -45,6 +45,13 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         {
             get
             {
+                return MailFolder.Name;
+            }
+        }
+        public string FullName
+        {
+            get
+            {
                 return MailFolder.FullName;
             }
         }

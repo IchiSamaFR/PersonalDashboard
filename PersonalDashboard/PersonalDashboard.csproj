@@ -143,7 +143,9 @@
     <Compile Include="View\Convertors\BooleanToVisibilityConverter.cs" />
     <Compile Include="View\Convertors\DateTimeOffsetToDateConverter.cs" />
     <Compile Include="View\Convertors\DatetimeToStringConverter.cs" />
+    <Compile Include="View\Convertors\HtmlToPlainTextConverter.cs" />
     <Compile Include="View\Convertors\LessThanConverter.cs" />
+    <Compile Include="View\Convertors\StringCleanerConverter.cs" />
     <Compile Include="View\Convertors\StringNullOrEmptyConverter.cs" />
     <Compile Include="View\Convertors\TextToPasswordDisplayConverter.cs" />
     <Compile Include="View\Dashboard\Crypto\BotView.xaml.cs">

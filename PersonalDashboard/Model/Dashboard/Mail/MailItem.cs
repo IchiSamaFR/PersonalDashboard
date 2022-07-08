@@ -41,9 +41,9 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged();
             }
         }
-        public List<MailboxAddress> ReplyTo { get; set; }
-        public List<MailboxAddress> ToEmail { get; set; }
-        public List<MailboxAddress> CcEmail { get; set; }
+        public List<InternetAddress> ReplyTo { get; set; }
+        public List<InternetAddress> ToEmail { get; set; }
+        public List<InternetAddress> CcEmail { get; set; }
         public string Subject { get; set; }
         public List<MimeEntity> Attachments { get; set; } = new List<MimeEntity>();
         public DateTime Date { get; set; }
@@ -102,11 +102,12 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public void Fill(MimeMessage mimeMessage)
         {
             FromEmail = mimeMessage.From.Mailboxes.FirstOrDefault();
-            ReplyTo = mimeMessage.ReplyTo.Select(email => (MailboxAddress)email).ToList();
-            ToEmail = mimeMessage.To.Select(email => (MailboxAddress)email).ToList();
-            CcEmail = mimeMessage.Cc.Select(email => (MailboxAddress)email).ToList();
+            ReplyTo = mimeMessage.ReplyTo.Select(email => email).ToList();
+            ToEmail = mimeMessage.To.Select(email => email).ToList();
+            CcEmail = mimeMessage.Cc.Select(email => email).ToList();
             Subject = mimeMessage.Subject;
             Date = mimeMessage.Date.DateTime;
+            HtmlBody = mimeMessage.HtmlBody;
             TextBody = mimeMessage.TextBody;
         }
         public void Fill(UniqueId id)

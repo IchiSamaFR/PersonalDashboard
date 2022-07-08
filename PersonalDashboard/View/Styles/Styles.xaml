@@ -8,6 +8,7 @@
     <converters:DateTimeOffsetToDateConverter x:Key="DateTimeOffsetToDateConverter"/>
     <converters:TextToPasswordDisplayConverter x:Key="TextToPasswordDisplayConverter"/>
     <converters:DatetimeToStringConverter x:Key="DatetimeToStringConverter"/>
+    <converters:HtmlToPlainTextConverter x:Key="HtmlToPlainTextConverter"/>
 
     <Style TargetType="Button" x:Key="Button">
         <Setter Property="Background" Value="{DynamicResource bru_BackgroundItem}"/>

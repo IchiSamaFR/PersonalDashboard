@@ -81,7 +81,7 @@ namespace PersonalDashboard.ViewModel.Tools
             return passwords;
         }
 
-        public static void SaveMails(List<MailItem> mails)
+        public static void SaveMails(List<MailItem> mails, string folderName)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace PersonalDashboard.ViewModel.Tools
                         ));
                     mail.SaveToEml(Path.Combine(cachePath, mail.Uid.ToString()));
                 }
-                SaveFile(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE),
+                SaveFile(Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, $"{folderName}.txt"),
                         array.ToString());
             }
             catch(Exception e)
@@ -105,12 +105,12 @@ namespace PersonalDashboard.ViewModel.Tools
                 NotificationsVM.instance.AddNotification("JsonSerializer", e.Message);
             }
         }
-        public static List<MailItem> LoadMails()
+        public static List<MailItem> LoadMails(string folderName)
         {
             List<MailItem> mails = new List<MailItem>();
             try
             {
-                string mailsPath = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILFILE);
+                string mailsPath = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, $"{folderName}.txt");
                 if (!File.Exists(mailsPath))
                 {
                     return mails;

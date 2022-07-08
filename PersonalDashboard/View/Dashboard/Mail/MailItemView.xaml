@@ -25,12 +25,12 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 14 0">
+                        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="{Binding FromEmail.Name}" Foreground="{DynamicResource bru_LightForeground}" FontWeight="Bold"/>
                             <TextBlock Text="{Binding Subject}" Foreground="{DynamicResource bru_LightForeground}"/>
-                            <TextBlock Text="{Binding TextDisplay}" Foreground="{DynamicResource bru_SubLightForeground}"/>
+                            <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{DynamicResource bru_SubLightForeground}"/>
                         </WrapPanel>
-                        <Grid Grid.Column="1" Margin="0 0 14 0">
+                        <Grid Grid.Column="2" Margin="0 0 14 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
