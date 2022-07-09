@@ -1,5 +1,6 @@
 ﻿using PersonalDashboard.Model.Dashboard.Mail;
 using PersonalDashboard.View.Dashboard.Mail;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,8 @@ namespace PersonalDashboard.ViewModel.Dashboard.Mail
 
         public void LoadMail(MailItem mail)
         {
-            (UserControl as MailViewerView).LoadMailBody(mail.HtmlBody);
+            string html = !string.IsNullOrEmpty(mail.HtmlBody) ? mail.HtmlBody : HtmlTool.TextToHtml(mail.TextBody);
+            (UserControl as MailViewerView).LoadMailBody(html);
         }
     }
 }

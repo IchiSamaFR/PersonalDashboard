@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PersonalDashboard.View.Dashboard.Mail"
              xmlns:properties="clr-namespace:PersonalDashboard.Properties"
-             mc:Ignorable="d" 
-             d:DesignHeight="56" d:DesignWidth="300">
+             mc:Ignorable="d" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -14,7 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Button Height="56" Margin="0 0 0 0" Background="{StaticResource bru_BackgroundItem}" Foreground="{StaticResource bru_LightForeground}"
+    <Button Margin="0 0 0 0" Background="{StaticResource bru_BackgroundItem}" Foreground="{StaticResource bru_LightForeground}"
             Command="{Binding Path=DataContext.SelectMailCmd, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}, AncestorLevel=2}}"
             CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
         <Button.Template>
@@ -22,34 +21,36 @@
                 <Border BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="0 0 0 1"
                         Background="{StaticResource bru_BackgroundItem}" x:Name="MainGrid">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
                         <Rectangle x:Name="indicator" Fill="{StaticResource bru_Background}" Visibility="Collapsed"
                                    Width="10" HorizontalAlignment="Left"/>
+                        <Grid Margin="0 10 0 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 10 0">
-                            <TextBlock Text="{Binding FromEmail.Name}" Foreground="{TemplateBinding Foreground}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Subject}" Foreground="{TemplateBinding Foreground}"/>
-                            <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{TemplateBinding Foreground}"/>
-                        </WrapPanel>
-                        <Grid Grid.Column="2" Margin="0 0 14 0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Image Margin="0 4 0 4" Source="{Binding Source={x:Static properties:Resources.attach}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding HasAttachment, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                <Button x:Name="DeleteBtn" Height="28" Width="28" Command="{Binding DeleteCmd}" Style="{StaticResource Button}"
-                                    Visibility="Collapsed">
-                                    <Image Source="{Binding Source={x:Static properties:Resources.remove}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
-                                </Button>
+                            <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 10 0">
+                                <TextBlock Text="{Binding FromEmail.Name}" Foreground="{TemplateBinding Foreground}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Subject}" Foreground="{TemplateBinding Foreground}"/>
+                                <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{TemplateBinding Foreground}"/>
                             </WrapPanel>
-                            <TextBlock Text="{Binding Date, Converter={StaticResource DatetimeToStringConverter}, ConverterParameter='ddd dd/MM/yyy'}" Foreground="{TemplateBinding Foreground}" 
+                            <Grid Grid.Column="2" Margin="0 0 14 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Image Margin="0 4 0 4" Source="{Binding Source={x:Static properties:Resources.attach}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding HasAttachment, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <Button x:Name="DeleteBtn" Height="28" Width="28" Command="{Binding DeleteCmd}" Style="{StaticResource Button}"
+                                    Visibility="Collapsed">
+                                        <Image Source="{Binding Source={x:Static properties:Resources.remove}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
+                                    </Button>
+                                </WrapPanel>
+                                <TextBlock Text="{Binding Date, Converter={StaticResource DatetimeToStringConverter}, ConverterParameter='ddd dd/MM/yyy'}" Foreground="{TemplateBinding Foreground}" 
                                        Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Border>
