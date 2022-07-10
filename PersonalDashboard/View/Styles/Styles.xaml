@@ -21,11 +21,8 @@
                         <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource bru_Background}"/>
-                        </Trigger>
-                        <Trigger Property="Button.IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource bru_BackgroundFocused}"/>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource bru_BackgroundFocused}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

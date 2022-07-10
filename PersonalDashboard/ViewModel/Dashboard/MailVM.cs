@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Net.Mail;
 using Newtonsoft.Json.Linq;
 using PersonalDashboard.ViewModel.Dashboard.Mail;
+using System.Threading;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
@@ -34,6 +35,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private ImapClient imapClient;
         private MailBox _selectedMailBox;
         private List<MailBox> _mailBoxes = new List<MailBox>();
+        CancellationTokenSource GetMailsTaskToken;
         private Task GetMailsTask;
         private MailItem _mailSelected;
         #endregion
@@ -54,9 +56,17 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             set
             {
-                _selectedMailBox = value;
-                NotifyPropertyChanged();
-                Task.Run(() => InitMails());
+                if(SelectedMailBox != value)
+                {
+                    if (SelectedMail != null)
+                    {
+                        SelectedMail.IsFocused = false;
+                        SelectedMail = null;
+                    }
+                    _selectedMailBox = value;
+                    NotifyPropertyChanged();
+                    InitMailBox();
+                }
             }
         }
         public List<MailBox> MailBoxes
@@ -119,13 +129,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
             SelectMailCmd = new RelayCommand(o => { StartSelectMail((MailItem)o); });
             LoadAncientMailsCmd = new RelayCommand(o => { StartLoadAncientMails(); });
             LoadNewMailsCmd = new RelayCommand(o => { StartLoadNewMails(); });
-        }
-        public override void OnFocus()
-        {
-            base.OnFocus();
+
             Task.Run(() => ConnectMailBoxAsync(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
         }
 
+        public async Task<bool> GetMailsTaskAvailable()
+        {
+            while (GetMailsTask != null)
+            {
+                await Task.Delay(100);
+            }
+            return true;
+        }
         public async Task<ImapClient> IsSet()
         {
             while (SelectedMailBox == null)
@@ -134,15 +149,18 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             return imapClient;
         }
-        public async Task InitMails()
+        public async void InitMailBox()
         {
             await IsSet();
-
-            if(SelectedMailBox.MailItems.Count == 0)
+            if (GetMailsTask != null)
+            {
+                GetMailsTaskToken.Cancel();
+            }
+            await GetMailsTaskAvailable();
+            if (SelectedMailBox.MailItems.Count == 0)
             {
                 await App.Current.Dispatcher.Invoke(async () =>
                 {
-                    ReloadMailGroups();
                     LoadMailsCache();
                 });
                 if (SelectedMailBox.MailItems.Count == 0)
@@ -161,31 +179,89 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 await imapClient.AuthenticateAsync(new NetworkCredential(mail, pass));
 
                 MailBoxes = imapClient.GetFolder(imapClient.PersonalNamespaces[0]).GetSubfolders().Select(fold => new MailBox(fold)).ToList();
-                SelectedMailBox = MailBoxes.First(box => box.Name.ToLower() == "inbox");
+                SelectedMailBox = MailBoxes.FirstOrDefault(box => box.Name.ToLower() == "inbox") ?? MailBoxes.FirstOrDefault();
             }
             catch (Exception e)
             {
                 NotificationsVM.instance.AddNotification(Name, $"Could not connect to the mailbox. {MethodBase.GetCurrentMethod().Name}");
             }
         }
-        public async void StartLoadAncientMails(int amount = 10)
+
+        public void StartLoadAncientMails(int amount = 10)
         {
-            if (GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
+            UniqueId lower = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).Last().Uid) : UniqueId.MaxValue;
+            StartLoadMails(amount, id => lower > id);
+        }
+        public void StartLoadNewMails(int amount = 10)
+        {
+            UniqueId higher = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).First().Uid) : UniqueId.MinValue;
+            StartLoadMails(amount, id => id > higher);
+        }
+        public void StartLoadMails(int amount, Func<UniqueId, bool> func)
+        {
+            if (GetMailsTask == null)
             {
-                UniqueId lower = new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).Last().Uid);
-                GetMailsTask = LoadMailsAsync(amount, id => lower > id );
-                await GetMailsTask;
-                GetMailsTask.Dispose();
+                GetMailsTaskToken = new CancellationTokenSource();
+                GetMailsTask = new Task(() => LoadMailsAsync(amount, SelectedMailBox, func));
+                GetMailsTask.Start();
             }
         }
-        public async void StartLoadNewMails(int amount = 10)
+        public async void LoadMailsAsync(int amount, MailBox mailBox, Func<UniqueId, bool> whereFunc)
         {
-            if (GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
+            await IsSet();
+
+            try
             {
-                UniqueId higher = new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).First().Uid);
-                GetMailsTask = LoadMailsAsync(amount, id => id > higher);
-                await GetMailsTask;
-                GetMailsTask.Dispose();
+                await App.Current.Dispatcher.Invoke(async () =>
+                {
+                    await mailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
+
+                    int mailItemsCount = mailBox.MailItems?.Count ?? 0;
+                    if (mailBox.MailFolder.Count > mailItemsCount)
+                    {
+                        var lstMsg = await mailBox.MailFolder.SearchAsync(SearchQuery.All);
+                        lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
+                        var messages = await mailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
+                        messages = messages.OrderByDescending(item => item.UniqueId).ToList();
+                        for (int i = 0; i < messages.Count; i++)
+                        {
+                            UniqueId mailId = messages[i].UniqueId;
+                            mailBox.HigherId = mailId > mailBox.HigherId ? mailId : mailBox.HigherId;
+                            mailBox.LowerId = mailId < mailBox.LowerId ? mailId : mailBox.LowerId;
+
+                            var message = messages[i];
+
+                            MimeMessage mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
+                            MailItem mail = new MailItem(this);
+                            mail.Fill(mimeMessage);
+                            mail.Fill(message.UniqueId);
+                            mail.Fill(message.Flags);
+
+                            mailBox.AddMail(mail);
+                            SaveMailsCache();
+
+                            if (GetMailsTaskToken.Token.IsCancellationRequested)
+                            {
+                                mailBox.MailFolder.Close();
+                                GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                            }
+                        }
+                    }
+                    await mailBox.MailFolder.CloseAsync();
+                });
+            }
+            catch { }
+            finally
+            {
+                GetMailsTask = null;
+            }
+        }
+
+        private void UnselectAllMails()
+        {
+            foreach (var mail in SelectedMailBox.MailItems.Where(mailItem => mailItem.IsFocused))
+            {
+                mail.IsFocused = false;
             }
         }
         public void StartSelectMail(MailItem mail)
@@ -209,50 +285,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 SelectedMail = mail;
             }
         }
-        private void UnselectAllMails()
-        {
-            foreach (var mail in SelectedMailBox.MailItems.Where(mailItem => mailItem.IsFocused))
-            {
-                mail.IsFocused = false;
-            }
-        }
-        public async Task LoadMailsAsync(int amount, Func<UniqueId, bool> whereFunc)
-        {
-            await IsSet();
-
-            await App.Current.Dispatcher.Invoke(async () =>
-            {
-                await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
-
-                int mailItemsCount = SelectedMailBox.MailItems?.Count ?? 0;
-                if (SelectedMailBox.MailFolder.Count > mailItemsCount)
-                {
-                    var lstMsg = await SelectedMailBox.MailFolder.SearchAsync(SearchQuery.All);
-                    lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
-                    var messages = await SelectedMailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
-                    messages = messages.OrderByDescending(item => item.UniqueId).ToList();
-                    for (int i = 0; i < messages.Count; i++)
-                    {
-                        UniqueId mailId = messages[i].UniqueId;
-                        SelectedMailBox.HigherId = mailId > SelectedMailBox.HigherId ? mailId : SelectedMailBox.HigherId;
-                        SelectedMailBox.LowerId = mailId < SelectedMailBox.LowerId ? mailId : SelectedMailBox.LowerId;
-
-                        var message = messages[i];
-
-                        MimeMessage mimeMessage = await SelectedMailBox.MailFolder.GetMessageAsync(message.UniqueId);
-                        MailItem mail = new MailItem(this);
-                        mail.Fill(mimeMessage);
-                        mail.Fill(message.UniqueId);
-                        mail.Fill(message.Flags);
-
-                        SelectedMailBox.MailItems.Add(mail);
-                        AddMailToGroup(mail);
-                        SaveMailsCache();
-                    }
-                }
-                await SelectedMailBox.MailFolder.CloseAsync();
-            });
-        }
 
         public void LoadMailsCache()
         {
@@ -267,8 +299,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                     SelectedMailBox.LowerId = new UniqueId(mail.Uid);
                 }
                 mail.Init(this);
-                SelectedMailBox.MailItems.Add(mail);
-                AddMailToGroup(mail);
+                SelectedMailBox.AddMail(mail);
             }
         }
         public void SaveMailsCache()
@@ -276,23 +307,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
             JsonTool.SaveMails(SelectedMailBox.MailItems.ToList(), SelectedMailBox.Name);
         }
 
-        public void AddMailToGroup(MailItem mail)
-        {
-            if (!SelectedMailBox.MailGroups.Any(group => group.Date.Date == mail.Date.Date))
-            {
-                SelectedMailBox.MailGroups.InsertWhere(grp => grp.Date.Date < mail.Date.Date, new MailGroup(mail.Date));
-            }
-            SelectedMailBox.MailGroups.FirstOrDefault(group => group.Date.Date == mail.Date.Date).AddMail(mail);
-        }
-        public void ReloadMailGroups()
-        {
-            SelectedMailBox.MailGroups.Clear();
-            foreach (var mail in SelectedMailBox.MailItems.OrderByDescending(mail => mail.Date))
-            {
-                AddMailToGroup(mail);
-            }
-        }
-        
         public async void SeenMail(MailItem mail)
         {
             await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
