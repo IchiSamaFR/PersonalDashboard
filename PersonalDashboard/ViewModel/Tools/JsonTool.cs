@@ -105,6 +105,15 @@ namespace PersonalDashboard.ViewModel.Tools
                 NotificationsVM.instance.AddNotification("JsonSerializer", e.Message);
             }
         }
+        public static MimeMessage GetMimeMessageCache(uint Uid)
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), MAILFOLDER, MAILCACHEFOLDER, Uid.ToString());
+            if (File.Exists(path))
+            {
+                return MimeMessage.Load(path);
+            }
+            return null;
+        }
         public static List<MailItem> LoadMails(string folderName)
         {
             List<MailItem> mails = new List<MailItem>();

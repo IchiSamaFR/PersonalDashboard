@@ -63,6 +63,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                         SelectedMail.IsFocused = false;
                         SelectedMail = null;
                     }
+
                     _selectedMailBox = value;
                     NotifyPropertyChanged();
                     InitMailBox();
@@ -159,13 +160,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
             await GetMailsTaskAvailable();
             if (SelectedMailBox.MailItems.Count == 0)
             {
-                await App.Current.Dispatcher.Invoke(async () =>
-                {
-                    LoadMailsCache();
-                });
                 if (SelectedMailBox.MailItems.Count == 0)
                 {
-                    StartLoadNewMails(40);
+                    StartLoadAncientMails(50);
+                }
+                else
+                {
+                    StartLoadNewMails();
                 }
             }
         }
@@ -192,10 +193,10 @@ namespace PersonalDashboard.ViewModel.Dashboard
             UniqueId lower = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).Last().Uid) : UniqueId.MaxValue;
             StartLoadMails(amount, id => lower > id);
         }
-        public void StartLoadNewMails(int amount = 10)
+        public void StartLoadNewMails()
         {
             UniqueId higher = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).First().Uid) : UniqueId.MinValue;
-            StartLoadMails(amount, id => id > higher);
+            StartLoadMails(int.MaxValue, id => id > higher);
         }
         public void StartLoadMails(int amount, Func<UniqueId, bool> func)
         {
@@ -226,16 +227,17 @@ namespace PersonalDashboard.ViewModel.Dashboard
                         for (int i = 0; i < messages.Count; i++)
                         {
                             UniqueId mailId = messages[i].UniqueId;
-                            mailBox.HigherId = mailId > mailBox.HigherId ? mailId : mailBox.HigherId;
-                            mailBox.LowerId = mailId < mailBox.LowerId ? mailId : mailBox.LowerId;
 
                             var message = messages[i];
-
-                            MimeMessage mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
                             MailItem mail = new MailItem(this);
-                            mail.Fill(mimeMessage);
                             mail.Fill(message.UniqueId);
                             mail.Fill(message.Flags);
+                            MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                            if (mimeMessage == null)
+                            {
+                                mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
+                            }
+                            mail.Fill(mimeMessage);
 
                             mailBox.AddMail(mail);
                             SaveMailsCache();
@@ -290,14 +292,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
         {
             foreach (var mail in JsonTool.LoadMails(SelectedMailBox.Name))
             {
-                if (mail.Uid > SelectedMailBox.HigherId.Id)
-                {
-                    SelectedMailBox.HigherId = new UniqueId(mail.Uid);
-                }
-                if (mail.Uid < SelectedMailBox.LowerId.Id)
-                {
-                    SelectedMailBox.LowerId = new UniqueId(mail.Uid);
-                }
                 mail.Init(this);
                 SelectedMailBox.AddMail(mail);
             }

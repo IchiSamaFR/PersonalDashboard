@@ -13,6 +13,8 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     {
         public UniqueId LowerId = UniqueId.MaxValue;
         public UniqueId HigherId = UniqueId.MinValue;
+        public Action OnCountChanged;
+        public bool CountChanged = false;
 
         private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
         private ObservableCollection<MailGroup> _mailGroups = new ObservableCollection<MailGroup>();
@@ -60,11 +62,49 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         public MailBox(IMailFolder mailFolder)
         {
             MailFolder = mailFolder;
+            MailFolder.MessageExpunged += MailFolder_MessageExpunged;
+            MailFolder.CountChanged += MailFolder_CountChanged;
         }
+
+        private void MailFolder_MessageExpunged(object sender, MessageEventArgs e)
+        {
+            RemoveMail(e.UniqueId);
+        }
+
+        private void MailFolder_CountChanged(object sender, EventArgs e)
+        {
+            CountChanged = true;
+            OnCountChanged?.Invoke();
+        }
+
         public void AddMail(MailItem mail)
         {
+            if (mail.Uid > HigherId.Id)
+            {
+                HigherId = new UniqueId(mail.Uid);
+            }
+            if (mail.Uid < LowerId.Id)
+            {
+                LowerId = new UniqueId(mail.Uid);
+            }
             MailItems.Add(mail);
             AddMailToGroup(mail);
+        }
+        public void RemoveMail(UniqueId? uniqueId)
+        {
+            if(uniqueId == null)
+            {
+                return;
+            }
+            uint id = uint.Parse(uniqueId.ToString());
+
+            MailItems.RemoveWhere(mail => mail.Uid == id);
+            var mailGroup = MailGroups.First(group => group.MailItems.Any(mail => mail.Uid == id));
+            mailGroup.MailItems.RemoveWhere(mail => mail.Uid == id);
+            if(mailGroup.MailItems.Count() == 0)
+            {
+                MailGroups.Remove(mailGroup);
+            }
         }
         public void AddMailToGroup(MailItem mail)
         {

@@ -17,7 +17,7 @@ namespace PersonalDashboard.ViewModel.Tools
             }
             return list;
         }
-        public static ObservableCollection<T> InsertWhere<T>(this ObservableCollection<T> list, Func<T, bool> func, T item)
+        public static bool InsertWhere<T>(this ObservableCollection<T> list, Func<T, bool> func, T item)
         {
             bool found = false;
             for (int i = 0; i < list.Count; i++)
@@ -33,7 +33,20 @@ namespace PersonalDashboard.ViewModel.Tools
             {
                 list.Add(item);
             }
-            return list;
+            return found;
+        }
+        public static bool RemoveWhere<T>(this ObservableCollection<T> list, Func<T, bool> func)
+        {
+            bool found = false;
+            for (int i = list.Count; i >= 0; i--)
+            {
+                if (func(list[i]))
+                {
+                    list.Remove(list[i]);
+                    found = true;
+                }
+            }
+            return found;
         }
     }
 }
