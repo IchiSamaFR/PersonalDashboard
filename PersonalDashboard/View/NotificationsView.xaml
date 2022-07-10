@@ -27,7 +27,7 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="{Binding Title}" Foreground="{DynamicResource bru_LightForeground}" FontWeight="DemiBold" />
-                                <TextBlock Text="{Binding Message}"  Foreground="{DynamicResource bru_LightForeground}" Grid.Row="1"/>
+                                <TextBlock Text="{Binding Message}"  Foreground="{DynamicResource bru_LightForeground}" Grid.Row="1" TextWrapping="Wrap"/>
                             </Grid>
                         </Border>
                     </Border>
