@@ -63,8 +63,15 @@ namespace PersonalDashboard.ViewModel.Dashboard
                         SelectedMail.IsFocused = false;
                         SelectedMail = null;
                     }
-
+                    if(SelectedMailBox != null)
+                    {
+                        SelectedMailBox.OnCountChanged -= StartLoadNewMails;
+                    }
                     _selectedMailBox = value;
+                    if (SelectedMailBox != null)
+                    {
+                        SelectedMailBox.OnCountChanged += StartLoadNewMails;
+                    }
                     NotifyPropertyChanged();
                     InitMailBox();
                 }
@@ -128,7 +135,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Icon = Properties.Resources.mail;
 
             SelectMailCmd = new RelayCommand(o => { StartSelectMail((MailItem)o); });
-            LoadAncientMailsCmd = new RelayCommand(o => { StartLoadAncientMails(); });
+            LoadAncientMailsCmd = new RelayCommand(o => { StartLoadOldMails(); });
             LoadNewMailsCmd = new RelayCommand(o => { StartLoadNewMails(); });
 
             Task.Run(() => ConnectMailBoxAsync(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
@@ -142,13 +149,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             return true;
         }
-        public async Task<ImapClient> IsSet()
+        public async Task<bool> IsSet()
         {
             while (SelectedMailBox == null)
             {
                 await Task.Delay(100);
             }
-            return imapClient;
+            return true;
         }
         public async void InitMailBox()
         {
@@ -162,7 +169,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             {
                 if (SelectedMailBox.MailItems.Count == 0)
                 {
-                    StartLoadAncientMails(50);
+                    StartLoadOldMails(50);
                 }
                 else
                 {
@@ -188,29 +195,32 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
         }
 
-        public void StartLoadAncientMails(int amount = 10)
+        public void StartLoadOldMails(int amount = 10)
         {
-            UniqueId lower = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).Last().Uid) : UniqueId.MaxValue;
-            StartLoadMails(amount, id => lower > id);
+            StartLoadMails(amount, id => SelectedMailBox.LowerId > id);
         }
         public void StartLoadNewMails()
         {
-            UniqueId higher = SelectedMailBox.MailItems.Count > 0 ? new UniqueId(SelectedMailBox.MailItems.OrderByDescending(item => item.Uid).First().Uid) : UniqueId.MinValue;
-            StartLoadMails(int.MaxValue, id => id > higher);
+            StartLoadMails(int.MaxValue, id => id > SelectedMailBox.HigherId, true);
         }
-        public void StartLoadMails(int amount, Func<UniqueId, bool> func)
+        public async void StartOnCountChanged()
+        {
+            await GetMailsTaskAvailable();
+            StartLoadMails(int.MaxValue, id => id > SelectedMailBox.HigherId, true);
+        }
+        public void StartLoadMails(int amount, Func<UniqueId, bool> func, bool invertOrder = false)
         {
             if (GetMailsTask == null)
             {
                 GetMailsTaskToken = new CancellationTokenSource();
-                GetMailsTask = new Task(() => LoadMailsAsync(amount, SelectedMailBox, func));
+                GetMailsTask = LoadMailsAsync(amount, func, invertOrder);
                 GetMailsTask.Start();
             }
         }
-        public async void LoadMailsAsync(int amount, MailBox mailBox, Func<UniqueId, bool> whereFunc)
+        
+        public async Task LoadMailsAsync(int amount, Func<UniqueId, bool> whereFunc, bool invertOrder)
         {
-            await IsSet();
-
+            MailBox mailBox = SelectedMailBox;
             try
             {
                 await App.Current.Dispatcher.Invoke(async () =>
@@ -223,7 +233,14 @@ namespace PersonalDashboard.ViewModel.Dashboard
                         var lstMsg = await mailBox.MailFolder.SearchAsync(SearchQuery.All);
                         lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
                         var messages = await mailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
-                        messages = messages.OrderByDescending(item => item.UniqueId).ToList();
+                        if (invertOrder)
+                        {
+                            messages = messages.OrderByDescending(item => item.UniqueId).Reverse().ToList();
+                        }
+                        else
+                        {
+                            messages = messages.OrderByDescending(item => item.UniqueId).ToList();
+                        }
                         for (int i = 0; i < messages.Count; i++)
                         {
                             UniqueId mailId = messages[i].UniqueId;
