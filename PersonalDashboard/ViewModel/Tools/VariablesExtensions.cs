@@ -17,32 +17,28 @@ namespace PersonalDashboard.ViewModel.Tools
             }
             return list;
         }
-        public static bool InsertWhere<T>(this ObservableCollection<T> list, Func<T, bool> func, T item)
+        public static bool InsertWhere<T>(this IList<T> list, Func<T, bool> func, T newItem)
         {
-            bool found = false;
-            for (int i = 0; i < list.Count; i++)
+            int i = 0;
+            foreach (var item in list)
             {
-                if (func(list[i]))
+                if (func(item))
                 {
-                    list.Insert(i, item);
-                    found = true;
-                    break;
+                    list.Insert(i, newItem);
+                    return true;
                 }
             }
-            if (!found)
-            {
-                list.Add(item);
-            }
-            return found;
+            list.Add(newItem);
+            return false;
         }
-        public static bool RemoveWhere<T>(this ObservableCollection<T> list, Func<T, bool> func)
+        public static bool RemoveWhere<T>(this IList<T> list, Func<T, bool> func)
         {
             bool found = false;
             for (int i = list.Count; i >= 0; i--)
             {
                 if (func(list[i]))
                 {
-                    list.Remove(list[i]);
+                    list.RemoveAt(i);
                     found = true;
                 }
             }
