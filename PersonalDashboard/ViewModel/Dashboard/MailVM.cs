@@ -104,9 +104,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 if (_mailSelected != null)
                 {
                     _mailViewerVM.LoadMail(_mailSelected);
-                    if (!SelectedMailBox.MailFolder.IsOpen && SelectedMail.Flags != MessageFlags.Seen)
+                    if (SelectedMail.Flags != MessageFlags.Seen)
                     {
-                        SeenMail(_mailSelected);
+                        SeenMail(SelectedMailBox, _mailSelected);
                     }
                 }
             }
@@ -144,6 +144,14 @@ namespace PersonalDashboard.ViewModel.Dashboard
         public async Task<bool> GetMailsTaskAvailable()
         {
             while (GetMailsTask != null)
+            {
+                await Task.Delay(100);
+            }
+            return true;
+        }
+        public async Task<bool> IsMailBoxOpen(MailBox mailBox)
+        {
+            while (mailBox.MailFolder.IsOpen)
             {
                 await Task.Delay(100);
             }
@@ -197,83 +205,128 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public void StartLoadOldMails(int amount = 10)
         {
-            StartLoadMails(amount, id => SelectedMailBox.LowerId > id);
+            if (GetMailsTask == null)
+            {
+                GetMailsTaskToken = new CancellationTokenSource();
+                GetMailsTask = new Task(() => LoadMailsAsync(amount, id => SelectedMailBox.LowerId > id, LoadOldMailsAction));
+                GetMailsTask.Start();
+            }
         }
         public void StartLoadNewMails()
-        {
-            StartLoadMails(int.MaxValue, id => id > SelectedMailBox.HigherId, true);
-        }
-        public async void StartOnCountChanged()
-        {
-            await GetMailsTaskAvailable();
-            StartLoadMails(int.MaxValue, id => id > SelectedMailBox.HigherId, true);
-        }
-        public void StartLoadMails(int amount, Func<UniqueId, bool> func, bool invertOrder = false)
         {
             if (GetMailsTask == null)
             {
                 GetMailsTaskToken = new CancellationTokenSource();
-                GetMailsTask = LoadMailsAsync(amount, func, invertOrder);
+                GetMailsTask = new Task(() => LoadMailsAsync(int.MaxValue, id => id > SelectedMailBox.HigherId, LoadNewMailsAction));
                 GetMailsTask.Start();
             }
         }
-        
-        public async Task LoadMailsAsync(int amount, Func<UniqueId, bool> whereFunc, bool invertOrder)
+        public async void StartOnCountChanged()
+        {
+            await GetMailsTaskAvailable();
+
+            if (GetMailsTask == null)
+            {
+                GetMailsTaskToken = new CancellationTokenSource();
+                GetMailsTask = new Task(() => LoadMailsAsync(int.MaxValue, id => id > SelectedMailBox.LowerId, LoadNewMailsAction));
+                GetMailsTask.Start();
+            }
+        }
+
+        private async void LoadMailsAsync(int amount, Func<UniqueId, bool> whereFunc, Action<MailBox, IList<IMessageSummary>> action)
         {
             MailBox mailBox = SelectedMailBox;
             try
             {
-                await App.Current.Dispatcher.Invoke(async () =>
+                await mailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
+                IList<IMessageSummary> messagesList = GetMailsMessages(amount, mailBox, whereFunc).Result;
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
                 {
-                    await mailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
-
-                    int mailItemsCount = mailBox.MailItems?.Count ?? 0;
-                    if (mailBox.MailFolder.Count > mailItemsCount)
-                    {
-                        var lstMsg = await mailBox.MailFolder.SearchAsync(SearchQuery.All);
-                        lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
-                        var messages = await mailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
-                        if (invertOrder)
-                        {
-                            messages = messages.OrderByDescending(item => item.UniqueId).Reverse().ToList();
-                        }
-                        else
-                        {
-                            messages = messages.OrderByDescending(item => item.UniqueId).ToList();
-                        }
-                        for (int i = 0; i < messages.Count; i++)
-                        {
-                            UniqueId mailId = messages[i].UniqueId;
-
-                            var message = messages[i];
-                            MailItem mail = new MailItem(this);
-                            mail.Fill(message.UniqueId);
-                            mail.Fill(message.Flags);
-                            MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
-                            if (mimeMessage == null)
-                            {
-                                mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
-                            }
-                            mail.Fill(mimeMessage);
-
-                            mailBox.AddMail(mail);
-                            SaveMailsCache();
-
-                            if (GetMailsTaskToken.Token.IsCancellationRequested)
-                            {
-                                mailBox.MailFolder.Close();
-                                GetMailsTaskToken.Token.ThrowIfCancellationRequested();
-                            }
-                        }
-                    }
                     await mailBox.MailFolder.CloseAsync();
-                });
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+                action.Invoke(mailBox, messagesList);
+                await mailBox.MailFolder.CloseAsync();
             }
             catch { }
             finally
             {
                 GetMailsTask = null;
             }
+        }
+        private async void LoadNewMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
+        {
+            messagesList = messagesList.OrderBy(item => item.UniqueId).ToList();
+
+            foreach (var message in messagesList)
+            {
+                UniqueId mailId = message.UniqueId;
+
+                MailItem mail = new MailItem(this);
+                mail.Fill(message.UniqueId);
+                mail.Fill(message.Flags);
+                MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                if (mimeMessage == null)
+                {
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
+                }
+                mail.Fill(mimeMessage);
+
+                await App.Current.Dispatcher.Invoke(async () =>
+                {
+                    mailBox.AddMail(mail);
+                    SaveMailsCache();
+                });
+
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
+                {
+                    mailBox.MailFolder.Close();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+            }
+        }
+        private async void LoadOldMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
+        {
+            messagesList = messagesList.OrderByDescending(item => item.UniqueId).ToList();
+
+            foreach (var message in messagesList)
+            {
+                UniqueId mailId = message.UniqueId;
+
+                MailItem mail = new MailItem(this);
+                mail.Fill(message.UniqueId);
+                mail.Fill(message.Flags);
+                MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                if (mimeMessage == null)
+                {
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
+                }
+                mail.Fill(mimeMessage);
+
+                await App.Current.Dispatcher.Invoke(async () =>
+                {
+                    mailBox.AddMail(mail);
+                    SaveMailsCache();
+                });
+
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
+                {
+                    mailBox.MailFolder.Close();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+            }
+        }
+        public async Task<IList<IMessageSummary>> GetMailsMessages(int amount, MailBox mailBox, Func<UniqueId, bool> whereFunc)
+        {
+            IList<IMessageSummary> messages = null;
+            int mailItemsCount = mailBox.MailItems?.Count ?? 0;
+            if (mailBox.MailFolder.Count > mailItemsCount)
+            {
+                var lstMsg = await mailBox.MailFolder.SearchAsync(SearchQuery.All);
+                lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
+                messages = await mailBox.MailFolder.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
+            }
+            return messages;
         }
 
         private void UnselectAllMails()
@@ -318,8 +371,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
             JsonTool.SaveMails(SelectedMailBox.MailItems.ToList(), SelectedMailBox.Name);
         }
 
-        public async void SeenMail(MailItem mail)
+        public async void SeenMail(MailBox mailBox, MailItem mail)
         {
+            await IsMailBoxOpen(mailBox);
             await SelectedMailBox.MailFolder.OpenAsync(FolderAccess.ReadWrite);
             await SelectedMailBox.MailFolder.AddFlagsAsync(new UniqueId(mail.Uid), MessageFlags.Seen, true);
             await SelectedMailBox.MailFolder.CloseAsync();
