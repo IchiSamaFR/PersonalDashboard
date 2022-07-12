@@ -257,19 +257,17 @@ namespace PersonalDashboard.ViewModel.Dashboard
         private async void LoadNewMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
         {
             messagesList = messagesList.OrderBy(item => item.UniqueId).ToList();
-
-            for (int i = 0; i < messagesList.Count; i++)
+            
+            foreach (var message in messagesList)
             {
-                UniqueId mailId = messagesList[i].UniqueId;
-
-                var message = messagesList[i];
+                UniqueId mailId = message.UniqueId;
                 MailItem mail = new MailItem(this);
                 mail.Fill(message.UniqueId);
                 mail.Fill(message.Flags);
                 MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
                 if (mimeMessage == null)
                 {
-                    mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
                 }
                 mail.Fill(mimeMessage);
 
@@ -293,14 +291,13 @@ namespace PersonalDashboard.ViewModel.Dashboard
             foreach (var message in messagesList)
             {
                 UniqueId mailId = message.UniqueId;
-                
                 MailItem mail = new MailItem(this);
                 mail.Fill(message.UniqueId);
                 mail.Fill(message.Flags);
                 MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
                 if (mimeMessage == null)
                 {
-                    mimeMessage = await mailBox.MailFolder.GetMessageAsync(message.UniqueId);
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
                 }
                 mail.Fill(mimeMessage);
 
