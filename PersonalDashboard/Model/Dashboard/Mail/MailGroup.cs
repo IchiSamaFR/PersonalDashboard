@@ -62,7 +62,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         }
         public MailGroup AddMail(MailItem mail)
         {
-            MailItems.Add(mail);
+            MailItems.InsertWhere(m => m.Uid < mail.Uid, mail);
             return this;
         }
     }

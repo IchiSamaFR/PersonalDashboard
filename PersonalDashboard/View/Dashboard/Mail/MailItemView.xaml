@@ -55,6 +55,11 @@
                     </Grid>
                 </Border>
                 <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsSeen}" Value="True">
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter_2}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="indicator" Property="Fill" Value="{DynamicResource bru_BackgroundFocused_2}"/>
+                    </DataTrigger>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter TargetName="DeleteBtn" Property="Visibility" Value="Visible"/>
                         <Setter TargetName="DeleteBtn" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter}"/>

@@ -63,7 +63,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         {
             MailFolder = mailFolder;
             MailFolder.MessageExpunged += MailFolder_MessageExpunged;
-            MailFolder.CountChanged += MailFolder_CountChanged;
         }
 
         private void MailFolder_MessageExpunged(object sender, MessageEventArgs e)
@@ -71,11 +70,6 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             RemoveMail(e.UniqueId);
         }
 
-        private void MailFolder_CountChanged(object sender, EventArgs e)
-        {
-            CountChanged = true;
-            OnCountChanged?.Invoke();
-        }
 
         public void AddMail(MailItem mail)
         {

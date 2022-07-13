@@ -40,6 +40,13 @@ namespace PersonalDashboard.Model.Dashboard.Mail
                 NotifyPropertyChanged();
             }
         }
+        public bool IsSeen
+        {
+            get
+            {
+                return Flags != MessageFlags.Seen;
+            }
+        }
         public uint Uid { get; set; }
         public MailboxAddress FromEmail
         {
@@ -112,6 +119,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 flags = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsSeen));
             }
         }
 
@@ -170,7 +178,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
 
         public void DeleteMail()
         {
-            mailVM.DeleteMail(this);
+            //mailVM.DeleteMail(this);
         }
         public override string ToString()
         {
