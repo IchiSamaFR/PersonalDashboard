@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PersonalDashboard.ViewModel.Tools
+namespace PersonalDashboard.Model
 {
     public class ObservableObject : INotifyPropertyChanged
     {

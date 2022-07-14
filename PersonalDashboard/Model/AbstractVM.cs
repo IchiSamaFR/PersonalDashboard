@@ -1,4 +1,4 @@
-﻿using PersonalDashboard.ViewModel.Tools;
+﻿using PersonalDashboard.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace PersonalDashboard.ViewModel
+namespace PersonalDashboard.Model
 {
     public abstract class AbstractVM : ObservableObject
     {

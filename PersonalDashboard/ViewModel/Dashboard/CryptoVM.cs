@@ -16,6 +16,7 @@ using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Authentication;
 using Binance.Net.Objects;
 using PersonalDashboard.Model;
+using PersonalDashboard.ViewModel.Tools;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
@@ -145,10 +146,8 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public async Task<BinanceSocketClient> IsSet()
         {
-            while (socketClient == null)
-            {
-                await Task.Delay(100);
-            }
+            await AsyncTool.AwaitUntil(() => socketClient != null);
+
             return socketClient;
         }
 
@@ -172,9 +171,9 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public async Task GetSymbolsValues(List<string> lstSymbols)
         {
-            await IsSet();
+            await AsyncTool.AwaitUntil(() => socketClient != null);
 
-            var subscribeResult = await socketClient.Spot.SubscribeToSymbolTickerUpdatesAsync(lstSymbols, data => {
+            await socketClient.Spot.SubscribeToSymbolTickerUpdatesAsync(lstSymbols, data => {
                 var symbol = AllPrices.SingleOrDefault(p => p.Symbol == data.Data.Symbol);
                 if (symbol != null)
                 {

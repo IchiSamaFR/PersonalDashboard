@@ -1,6 +1,8 @@
 ﻿using Binance.Net;
+using PersonalDashboard.Model;
 using PersonalDashboard.Model.Dashboard.Crypto;
 using PersonalDashboard.View.Dashboard.Crypto;
+using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +17,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
     {
         private CryptoVM cryptoVM { get; set; }
         public override UserControl UserControl { get; } = new WalletView();
-        private bool isInit;
 
         private List<string> _lstSymbols = new List<string>();
         private ObservableCollection<SymbolItem> _allPrices = new ObservableCollection<SymbolItem>();
@@ -56,30 +57,23 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
             {
                 AllPrices = new ObservableCollection<SymbolItem>();
                 LstSymbols = new List<string>();
-                Task.Run(() => GetWallet());
+                GetSymbolTask = Task.Run(() => GetWallet());
             }
             else
             {
-                if (GetSymbolTask != null && GetSymbolTask.IsCompleted)
-                {
-                    GetSymbolTask.Dispose();
-                }
-                GetSymbolTask = null;
+                DeleteTask();
             }
         }
-
-        public async Task InitSymbols()
+        private async void DeleteTask()
         {
-            socketClient = await cryptoVM.IsSet();
-            isInit = true;
+            //await AsyncTool.AwaitUntil(() => GetSymbolTask.);
+            GetSymbolTask?.Dispose();
+            GetSymbolTask = null;
         }
 
         public async Task GetSymbolsValues()
         {
-            while (!isInit)
-            {
-                await Task.Delay(100);
-            }
+            await AsyncTool.AwaitUntil(() => socketClient != null);
 
             await cryptoVM.GetSymbolsValues(LstSymbols);
         }
@@ -87,7 +81,6 @@ namespace PersonalDashboard.ViewModel.Dashboard.Crypto
         public async Task GetWallet()
         {
             socketClient = await cryptoVM.IsSet();
-            isInit = true;
             using (var client = new BinanceClient())
             {
                 var spotResult = await client.General.GetAccountInfoAsync();

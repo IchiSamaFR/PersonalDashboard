@@ -1,4 +1,5 @@
-﻿using PersonalDashboard.Model.Dashboard.Password;
+﻿using PersonalDashboard.Model;
+using PersonalDashboard.Model.Dashboard.Password;
 using PersonalDashboard.View.Dashboard;
 using PersonalDashboard.ViewModel.Dashboard.Password;
 using PersonalDashboard.ViewModel.Tools;

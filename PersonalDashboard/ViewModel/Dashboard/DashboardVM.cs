@@ -1,4 +1,5 @@
-﻿using PersonalDashboard.View.Dashboard;
+﻿using PersonalDashboard.Model;
+using PersonalDashboard.View.Dashboard;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;

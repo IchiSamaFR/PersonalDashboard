@@ -1,4 +1,5 @@
-﻿using PersonalDashboard.Model.Notifications;
+﻿using PersonalDashboard.Model;
+using PersonalDashboard.Model.Notifications;
 using PersonalDashboard.View;
 using PersonalDashboard.ViewModel.Tools;
 using System;

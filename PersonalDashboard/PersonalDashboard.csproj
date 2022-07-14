@@ -119,7 +119,7 @@
     <Compile Include="Model\Dashboard\Password\ServiceItem.cs" />
     <Compile Include="Model\Notifications\NotificationItem.cs" />
     <Compile Include="Resources\ResourceTool.cs" />
-    <Compile Include="ViewModel\AbstractVM.cs" />
+    <Compile Include="Model\AbstractVM.cs" />
     <Compile Include="ViewModel\Dashboard\CryptoVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\BotVM.cs" />
     <Compile Include="ViewModel\Dashboard\Crypto\PricesVM.cs" />
@@ -136,10 +136,11 @@
     <Compile Include="ViewModel\Login\LoginVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="ViewModel\NotificationsVM.cs" />
+    <Compile Include="ViewModel\Tools\AsyncTool.cs" />
     <Compile Include="ViewModel\Tools\ConnectionTool.cs" />
     <Compile Include="ViewModel\Tools\HtmlTool.cs" />
     <Compile Include="ViewModel\Tools\JsonTool.cs" />
-    <Compile Include="ViewModel\Tools\ObservableObject.cs" />
+    <Compile Include="Model\ObservableObject.cs" />
     <Compile Include="ViewModel\Tools\RelayCommand.cs" />
     <Compile Include="ViewModel\Tools\VariablesExtensions.cs" />
     <Compile Include="View\Convertors\BitmapToImageSourceConverter.cs" />

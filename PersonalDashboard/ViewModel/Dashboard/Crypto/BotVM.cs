@@ -1,4 +1,5 @@
 ﻿using Binance.Net;
+using PersonalDashboard.Model;
 using PersonalDashboard.Model.Dashboard.Crypto;
 using PersonalDashboard.View.Dashboard.Crypto;
 using System;

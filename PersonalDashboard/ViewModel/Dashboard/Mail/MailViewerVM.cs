@@ -1,4 +1,5 @@
-﻿using PersonalDashboard.Model.Dashboard.Mail;
+﻿using PersonalDashboard.Model;
+using PersonalDashboard.Model.Dashboard.Mail;
 using PersonalDashboard.View.Dashboard.Mail;
 using PersonalDashboard.ViewModel.Tools;
 using System;
