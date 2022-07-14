@@ -10,10 +10,10 @@ namespace PersonalDashboard.Model
     public class ConfigItem
     {
         public static ConfigItem Instance;
-        public string APIKey { get; set; } = "***REMOVED***";
-        public string SecretKey { get; set; } = "***REMOVED***";
-        public string MailAdress { get; set; } = "***REMOVED***";
-        public string MailPass { get; set; } = "***REMOVED***";
+        public string APIKey { get; set; } = "";
+        public string SecretKey { get; set; } = "";
+        public string MailAdress { get; set; } = "";
+        public string MailPass { get; set; } = "";
 
         public ConfigItem()
         {

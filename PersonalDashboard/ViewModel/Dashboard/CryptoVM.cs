@@ -94,8 +94,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Name = "Crypto";
             Icon = PersonalDashboard.Properties.Resources.wallet;
 
-            BinanceClient.SetDefaultOptions(new BinanceClientOptions() { ApiCredentials = new ApiCredentials(ApiKey, ApiSecret) });
-
+            LogBinance();
 
             AllVM = new List<AbstractVM>
             {
@@ -104,6 +103,14 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 new TradingVM(this),
                 new BotVM(this),
             };
+        }
+        private void LogBinance()
+        {
+            if(string.IsNullOrEmpty(ApiKey) || string.IsNullOrEmpty(ApiSecret))
+            {
+                return;
+            }
+            BinanceClient.SetDefaultOptions(new BinanceClientOptions() { ApiCredentials = new ApiCredentials(ApiKey, ApiSecret) });
         }
 
         public override void OnFocus()
@@ -157,7 +164,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 }
                 else
                 {
-                    NotificationsVM.instance.AddNotification(this, "Could not connect to the binance API.");
+                    NotificationsVM.instance.AddNotification(Name, "Could not connect to the binance API.");
                 }
             }
 

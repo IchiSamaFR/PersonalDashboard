@@ -5,40 +5,76 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PersonalDashboard.View.Dashboard.Mail"
              xmlns:properties="clr-namespace:PersonalDashboard.Properties"
-             mc:Ignorable="d" 
-             d:DesignHeight="56" d:DesignWidth="300">
-    <Grid Height="56" Background="{DynamicResource bru_BackgroundItem}" Margin="0 0 0 0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="60"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="100"/>
-        </Grid.ColumnDefinitions>
+             mc:Ignorable="d" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/Dashboard/Mail/MailStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Button Margin="0 0 0 0" Background="{StaticResource bru_BackgroundItem}" Foreground="{StaticResource bru_LightForeground}"
+            Command="{Binding Path=DataContext.SelectMailCmd, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}, AncestorLevel=2}}"
+            CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
+        <Button.Template>
+            <ControlTemplate>
+                <Border BorderBrush="{DynamicResource bru_BackgroundDarker}" BorderThickness="0 0 0 1"
+                        Background="{StaticResource bru_BackgroundItem}" x:Name="MainGrid">
+                    <Grid>
+                        <Rectangle x:Name="indicator" Fill="{StaticResource bru_Background}" Visibility="Collapsed"
+                                   Width="10" HorizontalAlignment="Left"/>
+                        <Grid Margin="0 10 0 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-        <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
-            <TextBlock Text="{Binding FromDisplay}" Foreground="{DynamicResource bru_LightForeground}"/>
-            <TextBlock Text="{Binding SubjectSub}" Foreground="{DynamicResource bru_LightForeground}"/>
-            <TextBlock Text="{Binding TextDisplay}" Foreground="{DynamicResource bru_SubLightForeground}"/>
-        </WrapPanel>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="MailOptions">
-                <WrapPanel.Style>
-                    <Style TargetType="WrapPanel">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid,AncestorLevel=2}, Path=IsMouseOver}" Value="False" >
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </WrapPanel.Style>
-                <Button Margin="2 0 2 0" Height="28" Width="28" Command="{Binding DeleteCmd}" Style="{StaticResource Button}">
-                    <Image Source="{Binding Source={x:Static properties:Resources.remove}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
-                </Button>
-            </WrapPanel>
-            <TextBlock Text="{Binding TimeDisplay}" Foreground="{DynamicResource bru_SubLightForeground}" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
-    </Grid>
+                            <WrapPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 10 0">
+                                <TextBlock Text="{Binding FromEmail.Name}" Foreground="{TemplateBinding Foreground}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Subject}" Foreground="{TemplateBinding Foreground}"/>
+                                <TextBlock Text="{Binding HtmlBody, Converter={StaticResource HtmlToPlainTextConverter}}" Foreground="{TemplateBinding Foreground}"/>
+                            </WrapPanel>
+                            <Grid Grid.Column="2" Margin="0 0 14 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Image Margin="0 4 0 4" Source="{Binding Source={x:Static properties:Resources.attach}, Converter={StaticResource BitmapToImageSourceConverter}}" Height="20" Width="20" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding HasAttachment, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <Button x:Name="DeleteBtn" Height="28" Width="28" Command="{Binding DeleteCmd}" Style="{StaticResource Button}"
+                                    Visibility="Collapsed">
+                                        <Image Source="{Binding Source={x:Static properties:Resources.remove}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="4"/>
+                                    </Button>
+                                </WrapPanel>
+                                <TextBlock Text="{Binding Date, Converter={StaticResource DatetimeToStringConverter}, ConverterParameter='ddd dd/MM/yyy'}" Foreground="{TemplateBinding Foreground}" 
+                                       Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsSeen}" Value="True">
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter_2}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="indicator" Property="Fill" Value="{DynamicResource bru_BackgroundFocused_2}"/>
+                    </DataTrigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="DeleteBtn" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="DeleteBtn" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter}"/>
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_BackgroundFocusedLighter}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="indicator" Property="Fill" Value="{DynamicResource bru_BackgroundFocused}"/>
+                    </Trigger>
+                    <DataTrigger Binding="{Binding IsFocused}" Value="True">
+                        <Setter TargetName="DeleteBtn" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="DeleteBtn" Property="Background" Value="{DynamicResource bru_Background}"/>
+                        <Setter TargetName="MainGrid" Property="Background" Value="{DynamicResource bru_Background}"/>
+                        <Setter TargetName="indicator" Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Button.Template>
+    </Button>
 </UserControl>

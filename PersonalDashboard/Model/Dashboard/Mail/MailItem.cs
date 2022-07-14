@@ -6,7 +6,9 @@ using PersonalDashboard.ViewModel.Dashboard;
 using PersonalDashboard.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,44 +20,35 @@ namespace PersonalDashboard.Model.Dashboard.Mail
     public class MailItem : ObservableObject
     {
         private MailVM mailVM;
-        public UserControl UserControl { get; } = new MailItemView();
 
-        #region Commands
+        private bool _isFocused;
+        private MailboxAddress fromEmail;
+        private string _htmlBody;
+        private MessageFlags? flags;
+        private string _textBody;
+        private List<MimeEntity> _attachments = new List<MimeEntity>();
 
-        private ICommand _deleteMailCmd;
-        public ICommand DeleteMailCmd
+        public bool IsFocused
         {
             get
             {
-                if (_deleteMailCmd == null)
-                {
-                    _deleteMailCmd = new RelayCommand(o => { DeleteMail(); });
-                }
-                return _deleteMailCmd;
-            }
-        }
-        #endregion
-
-        public bool IsOpened { get; set; }
-
-        public UniqueId Uid { get; set; }
-        private string fromDisplayName;
-        public string FromDisplayName
-        {
-            get
-            {
-                return fromDisplayName;
+                return _isFocused;
             }
             set
             {
-                fromDisplayName = value;
+                _isFocused = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(FromDisplay));
             }
         }
-
-        private string fromEmail;
-        public string FromEmail
+        public bool IsSeen
+        {
+            get
+            {
+                return Flags != MessageFlags.Seen;
+            }
+        }
+        public uint Uid { get; set; }
+        public MailboxAddress FromEmail
         {
             get
             {
@@ -65,90 +58,57 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 fromEmail = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(FromDisplay));
             }
         }
-
-        public string FromDisplay
-        {
-            get
-            {
-                return string.IsNullOrEmpty(FromDisplayName) ? FromEmail : FromDisplayName;
-            }
-        }
-
-        public List<string> ToDisplayName { get; set; }
-        public List<string> ToEmail { get; set; }
+        public List<InternetAddress> ReplyTo { get; set; }
+        public List<InternetAddress> ToEmail { get; set; }
+        public List<InternetAddress> CcEmail { get; set; }
         public string Subject { get; set; }
-        public string SubjectSub
+        public List<MimeEntity> Attachments
         {
             get
             {
-                return Subject?.Length > 33 ? $"{Subject?.Substring(0, 30)}..." : Subject;
+                return _attachments;
+            }
+            set
+            {
+                _attachments = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(HasAttachment));
             }
         }
-
-        public DateTime TimeReceived { get; set; }
-        public string TimeDisplay
+        public DateTime Date { get; set; }
+        public bool HasAttachment
         {
             get
             {
-                return TimeReceived.ToString("ddd dd/MM/yy");
+                return Attachments.Count() > 0;
             }
         }
-
-        public bool HasAttachment { get; set; }
-        public List<MimeEntity> Attachments { get; set; }
-
-        public string htmlBody { get; set; }
         public string HtmlBody
         {
             get
             {
-                return htmlBody;
+                return _htmlBody;
             }
             set
             {
-                htmlBody = value;
+                _htmlBody = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(HtmlDisplay));
             }
         }
-        public string HtmlDisplay
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(HtmlBody))
-                {
-                    return htmlBody;
-                }
-                else if (!string.IsNullOrEmpty(TextBody))
-                {
-                    return TextBody.Replace("\r", "<br/>");
-                }
-                else
-                {
-                    return "";
-                }
-            }
-        }
-
-        public string textBody { get; set; }
         public string TextBody
         {
             get
             {
-                return textBody;
+                return _textBody;
             }
             set
             {
-                textBody = value;
+                _textBody = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(TextDisplay));
             }
         }
-
-        private MessageFlags? flags;
         public MessageFlags? Flags
         {
             get
@@ -159,33 +119,71 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 flags = value;
                 NotifyPropertyChanged();
-            }
-        }
-
-        public string TextDisplay
-        {
-            get
-            {
-                if (TextBody == null)
-                {
-                    return "";
-                }
-                else
-                {
-                    return Regex.Replace(TextBody?.Replace("\r", " ").Replace("\n", " ").Trim(), @"\s+", " ");
-                }
+                NotifyPropertyChanged(nameof(IsSeen));
             }
         }
 
         public MailItem(MailVM vm)
         {
-            UserControl.DataContext = this;
+            Init(vm);
+        }
+        public void Init(MailVM vm)
+        {
             mailVM = vm;
+        }
+        public void Fill(MimeMessage mimeMessage)
+        {
+            Attachments = mimeMessage.Attachments.ToList();
+            FromEmail = mimeMessage.From.Mailboxes.FirstOrDefault();
+            ReplyTo = mimeMessage.ReplyTo.Select(email => email).ToList();
+            ToEmail = mimeMessage.To.Select(email => email).ToList();
+            CcEmail = mimeMessage.Cc.Select(email => email).ToList();
+            Subject = mimeMessage.Subject;
+            Date = mimeMessage.Date.DateTime;
+            HtmlBody = mimeMessage.HtmlBody;
+            TextBody = mimeMessage.TextBody;
+        }
+        public void Fill(UniqueId id)
+        {
+            Uid = uint.Parse(id.ToString());
+        }
+        public void Fill(MessageFlags? flags)
+        {
+            Flags = flags;
+        }
+
+        public void SaveAsEml(string path)
+        {
+            MimeMessage msg = new MimeMessage();
+            BodyBuilder bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = HtmlBody;
+            bodyBuilder.TextBody = TextBody;
+            Attachments.ForEach(att => bodyBuilder.Attachments.Add(att));
+
+            if(FromEmail != null)
+            {
+                msg.From.Add(FromEmail);
+            }
+            ReplyTo?.ForEach(email => msg.ReplyTo.Add(email));
+            ToEmail?.ForEach(email => msg.To.Add(email));
+            CcEmail?.ForEach(email => msg.Cc.Add(email));
+
+            msg.Subject = Subject;
+            msg.Body = bodyBuilder.ToMessageBody();
+            msg.Date = Date;
+            msg.ResentDate = Date;
+
+            msg.WriteTo(path);
         }
 
         public void DeleteMail()
         {
-            mailVM.DeleteMail(this);
+            //mailVM.DeleteMail(this);
+        }
+        public override string ToString()
+        {
+
+            return "";
         }
     }
 }

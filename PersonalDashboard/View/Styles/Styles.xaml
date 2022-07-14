@@ -5,6 +5,10 @@
 
     <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     <converters:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
+    <converters:DateTimeOffsetToDateConverter x:Key="DateTimeOffsetToDateConverter"/>
+    <converters:TextToPasswordDisplayConverter x:Key="TextToPasswordDisplayConverter"/>
+    <converters:DatetimeToStringConverter x:Key="DatetimeToStringConverter"/>
+    <converters:HtmlToPlainTextConverter x:Key="HtmlToPlainTextConverter"/>
 
     <Style TargetType="Button" x:Key="Button">
         <Setter Property="Background" Value="{DynamicResource bru_BackgroundItem}"/>
@@ -17,11 +21,8 @@
                         <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource bru_Background}"/>
-                        </Trigger>
-                        <Trigger Property="Button.IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource bru_BackgroundFocused}"/>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource bru_BackgroundFocused}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

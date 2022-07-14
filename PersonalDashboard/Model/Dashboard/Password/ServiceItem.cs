@@ -25,7 +25,7 @@ namespace PersonalDashboard.Model.Dashboard.Password
         }
 
         private ObservableCollection<PasswordItem> passwordItems = new ObservableCollection<PasswordItem>();
-        public ObservableCollection<PasswordItem> PasswordItems
+        public ObservableCollection<PasswordItem> Passwords
         {
             get
             {
@@ -45,7 +45,7 @@ namespace PersonalDashboard.Model.Dashboard.Password
 
         public void AddPassword(string login, string password)
         {
-            PasswordItems.Add(new PasswordItem(login, password));
+            Passwords.Add(new PasswordItem(login, password));
         }
     }
 }

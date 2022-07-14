@@ -12,17 +12,15 @@ namespace PersonalDashboard.Model.Dashboard.Mail
 {
     public class MailGroup : ObservableObject
     {
-        public UserControl UserControl { get; } = new MailGroupView();
-
         private ObservableCollection<MailItem> _mailItems;
         private bool _isOpen = true;
 
-        public DateTime TimeReceived { get; set; }
+        public DateTime Date { get; set; }
         public string TimeDisplay
         {
             get
             {
-                return TimeReceived.ToString("ddd dd/MM/yy");
+                return Date.ToString("ddd dd/MM/yy");
             }
         }
         public ObservableCollection<MailItem> MailItems
@@ -53,19 +51,18 @@ namespace PersonalDashboard.Model.Dashboard.Mail
         {
             get
             {
-                return TimeReceived == DateTime.Now.Date;
+                return Date == DateTime.Now.Date;
             }
         }
 
         public MailGroup(DateTime dateTime)
         {
-            UserControl.DataContext = this;
-            TimeReceived = dateTime.Date;
+            Date = dateTime.Date;
             MailItems = new ObservableCollection<MailItem>();
         }
         public MailGroup AddMail(MailItem mail)
         {
-            MailItems.Add(mail);
+            MailItems.InsertWhere(m => m.Uid < mail.Uid, mail);
             return this;
         }
     }

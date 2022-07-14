@@ -16,38 +16,80 @@ using PersonalDashboard.ViewModel.Tools;
 using System.Windows.Input;
 using System.Windows;
 using MailKit.Search;
+using System.IO;
+using System.Reflection;
+using System.Net.Mail;
+using Newtonsoft.Json.Linq;
+using PersonalDashboard.ViewModel.Dashboard.Mail;
+using System.Threading;
 
 namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class MailVM : AbstractVM
     {
-        private DashboardVM dashboardVM { get; set; }
+        private readonly DashboardVM _dashboardVM;
         public override UserControl UserControl { get; } = new MailView();
 
-        private UniqueId lowerId = UniqueId.MaxValue;
-        private UniqueId higherId = UniqueId.MinValue;
+        #region Private
+        private MailViewerVM _mailViewerVM;
         private ImapClient imapClient;
-        private IMailFolder inbox;
-        private Task GetMailsTask;
-        private UserControl _controlSelected;
+        private MailBox _selectedMailBox;
+        private List<MailBox> _mailBoxes = new List<MailBox>();
+        CancellationTokenSource GetMailsTaskToken;
+        private Task _getMailsTask;
         private MailItem _mailSelected;
-        private ObservableCollection<MailItem> _mailItems = new ObservableCollection<MailItem>();
-        private ObservableCollection<Model.Dashboard.Mail.MailGroup> _mailDateItems = new ObservableCollection<Model.Dashboard.Mail.MailGroup>();
-        private ObservableCollection<UserControl> _mailControls = new ObservableCollection<UserControl>();
+        #endregion
 
-        public UserControl ControlSelected
+        #region public
+        public MailViewerVM MailViewerVM
         {
             get
             {
-                return _controlSelected;
+                return _mailViewerVM;
+            }
+        }
+        public MailBox SelectedMailBox
+        {
+            get
+            {
+                return _selectedMailBox;
             }
             set
             {
-                _controlSelected = value;
-                MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                if(SelectedMailBox != value)
+                {
+                    if (SelectedMail != null)
+                    {
+                        SelectedMail.IsFocused = false;
+                        SelectedMail = null;
+                    }
+                    if(SelectedMailBox != null)
+                    {
+                        SelectedMailBox.OnCountChanged -= StartOnCountChanged;
+                    }
+                    _selectedMailBox = value;
+                    if (SelectedMailBox != null)
+                    {
+                        SelectedMailBox.OnCountChanged += StartOnCountChanged;
+                    }
+                    NotifyPropertyChanged();
+                    InitMailBox();
+                }
             }
         }
-        public MailItem MailSelected
+        public List<MailBox> MailBoxes
+        {
+            get
+            {
+                return _mailBoxes;
+            }
+            set
+            {
+                _mailBoxes = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public MailItem SelectedMail
         {
             get
             {
@@ -55,125 +97,108 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             set
             {
-                if (value != null && (!inbox.IsOpen || value.Flags == MessageFlags.Seen))
-                {
-                    if (!inbox.IsOpen)
-                    {
-                        SeenMail(_mailSelected);
-                    }
-
-                    _mailSelected = value;
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        MailViewer.NavigateToString(MailSelected.HtmlDisplay);
-                    });
-                    NotifyPropertyChanged();
-                    NotifyPropertyChanged(nameof(MailViewerVisible));
-                }
-            }
-        }
-        public ObservableCollection<MailItem> MailItems
-        {
-            get
-            {
-                return _mailItems;
-            }
-            set
-            {
-                _mailItems = value;
-            }
-        }
-        public ObservableCollection<Model.Dashboard.Mail.MailGroup> MailGroups
-        {
-            get
-            {
-                return _mailDateItems;
-            }
-            set
-            {
-                _mailDateItems = value;
+                _mailSelected = value;
                 NotifyPropertyChanged();
-            }
-        }
-        public ObservableCollection<UserControl> MailControls
-        {
-            get
-            {
-                return _mailControls;
-            }
-            set
-            {
-                _mailControls = value;
-            }
-        }
+                NotifyPropertyChanged(nameof(IsMailViewerVisible));
 
-        public ICommand LoadNewMailsCmd { get; }
-        public Visibility MailViewerVisible
-        {
-            get
-            {
-                return MailSelected == null ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
-        private WebBrowser MailViewer { get { return ((MailView)UserControl).webBrowser; } }
-
-        private UserControl UsercontrolSelected
-        {
-            get
-            {
-                return MailSelected.UserControl;
-            }
-            set
-            {
-                MailItem selected = MailItems.FirstOrDefault(item => item.UserControl == value);
-                if(selected != null)
+                if (_mailSelected != null)
                 {
-                    MailSelected = MailItems.FirstOrDefault(item => item.UserControl == value);
+                    _mailViewerVM.LoadMail(_mailSelected);
+                    if (SelectedMail.Flags != MessageFlags.Seen)
+                    {
+                        SeenMail(SelectedMailBox, _mailSelected);
+                    }
                 }
             }
         }
-
-        public MailVM(DashboardVM dashboardVM)
+        public bool IsMailViewerVisible
         {
-            this.dashboardVM = dashboardVM;
-            Name = "Mail";
-            Icon = PersonalDashboard.Properties.Resources.envelope;
-
-            LoadNewMailsCmd = new RelayCommand(o => { LoadMails(); });
+            get
+            {
+                return SelectedMailBox?.MailItems.Where(mail => mail.IsFocused).Count() == 1;
+            }
         }
+        #endregion
+
+        #region Commands
+        public ICommand SelectMailCmd { get; }
+        public ICommand LoadAncientMailsCmd { get; }
+        public ICommand ReloadMailsCommand { get; }
+        #endregion
+
+
+        public MailVM(DashboardVM dashboard)
+        {
+            _mailViewerVM = new MailViewerVM();
+            _dashboardVM = dashboard;
+            Name = "Mail";
+            Icon = Properties.Resources.mail;
+
+            SelectMailCmd = new RelayCommand(o => { StartSelectMail((MailItem)o); });
+            LoadAncientMailsCmd = new RelayCommand(o => { StartLoadOldMails(); });
+            ReloadMailsCommand = new RelayCommand(o => { StartOnCountChanged(); });
+
+            Task.Run(() => ConnectMailBoxAsync(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
+        }
+
         public override void OnFocus()
         {
-            base.OnFocus();
-            if (Focused && imapClient == null)
-            {
-                Task.Run(() => InitMails());
-            }
+            SelectFirstMailBox();
         }
-        
-        public void LoadMails(int amount = 10)
+        private async void SelectFirstMailBox()
         {
-            if(GetMailsTask == null || GetMailsTask.IsCanceled || GetMailsTask.IsCompleted || GetMailsTask.IsFaulted)
+            await AwaitUntil(() => imapClient.IsAuthenticated && MailBoxes.Count > 0);
+            if (SelectedMailBox == null)
             {
-                GetMailsTask = Task.Run(() => GetMails(amount));
+                SelectedMailBox = MailBoxes.FirstOrDefault(box => box.Name.ToLower() == "inbox") ?? MailBoxes.FirstOrDefault();
             }
         }
 
-        public async Task<ImapClient> IsSet()
+        public async Task<bool> AwaitUntil(Func<bool> func)
         {
-            while (inbox == null)
+            if(func.Invoke() == false)
             {
                 await Task.Delay(100);
             }
-            return imapClient;
+            return true;
         }
-        public async Task InitMails()
+        public async Task<bool> IsMailBoxOpen(MailBox mailBox)
         {
-            if (await ConnectMailBox(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass))
+            while (mailBox.MailFolder.IsOpen)
             {
-                LoadMails(50);
+                await Task.Delay(100);
+            }
+            return true;
+        }
+        public async Task<bool> IsSet()
+        {
+            while (SelectedMailBox == null)
+            {
+                await Task.Delay(100);
+            }
+            return true;
+        }
+        public async void InitMailBox()
+        {
+            await IsSet();
+            if (_getMailsTask != null)
+            {
+                GetMailsTaskToken.Cancel();
+            }
+            await AwaitUntil(() => _getMailsTask == null);
+            if (SelectedMailBox.MailItems.Count == 0)
+            {
+                if (SelectedMailBox.MailItems.Count == 0)
+                {
+                    StartLoadOldMails(50);
+                }
+                else
+                {
+                    StartLoadNewMails();
+                }
             }
         }
-        public async Task<bool> ConnectMailBox(string mail, string pass)
+        public async Task ConnectMailBoxAsync(string mail, string pass)
         {
             try
             {
@@ -181,88 +206,237 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
                 await imapClient.ConnectAsync("outlook.office365.com", 993, true);
                 await imapClient.AuthenticateAsync(new NetworkCredential(mail, pass));
-                inbox = imapClient.Inbox;
-                return true;
+
+                MailBoxes = imapClient.GetFolder(imapClient.PersonalNamespaces[0]).GetSubfolders().Select(fold => new MailBox(fold)).ToList();
             }
-            catch
+            catch (Exception e)
             {
-                NotificationsVM.instance.AddNotification(this, "Could not connect to the mailbox.");
-                return false;
+                NotificationsVM.instance.AddNotification(Name, $"Could not connect to the mailbox. {MethodBase.GetCurrentMethod().Name}");
             }
         }
-        public async Task GetMails(int amount)
+
+        public void StartLoadOldMails(int amount = 10)
         {
-            await IsSet();
-
-            await App.Current.Dispatcher.Invoke(async () =>
+            if (_getMailsTask == null)
             {
-                await inbox.OpenAsync(FolderAccess.ReadOnly);
+                GetMailsTaskToken = new CancellationTokenSource();
+                _getMailsTask = new Task(() => LoadMailsAsync(amount, id => SelectedMailBox.LowerId > id, LoadOldMailsAction));
+                _getMailsTask.Start();
+            }
+        }
+        public void StartLoadNewMails()
+        {
+            if (_getMailsTask == null)
+            {
+                GetMailsTaskToken = new CancellationTokenSource();
+                _getMailsTask = new Task(() => LoadMailsAsync(int.MaxValue, id => id > SelectedMailBox.HigherId, LoadNewMailsAction));
+                _getMailsTask.Start();
+            }
+        }
+        public async void StartOnCountChanged()
+        {
+            await AwaitUntil(() => _getMailsTask == null);
 
-                int mailItemsCount = MailItems?.Count ?? 0;
-                if (inbox.Count > mailItemsCount)
+            if (_getMailsTask == null)
+            {
+                GetMailsTaskToken = new CancellationTokenSource();
+                _getMailsTask = new Task(() => LoadMailsAsync(int.MaxValue, id => id > SelectedMailBox.LowerId, ReloadMailsAction));
+                _getMailsTask.Start();
+            }
+        }
+
+        private async void LoadMailsAsync(int amount, Func<UniqueId, bool> whereFunc, Action<MailBox, IList<IMessageSummary>> action)
+        {
+            MailBox mailBox = SelectedMailBox;
+            try
+            {
+                mailBox.MailFolder.Open(FolderAccess.ReadOnly);
+                IList<IMessageSummary> messagesList = await Task.Run(() => GetMailsMessages(amount, mailBox, whereFunc));
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
                 {
-                    var lstMsg = await inbox.SearchAsync(SearchQuery.All);
-                    lstMsg = lstMsg.Where(id => id < lowerId || id > higherId).OrderByDescending(msg => msg).Take(amount).ToList();
-                    var messages = await inbox.FetchAsync(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
-                    messages = messages.OrderByDescending(item => item.UniqueId).ToList();
-                    for (int i = 0; i < messages.Count; i++)
-                    {
-                        UniqueId mailId = messages[i].UniqueId;
-                        higherId = mailId > higherId ? mailId : higherId;
-                        lowerId = mailId < lowerId ? mailId : lowerId;
-
-                        var message = messages[i];
-                        MimeMessage mimeMessage = await inbox.GetMessageAsync(message.UniqueId);
-
-                        MailItem tempMail = new MailItem(this)
-                        {
-                            Uid = message.UniqueId,
-                            FromDisplayName = mimeMessage.From.FirstOrDefault().Name,
-                            FromEmail = mimeMessage.From.Mailboxes.Select(o => o.Address).FirstOrDefault(),
-                            ToDisplayName = mimeMessage.To.Select(item => item.Name).ToList(),
-                            ToEmail = mimeMessage.To.Mailboxes.Select(item => item.Address).ToList(),
-                            Subject = mimeMessage.Subject,
-                            TimeReceived = mimeMessage.Date.DateTime,
-                            HasAttachment = mimeMessage.Attachments.Count() > 0 ? true : false,
-                            Attachments = mimeMessage.Attachments.ToList(),
-                            HtmlBody = mimeMessage.HtmlBody,
-                            TextBody = mimeMessage.TextBody,
-                            Flags = messages[i].Flags,
-                        };
-                        AddMail(tempMail);
-                    }
+                    await mailBox.MailFolder.CloseAsync();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
                 }
-                await inbox.CloseAsync();
-            });
-            GetMailsTask.Dispose();
-        }
-
-        public void AddMail(MailItem mail)
-        {
-            if (!MailGroups.Any(group => group.TimeReceived.Date == mail.TimeReceived.Date))
-            {
-                MailGroups.Add(new MailGroup(mail.TimeReceived));
+                if (messagesList != null)
+                {
+                    await Task.Run(() => action(mailBox, messagesList));
+                }
+                mailBox.MailFolder.Close();
             }
-            MailGroups.FirstOrDefault(group => group.TimeReceived.Date == mail.TimeReceived.Date).AddMail(mail);
+            catch { }
+            finally
+            {
+                _getMailsTask = null;
+            }
+        }
+        private void LoadNewMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
+        {
+            messagesList = messagesList.OrderBy(item => item.UniqueId).ToList();
+            
+            foreach (var message in messagesList)
+            {
+                UniqueId mailId = message.UniqueId;
+                MailItem mail = new MailItem(this);
+                mail.Fill(message.UniqueId);
+                mail.Fill(message.Flags);
+                MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                if (mimeMessage == null)
+                {
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
+                }
+                mail.Fill(mimeMessage);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    mailBox.AddMail(mail);
+                    SaveMailsCache();
+                });
+
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
+                {
+                    mailBox.MailFolder.Close();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+            }
+        }
+        private void LoadOldMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
+        {
+            messagesList = messagesList.OrderByDescending(item => item.UniqueId).ToList();
+
+            foreach (var message in messagesList)
+            {
+                UniqueId mailId = message.UniqueId;
+                MailItem mail = new MailItem(this);
+                mail.Fill(message.UniqueId);
+                mail.Fill(message.Flags);
+                MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                if (mimeMessage == null)
+                {
+                    mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
+                }
+                mail.Fill(mimeMessage);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    mailBox.AddMail(mail);
+                    SaveMailsCache();
+                });
+
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
+                {
+                    mailBox.MailFolder.Close();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+            }
+        }
+        private void ReloadMailsAction(MailBox mailBox, IList<IMessageSummary> messagesList)
+        {
+            messagesList = messagesList.OrderByDescending(item => item.UniqueId).ToList();
+
+            foreach (var message in messagesList)
+            {
+                MailItem mail = null;
+                if (mailBox.MailItems.Any(m => m.Uid == uint.Parse(message.UniqueId.ToString())))
+                {
+                    mail = mailBox.MailItems.First(m => m.Uid == uint.Parse(message.UniqueId.ToString()));
+                    mail.Fill(message.Flags);
+                }
+                else
+                {
+                    UniqueId mailId = message.UniqueId;
+                    mail = new MailItem(this);
+                    mail.Fill(message.UniqueId);
+                    mail.Fill(message.Flags);
+                    MimeMessage mimeMessage = JsonTool.GetMimeMessageCache(mail.Uid);
+                    if (mimeMessage == null)
+                    {
+                        mimeMessage = mailBox.MailFolder.GetMessage(message.UniqueId);
+                    }
+                    mail.Fill(mimeMessage);
+
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        mailBox.AddMail(mail);
+                        SaveMailsCache();
+                    });
+                }
+
+                if (GetMailsTaskToken.Token.IsCancellationRequested)
+                {
+                    mailBox.MailFolder.Close();
+                    GetMailsTaskToken.Token.ThrowIfCancellationRequested();
+                }
+            }
+        }
+        public IList<IMessageSummary> GetMailsMessages(int amount, MailBox mailBox, Func<UniqueId, bool> whereFunc)
+        {
+            IList<IMessageSummary> messages = null;
+            int mailItemsCount = mailBox.MailItems?.Count ?? 0;
+            if (mailBox.MailFolder.Count > mailItemsCount)
+            {
+                var lstMsg = mailBox.MailFolder.Search(SearchQuery.All);
+                lstMsg = lstMsg.Where(whereFunc).OrderByDescending(msg => msg).Take(amount).ToList();
+                messages = mailBox.MailFolder.Fetch(lstMsg, MailKit.MessageSummaryItems.UniqueId | MailKit.MessageSummaryItems.Flags);
+            }
+            return messages;
         }
 
-        public async void SeenMail(MailItem mail)
+        private void UnselectAllMails()
         {
-            await App.Current.Dispatcher.Invoke(async () =>
+            foreach (var mail in SelectedMailBox.MailItems.Where(mailItem => mailItem.IsFocused))
             {
-                await inbox.OpenAsync(FolderAccess.ReadWrite);
-                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Seen, true);
-                await inbox.CloseAsync();
-            });
+                mail.IsFocused = false;
+            }
         }
-        public async void DeleteMail(MailItem mail)
+        public void StartSelectMail(MailItem mail)
         {
-            await App.Current.Dispatcher.Invoke(async () =>
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-                await inbox.OpenAsync(FolderAccess.ReadWrite);
-                await inbox.AddFlagsAsync(mail.Uid, MessageFlags.Deleted, true);
-                await inbox.CloseAsync();
-            });
+                mail.IsFocused = true;
+                if (SelectedMail != null)
+                {
+                    SelectedMail = null;
+                }
+                else
+                {
+                    SelectedMail = mail;
+                }
+            }
+            else
+            {
+                UnselectAllMails();
+                mail.IsFocused = true;
+                SelectedMail = mail;
+            }
+        }
+
+        public void LoadMailsCache()
+        {
+            foreach (var mail in JsonTool.LoadMails(SelectedMailBox.Name))
+            {
+                mail.Init(this);
+                SelectedMailBox.AddMail(mail);
+            }
+        }
+        public void SaveMailsCache()
+        {
+            JsonTool.SaveMails(SelectedMailBox.MailItems.ToList(), SelectedMailBox.Name);
+        }
+
+        public async void SeenMail(MailBox mailBox, MailItem mail)
+        {
+            await AwaitUntil(() => !mailBox.MailFolder.IsOpen);
+            SelectedMailBox.MailFolder.Open(FolderAccess.ReadWrite);
+            SelectedMailBox.MailFolder.AddFlags(new UniqueId(mail.Uid), MessageFlags.Seen, false);
+            SelectedMailBox.MailFolder.Close();
+            mail.Flags = MessageFlags.Seen;
+        }
+        public async void DeleteMail(MailBox mailBox, MailItem mail)
+        {
+            await AwaitUntil(() => !mailBox.MailFolder.IsOpen);
+            SelectedMailBox.MailFolder.Open(FolderAccess.ReadWrite);
+            SelectedMailBox.MailFolder.AddFlags(new UniqueId(mail.Uid), MessageFlags.Deleted, true);
+            SelectedMailBox.MailFolder.Close();
         }
     }
 }

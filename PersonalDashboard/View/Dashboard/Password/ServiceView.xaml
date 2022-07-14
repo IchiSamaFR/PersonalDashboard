@@ -72,7 +72,7 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Image Source="{Binding Source={x:Static properties:Resources.key}, Converter={StaticResource BitmapToImageSourceConverter}}" Margin="5"/>
-                                    <TextBlock Text="{Binding PasswordDisplay}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" Grid.Column="1"/>
+                                    <TextBlock Text="{Binding Password, Converter={StaticResource TextToPasswordDisplayConverter}}" VerticalAlignment="Center" Margin="10 0" Foreground="{DynamicResource bru_LightForeground}" Grid.Column="1"/>
                                 </Grid>
                             </Button>
                         </Grid>

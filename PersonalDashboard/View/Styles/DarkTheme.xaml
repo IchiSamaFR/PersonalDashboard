@@ -5,7 +5,12 @@
     <Color x:Key="col_BackgroundItem">#2A2A2A</Color>
     <Color x:Key="col_BackgroundDarker">#232323</Color>
     <Color x:Key="col_BackgroundLighter">#434343</Color>
+    
     <Color x:Key="col_BackgroundFocused">#2E2E75</Color>
+    <Color x:Key="col_BackgroundFocused_2">#284037</Color>
+    <Color x:Key="col_BackgroundFocusedLighter">#2E3256</Color>
+    <Color x:Key="col_BackgroundFocusedLighter_2">#1d3d37</Color>
+    
     <Color x:Key="col_DarkForeground">#1E1E3E</Color>
     <Color x:Key="col_LightForeground">#FFFFFF</Color>
     <Color x:Key="col_SubLightForeground">#DDDDDD</Color>
@@ -17,9 +22,15 @@
     <SolidColorBrush x:Key="bru_BackgroundItem" Color="{DynamicResource col_BackgroundItem}"/>
     <SolidColorBrush x:Key="bru_BackgroundDarker" Color="{DynamicResource col_BackgroundDarker}"/>
     <SolidColorBrush x:Key="bru_BackgroundLighter" Color="{DynamicResource col_BackgroundLighter}"/>
+    
     <SolidColorBrush x:Key="bru_BackgroundFocused" Color="{DynamicResource col_BackgroundFocused}"/>
+    <SolidColorBrush x:Key="bru_BackgroundFocused_2" Color="{DynamicResource col_BackgroundFocused_2}"/>
+    <SolidColorBrush x:Key="bru_BackgroundFocusedLighter" Color="{DynamicResource col_BackgroundFocusedLighter}"/>
+    <SolidColorBrush x:Key="bru_BackgroundFocusedLighter_2" Color="{DynamicResource col_BackgroundFocusedLighter_2}"/>
+    
     <SolidColorBrush x:Key="bru_DarkForeground" Color="{DynamicResource col_DarkForeground}"/>
     <SolidColorBrush x:Key="bru_LightForeground" Color="{DynamicResource col_LightForeground}"/>
+    
     <SolidColorBrush x:Key="bru_SubLightForeground" Color="{DynamicResource col_SubLightForeground}"/>
     <SolidColorBrush x:Key="bru_ErrorForeground" Color="{DynamicResource col_ErrorForeground}"/>
 </ResourceDictionary>

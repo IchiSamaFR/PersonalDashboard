@@ -15,7 +15,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 {
     public class PasswordVM : AbstractVM
     {
-        private DashboardVM dashboardVM { get; set; }
+        private readonly DashboardVM dashboardVM;
         public override UserControl UserControl { get; } = new PasswordView();
 
         private ServiceItem serviceSelected;
@@ -97,7 +97,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
             LoadPasswords();
 
-            ServiceItems = new ObservableCollection<ServiceItem>(JsonTool.LoadPasswords(ServiceItems.ToList()));
+            SavePasswords();
         }
 
         public void LoadPasswords()
@@ -115,7 +115,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public void SavePasswords()
         {
-
+            JsonTool.SavePasswords(ServiceItems.ToList());
         }
 
         public void AddPassword()

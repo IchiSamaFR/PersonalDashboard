@@ -22,8 +22,6 @@ namespace PersonalDashboard.View.Dashboard
     /// </summary>
     public partial class MailView : UserControl
     {
-        public WebBrowser WebBrowser { get { return webBrowser; } }
-
         public MailView()
         {
             InitializeComponent();
@@ -36,8 +34,8 @@ namespace PersonalDashboard.View.Dashboard
                 if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight - 50)
                 {
                     var viewModel = (MailVM)DataContext;
-                    if (viewModel.LoadNewMailsCmd.CanExecute(null))
-                        viewModel.LoadNewMailsCmd.Execute(null);
+                    if (viewModel.LoadAncientMailsCmd.CanExecute(null))
+                        viewModel.LoadAncientMailsCmd.Execute(null);
                 }
             }
         }
