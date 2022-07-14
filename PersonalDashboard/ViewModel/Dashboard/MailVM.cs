@@ -141,9 +141,22 @@ namespace PersonalDashboard.ViewModel.Dashboard
             Task.Run(() => ConnectMailBoxAsync(ConfigItem.Instance.MailAdress, ConfigItem.Instance.MailPass));
         }
 
-        public async Task<bool> GetMailsTaskAvailable()
+        public override void OnFocus()
         {
-            while (_getMailsTask != null)
+            SelectFirstMailBox();
+        }
+        private async void SelectFirstMailBox()
+        {
+            await AwaitUntil(() => imapClient.IsAuthenticated && MailBoxes.Count > 0);
+            if (SelectedMailBox == null)
+            {
+                SelectedMailBox = MailBoxes.FirstOrDefault(box => box.Name.ToLower() == "inbox") ?? MailBoxes.FirstOrDefault();
+            }
+        }
+
+        public async Task<bool> AwaitUntil(Func<bool> func)
+        {
+            if(func.Invoke() == false)
             {
                 await Task.Delay(100);
             }
@@ -172,7 +185,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             {
                 GetMailsTaskToken.Cancel();
             }
-            await GetMailsTaskAvailable();
+            await AwaitUntil(() => _getMailsTask == null);
             if (SelectedMailBox.MailItems.Count == 0)
             {
                 if (SelectedMailBox.MailItems.Count == 0)
@@ -195,7 +208,6 @@ namespace PersonalDashboard.ViewModel.Dashboard
                 await imapClient.AuthenticateAsync(new NetworkCredential(mail, pass));
 
                 MailBoxes = imapClient.GetFolder(imapClient.PersonalNamespaces[0]).GetSubfolders().Select(fold => new MailBox(fold)).ToList();
-                SelectedMailBox = MailBoxes.FirstOrDefault(box => box.Name.ToLower() == "inbox") ?? MailBoxes.FirstOrDefault();
             }
             catch (Exception e)
             {
@@ -223,7 +235,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         }
         public async void StartOnCountChanged()
         {
-            await GetMailsTaskAvailable();
+            await AwaitUntil(() => _getMailsTask == null);
 
             if (_getMailsTask == null)
             {
@@ -413,7 +425,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
 
         public async void SeenMail(MailBox mailBox, MailItem mail)
         {
-            await IsMailBoxOpen(mailBox);
+            await AwaitUntil(() => !mailBox.MailFolder.IsOpen);
             SelectedMailBox.MailFolder.Open(FolderAccess.ReadWrite);
             SelectedMailBox.MailFolder.AddFlags(new UniqueId(mail.Uid), MessageFlags.Seen, false);
             SelectedMailBox.MailFolder.Close();
@@ -421,7 +433,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
         }
         public async void DeleteMail(MailBox mailBox, MailItem mail)
         {
-            await IsMailBoxOpen(mailBox);
+            await AwaitUntil(() => !mailBox.MailFolder.IsOpen);
             SelectedMailBox.MailFolder.Open(FolderAccess.ReadWrite);
             SelectedMailBox.MailFolder.AddFlags(new UniqueId(mail.Uid), MessageFlags.Deleted, true);
             SelectedMailBox.MailFolder.Close();
