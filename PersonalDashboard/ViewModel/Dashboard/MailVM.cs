@@ -203,7 +203,7 @@ namespace PersonalDashboard.ViewModel.Dashboard
             }
             catch (Exception e)
             {
-                NotificationsVM.instance.AddNotification(Name, $"Could not connect to the mailbox. {MethodBase.GetCurrentMethod().Name}");
+                NotificationsVM.instance.AddNotification(Name, $"Could not connect to the mailbox.\n{e.Message}");
             }
         }
 
