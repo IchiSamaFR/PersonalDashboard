@@ -106,7 +106,7 @@ namespace PersonalDashboard.Model.Dashboard.Mail
             {
                 MailGroups.InsertWhere(grp => grp.Date.Date < mail.Date.Date, new MailGroup(mail.Date));
             }
-            MailGroups.FirstOrDefault(group => group.Date.Date == mail.Date.Date).AddMail(mail);
+            MailGroups.First(group => group.Date.Date == mail.Date.Date).AddMail(mail);
         }
         public void ReloadMailGroups()
         {

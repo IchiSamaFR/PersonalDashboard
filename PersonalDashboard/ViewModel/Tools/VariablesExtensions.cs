@@ -27,6 +27,7 @@ namespace PersonalDashboard.ViewModel.Tools
                     list.Insert(i, newItem);
                     return true;
                 }
+                i++;
             }
             list.Add(newItem);
             return false;
